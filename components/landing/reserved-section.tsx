@@ -15,7 +15,7 @@ const cinzel = Cinzel({
 export function ReservedSection() {
   return (
     <section
-      className="bg-white px-5 py-16 md:px-10 md:py-24 lg:py-28"
+      className=" every-thing-main bg-white px-5 py-16 md:px-10 md:py-24 lg:py-28"
       aria-labelledby="reserved-heading"
     >
       <div className="mx-auto max-w-3xl text-center">
