@@ -19,7 +19,7 @@ const body =
 export function Hero() {
   return (
     <section
-      className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-white"
+      className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-white hero-banner"
       aria-label="Fortuna Global Holdings"
     >
       <Image
@@ -46,9 +46,15 @@ export function Hero() {
         <h1
           className={`${cinzel.className} mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
         >
-          <span className="block">A higher standard of</span>
-          <span className="block">access</span>
+        A higher standard of
         </h1>
+
+        <h2
+          className={`${cinzel.className} mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
+        >
+        access
+        </h2>
+        
 
         <p
           className={`${inter.className} mt-6 max-w-[38rem] text-pretty text-[15px] leading-[1.6] text-black/80 sm:mt-7 sm:text-[17px] md:mt-8 md:text-[18px]`}
