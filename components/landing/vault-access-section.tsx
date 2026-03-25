@@ -10,7 +10,7 @@ const cinzel = Cinzel({
 export function VaultAccessSection() {
   return (
     <section
-      className="relative isolate min-h-[58vh] w-full overflow-hidden bg-[#f4f4f2] md:min-h-[min(78vh,880px)]"
+      className="Vault-main relative isolate min-h-[58vh] w-full overflow-hidden bg-[#f4f4f2] md:min-h-[min(78vh,880px)]"
       aria-labelledby="vault-access-heading"
     >
       <Image
@@ -29,19 +29,19 @@ export function VaultAccessSection() {
           <div className="rounded-2xl bg-white/88 px-5 py-8 shadow-sm backdrop-blur-md sm:px-7 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none">
             <h2
               id="vault-access-heading"
-              className={`${cinzel.className} max-w-lg text-balance bg-gradient-to-br from-[#1a1a1a] from-35% via-[#2a2419] to-[#a67c32] bg-clip-text text-[1.35rem] font-bold uppercase leading-[1.08] tracking-[0.05em] text-transparent sm:text-2xl md:text-[1.65rem] md:leading-[1.06] lg:text-[1.85rem] xl:text-[2rem]`}
+              className={`${cinzel.className} text-[22px] text-start md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
             >
               <span className="block">Vault &amp; access</span>
               <span className="block">positioning</span>
             </h2>
 
             <p
-              className={`${cinzel.className} mt-4 max-w-lg text-[0.7rem] font-semibold uppercase leading-snug tracking-[0.12em] text-neutral-900 sm:mt-5 sm:text-xs md:text-[0.8rem] md:tracking-[0.14em]`}
+              className={`${cinzel.className} " font text-[20px] !mt-[10px] mb-[10px] md:!mt-[30px] md:mb-[30px]  md:!font-[Engravers_MT] md:text-[30px] md:leading-[160%] md:font-medium md:text-black/80`}
             >
               Access is not open. It is secured.
             </p>
 
-            <p className="mt-5 max-w-md text-pretty text-[15px] font-normal leading-[1.65] text-neutral-600 sm:mt-6 sm:text-[16px] md:mt-7 md:text-[17px]">
+            <p className="">
               This is a controlled environment—where participation is limited,
               and entry is considered.
             </p>

@@ -22,14 +22,14 @@ export function Hero() {
       className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-white hero-banner"
       aria-label="Fortuna Global Holdings"
     >
-      <Image
+      {/* <Image
         src="/Hero.png"
         alt=""
         fill
         priority
         className="object-cover object-[center_40%] md:object-center"
         sizes="100vw"
-      />
+      /> */}
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/50" />
 
@@ -46,8 +46,8 @@ export function Hero() {
         <h1
           className={`${ cinzel.className } !font-engravers heading-bg mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
         >
-          <span className="block higher-heading  font-[Engravers MT] not-italic font-medium text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">A higher standard of</span>
-          <span className="block access-heading font-[Engravers MT] not-italic font-medium text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)] justify-center">access</span>
+          <span className="block higher-heading !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">A higher standard of</span>
+          <span className="block access-heading !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)] justify-center">access</span>
         </h1>
 
        
