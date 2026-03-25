@@ -33,7 +33,7 @@ export function Hero() {
 
       <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-white/40 via-transparent to-white/50" />
 
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-5xl flex-col items-center px-5 pb-14 pt-8 text-center md:px-10 md:pb-20 md:pt-12 lg:pt-16">
+      <div className=" banner-inner-row  relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-5xl flex-col items-center px-5 pb-14 pt-8 text-center md:px-10 md:pb-20 md:pt-12 lg:pt-16">
         <Image
           src="/logo.png"
           alt="Fortuna Global Holdings — Building infinite abundance"
@@ -44,20 +44,17 @@ export function Hero() {
         />
 
         <h1
-          className={`${cinzel.className} mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
+          className={`${ cinzel.className } !font-engravers heading-bg mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
         >
-        A higher standard of
+          <span className="block higher-heading  font-[Engravers MT] not-italic font-medium text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">A higher standard of</span>
+          <span className="block access-heading font-[Engravers MT] not-italic font-medium text-[46px] leading-[54px] flex items-center text-center text-[#111111] [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)] justify-center">access</span>
         </h1>
 
-        <h2
-          className={`${cinzel.className} mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
-        >
-        access
-        </h2>
+       
         
 
         <p
-          className={`${inter.className} mt-6 max-w-[38rem] text-pretty text-[15px] leading-[1.6] text-black/80 sm:mt-7 sm:text-[17px] md:mt-8 md:text-[18px]`}
+          className={`${inter.className}  `}
         >
           {body}
         </p>
