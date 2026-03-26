@@ -92,12 +92,19 @@ color: rgba(0, 0, 0, 0.8);
 
  }
 
- .hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat; background-size: cover; background-position: center bottom;}
+ .hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat; background-size: cover; background-position:bottom; height:959px; min-height:100%; position: relative;}
 
 .banner-inner-row {
-  justify-content:center;
-    padding-top: 56px;
-    padding-bottom: 100px;
+    padding-top: 56px !important;
+    padding-bottom: 0px !important;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    left: 0px;
+    right: 0;
+    margin: 0 auto;
+    height: 100% !important;
+    min-height: 100% !important;
 }
 
 .banner-inner-row h1 {
