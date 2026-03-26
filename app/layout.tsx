@@ -1,5 +1,5 @@
-import type { Metadata } from "next";
-import { SiteFooter } from "@/components/landing/site-footer";
+import type { Metadata, Viewport } from "next";
+import { ConditionalSiteFooter } from "@/components/conditional-site-footer";
 import { Geist } from "next/font/google";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -25,8 +25,6 @@ export const metadata: Metadata = {
     "private access",
     "institutional execution",
   ],
-  themeColor: "#ffffff",
-  colorScheme: "light",
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -44,6 +42,11 @@ export const metadata: Metadata = {
     title: "Fortuna",
     statusBarStyle: "default",
   },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#ffffff",
+  colorScheme: "light",
 };
 
 const geistSans = Geist({
@@ -70,7 +73,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           {children}
-          <SiteFooter />
+          <ConditionalSiteFooter />
         </ThemeProvider>
       </body>
     </html>

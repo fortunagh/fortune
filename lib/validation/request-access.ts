@@ -121,9 +121,9 @@ export const requestAccessStepSchemas = [
 ] as const;
 
 export const REQUEST_ACCESS_STEP_META = [
-  { title: "About you", short: "You" },
+  { title: "Info", short: "Info" },
   { title: "Contact", short: "Contact" },
-  { title: "Availability", short: "When" },
+  { title: "Schedule", short: "Schedule" },
   { title: "Details", short: "Details" },
 ] as const;
 

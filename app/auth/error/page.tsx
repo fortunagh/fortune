@@ -1,5 +1,17 @@
+import {
+  authCardClass,
+  authCardDescriptionClass,
+  authCardTitleClass,
+} from "@/components/auth/auth-ui-classes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Cinzel } from "next/font/google";
 import { Suspense } from "react";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
 
 async function ErrorContent({
   searchParams,
@@ -11,11 +23,11 @@ async function ErrorContent({
   return (
     <>
       {params?.error ? (
-        <p className="text-sm text-muted-foreground">
+        <p className={`text-sm leading-relaxed ${authCardDescriptionClass}`}>
           Code error: {params.error}
         </p>
       ) : (
-        <p className="text-sm text-muted-foreground">
+        <p className={`text-sm leading-relaxed ${authCardDescriptionClass}`}>
           An unspecified error occurred.
         </p>
       )}
@@ -29,23 +41,21 @@ export default function Page({
   searchParams: Promise<{ error: string }>;
 }) {
   return (
-    <div className="flex min-h-svh w-full items-center justify-center p-6 md:p-10">
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col gap-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="text-2xl">
-                Sorry, something went wrong.
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <Suspense>
-                <ErrorContent searchParams={searchParams} />
-              </Suspense>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+    <div className="flex flex-col gap-6">
+      <Card className={authCardClass}>
+        <CardHeader>
+          <CardTitle
+            className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
+          >
+            Something went wrong
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <Suspense>
+            <ErrorContent searchParams={searchParams} />
+          </Suspense>
+        </CardContent>
+      </Card>
     </div>
   );
 }

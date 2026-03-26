@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  authCardClass,
+  authCardDescriptionClass,
+  authCardTitleClass,
+  authErrorTextClass,
+  authFooterLineClass,
+  authInputClass,
+  authLabelClass,
+  authLinkClass,
+} from "@/components/auth/auth-ui-classes";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,8 +22,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Cinzel } from "next/font/google";
 import Link from "next/link";
 import { useState } from "react";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
 
 export function ForgotPasswordForm({
   className,
@@ -47,32 +64,43 @@ export function ForgotPasswordForm({
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       {success ? (
-        <Card>
+        <Card className={authCardClass}>
           <CardHeader>
-            <CardTitle className="text-2xl">Check Your Email</CardTitle>
-            <CardDescription>Password reset instructions sent</CardDescription>
+            <CardTitle
+              className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
+            >
+              Check your email
+            </CardTitle>
+            <CardDescription className={authCardDescriptionClass}>
+              Password reset instructions sent
+            </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className="text-sm text-muted-foreground">
+            <p className={`text-sm leading-relaxed ${authCardDescriptionClass}`}>
               If you registered using your email and password, you will receive
               a password reset email.
             </p>
           </CardContent>
         </Card>
       ) : (
-        <Card>
+        <Card className={authCardClass}>
           <CardHeader>
-            <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-            <CardDescription>
-              Type in your email and we&apos;ll send you a link to reset your
-              password
+            <CardTitle
+              className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
+            >
+              Reset password
+            </CardTitle>
+            <CardDescription className={authCardDescriptionClass}>
+              We&apos;ll send a secure link to the address on file.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleForgotPassword}>
               <div className="flex flex-col gap-6">
                 <div className="grid gap-2">
-                  <Label htmlFor="email">Email</Label>
+                  <Label htmlFor="email" className={authLabelClass}>
+                    Email
+                  </Label>
                   <Input
                     id="email"
                     type="email"
@@ -80,20 +108,23 @@ export function ForgotPasswordForm({
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
+                    className={authInputClass}
                   />
                 </div>
-                {error && <p className="text-sm text-red-500">{error}</p>}
-                <Button type="submit" className="w-full" disabled={isLoading}>
-                  {isLoading ? "Sending..." : "Send reset email"}
+                {error && <p className={authErrorTextClass}>{error}</p>}
+                <Button
+                  type="submit"
+                  variant="fortuna"
+                  className="w-full"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Sending…" : "Send reset link"}
                 </Button>
               </div>
-              <div className="mt-4 text-center text-sm">
+              <div className={`mt-4 ${authFooterLineClass}`}>
                 Already have an account?{" "}
-                <Link
-                  href="/auth/login"
-                  className="underline underline-offset-4"
-                >
-                  Login
+                <Link href="/auth/login" className={authLinkClass}>
+                  Sign in
                 </Link>
               </div>
             </form>

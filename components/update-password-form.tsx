@@ -1,5 +1,13 @@
 "use client";
 
+import {
+  authCardClass,
+  authCardDescriptionClass,
+  authCardTitleClass,
+  authErrorTextClass,
+  authInputClass,
+  authLabelClass,
+} from "@/components/auth/auth-ui-classes";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,8 +20,15 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Cinzel } from "next/font/google";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
 
 export function UpdatePasswordForm({
   className,
@@ -44,18 +59,24 @@ export function UpdatePasswordForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className={authCardClass}>
         <CardHeader>
-          <CardTitle className="text-2xl">Reset Your Password</CardTitle>
-          <CardDescription>
-            Please enter your new password below.
+          <CardTitle
+            className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
+          >
+            New password
+          </CardTitle>
+          <CardDescription className={authCardDescriptionClass}>
+            Choose a strong password for your vault access.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleForgotPassword}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="password">New password</Label>
+                <Label htmlFor="password" className={authLabelClass}>
+                  New password
+                </Label>
                 <Input
                   id="password"
                   type="password"
@@ -63,11 +84,17 @@ export function UpdatePasswordForm({
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={authInputClass}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Saving..." : "Save new password"}
+              {error && <p className={authErrorTextClass}>{error}</p>}
+              <Button
+                type="submit"
+                variant="fortuna"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Saving…" : "Save password"}
               </Button>
             </div>
           </form>

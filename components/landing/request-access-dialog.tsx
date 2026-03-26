@@ -67,7 +67,23 @@ const contactMethodOptions = [
   { value: "text", label: "Text message" },
 ] as const;
 
-const labelClass = `${inter.className} text-[11px] font-medium uppercase tracking-[0.08em] text-neutral-800`;
+/** Form labels + step UI: same serif / caps / tracking as dialog title. */
+const labelClass = `${cinzel.className} text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-800 sm:text-xs`;
+
+/** Inputs, selects, textareas — Inter + explicit placeholder styling. */
+const fieldControlClass = cn(
+  inter.className,
+  "text-sm text-neutral-900 placeholder:font-normal placeholder:text-neutral-500",
+);
+
+/** Validation errors — Inter, slightly smaller than label. */
+const formMessageClass = cn(
+  inter.className,
+  "text-[11px] font-medium leading-snug",
+);
+
+/** Secondary actions — Cinzel to match dialog chrome. */
+const secondaryActionClass = `${cinzel.className} rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors`;
 
 const lastStepIndex = REQUEST_ACCESS_STEP_COUNT - 1;
 
@@ -101,7 +117,11 @@ function StepProgress({ step }: { step: number }) {
   const trackWidthPct = ((n - 1) / n) * 100;
 
   return (
-    <div className="mb-5 space-y-3">
+    <div
+      className="mb-5"
+      role="group"
+      aria-label={`Step ${step + 1} of ${n}: ${REQUEST_ACCESS_STEP_META[step]?.title ?? ""}`}
+    >
       <div className="px-1 sm:px-2">
         {/* Row 1: line runs through vertical center of circles */}
         <div className="relative flex min-h-8 items-center justify-between sm:min-h-9">
@@ -126,7 +146,8 @@ function StepProgress({ step }: { step: number }) {
               >
                 <div
                   className={cn(
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[11px] font-semibold shadow-sm transition-colors sm:h-9 sm:w-9 sm:text-xs",
+                    cinzel.className,
+                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[11px] font-semibold tabular-nums shadow-sm transition-colors sm:h-9 sm:w-9 sm:text-xs",
                     done &&
                       "border-amber-600 bg-gradient-to-br from-[#D4AF37] to-[#b8942a] text-white",
                     active &&
@@ -158,7 +179,8 @@ function StepProgress({ step }: { step: number }) {
               >
                 <span
                   className={cn(
-                    "hidden max-w-[4.5rem] truncate text-center text-[9px] font-medium uppercase tracking-wide text-neutral-500 sm:block sm:max-w-none sm:text-[10px]",
+                    cinzel.className,
+                    "hidden max-w-[4.5rem] truncate text-center text-[10px] font-semibold tracking-[0.12em] text-neutral-500 sm:block sm:max-w-none sm:text-[11px]",
                     active && "text-amber-950",
                   )}
                 >
@@ -169,14 +191,6 @@ function StepProgress({ step }: { step: number }) {
           })}
         </div>
       </div>
-      <p
-        className={`${inter.className} text-center text-[11px] text-neutral-500`}
-      >
-        Step {step + 1} of {REQUEST_ACCESS_STEP_COUNT} —{" "}
-        <span className="font-medium text-neutral-700">
-          {REQUEST_ACCESS_STEP_META[step]?.title}
-        </span>
-      </p>
     </div>
   );
 }
@@ -324,7 +338,7 @@ export function RequestAccessButton({
           <>
             <DialogHeader>
               <DialogTitle
-                className={`${cinzel.className} text-lg font-semibold uppercase tracking-[0.06em] text-neutral-900 sm:text-xl`}
+                className={`${cinzel.className} text-lg font-semibold uppercase tracking-[0.12em] text-neutral-900 sm:text-xl`}
               >
                 Request access
               </DialogTitle>
@@ -362,11 +376,11 @@ export function RequestAccessButton({
                               <Input
                                 placeholder="Jane"
                                 autoComplete="given-name"
-                                className={inter.className}
+                                className={fieldControlClass}
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className={formMessageClass} />
                           </FormItem>
                         )}
                       />
@@ -382,11 +396,11 @@ export function RequestAccessButton({
                               <Input
                                 placeholder="Doe"
                                 autoComplete="family-name"
-                                className={inter.className}
+                                className={fieldControlClass}
                                 {...field}
                               />
                             </FormControl>
-                            <FormMessage />
+                            <FormMessage className={formMessageClass} />
                           </FormItem>
                         )}
                       />
@@ -402,11 +416,11 @@ export function RequestAccessButton({
                           <FormControl>
                             <Input
                               placeholder="Name, event, publication, etc."
-                              className={inter.className}
+                              className={fieldControlClass}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -429,7 +443,7 @@ export function RequestAccessButton({
                               value={field.value || undefined}
                             >
                               <FormControl>
-                                <SelectTrigger className={inter.className}>
+                                <SelectTrigger className={fieldControlClass}>
                                   <SelectValue placeholder="Select country" />
                                 </SelectTrigger>
                               </FormControl>
@@ -441,7 +455,7 @@ export function RequestAccessButton({
                                 ))}
                               </SelectContent>
                             </Select>
-                            <FormMessage />
+                            <FormMessage className={formMessageClass} />
                           </FormItem>
                         )}
                       />
@@ -459,7 +473,7 @@ export function RequestAccessButton({
                                 inputMode="tel"
                                 autoComplete="tel-national"
                                 placeholder="National number"
-                                className={inter.className}
+                                className={fieldControlClass}
                                 {...field}
                               />
                             </FormControl>
@@ -469,7 +483,7 @@ export function RequestAccessButton({
                               Validated for the country you selected (include
                               leading 0 if your number uses one).
                             </p>
-                            <FormMessage />
+                            <FormMessage className={formMessageClass} />
                           </FormItem>
                         )}
                       />
@@ -485,11 +499,11 @@ export function RequestAccessButton({
                               type="email"
                               placeholder="you@company.com"
                               autoComplete="email"
-                              className={inter.className}
+                              className={fieldControlClass}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -505,11 +519,11 @@ export function RequestAccessButton({
                             <Input
                               placeholder="City"
                               autoComplete="address-level2"
-                              className={inter.className}
+                              className={fieldControlClass}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -531,7 +545,7 @@ export function RequestAccessButton({
                             value={field.value || undefined}
                           >
                             <FormControl>
-                              <SelectTrigger className={inter.className}>
+                              <SelectTrigger className={fieldControlClass}>
                                 <SelectValue placeholder="Select time zone" />
                               </SelectTrigger>
                             </FormControl>
@@ -543,7 +557,7 @@ export function RequestAccessButton({
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -558,11 +572,11 @@ export function RequestAccessButton({
                           <FormControl>
                             <Input
                               placeholder="e.g. Weekdays 9am–5pm, your local time"
-                              className={inter.className}
+                              className={fieldControlClass}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -579,7 +593,7 @@ export function RequestAccessButton({
                             value={field.value || undefined}
                           >
                             <FormControl>
-                              <SelectTrigger className={inter.className}>
+                              <SelectTrigger className={fieldControlClass}>
                                 <SelectValue placeholder="Select method" />
                               </SelectTrigger>
                             </FormControl>
@@ -591,7 +605,7 @@ export function RequestAccessButton({
                               ))}
                             </SelectContent>
                           </Select>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -612,13 +626,13 @@ export function RequestAccessButton({
                             <Textarea
                               placeholder="Your role, industry, or business name"
                               className={cn(
-                                inter.className,
+                                fieldControlClass,
                                 "min-h-[72px] resize-y",
                               )}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -634,13 +648,13 @@ export function RequestAccessButton({
                             <Textarea
                               placeholder="Please explain what you are looking for and why this environment is a fit."
                               className={cn(
-                                inter.className,
+                                fieldControlClass,
                                 "min-h-[120px] resize-y",
                               )}
                               {...field}
                             />
                           </FormControl>
-                          <FormMessage />
+                          <FormMessage className={formMessageClass} />
                         </FormItem>
                       )}
                     />
@@ -651,7 +665,10 @@ export function RequestAccessButton({
                   <div className="flex flex-wrap gap-2">
                     <button
                       type="button"
-                      className={`${inter.className} rounded-md px-3 py-2 text-sm text-neutral-600 hover:bg-neutral-100`}
+                      className={cn(
+                        secondaryActionClass,
+                        "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+                      )}
                       onClick={() => handleOpenChange(false)}
                     >
                       Cancel
@@ -659,7 +676,10 @@ export function RequestAccessButton({
                     {step > 0 && (
                       <button
                         type="button"
-                        className={`${inter.className} rounded-md px-3 py-2 text-sm font-medium text-neutral-800 hover:bg-neutral-100`}
+                        className={cn(
+                          secondaryActionClass,
+                          "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950",
+                        )}
                         onClick={goBack}
                       >
                         Back

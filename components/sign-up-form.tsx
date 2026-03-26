@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  authCardClass,
+  authCardDescriptionClass,
+  authCardTitleClass,
+  authErrorTextClass,
+  authFooterLineClass,
+  authInputClass,
+  authLabelClass,
+  authLinkClass,
+} from "@/components/auth/auth-ui-classes";
 import { cn } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -12,9 +22,16 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Cinzel } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+
+const cinzel = Cinzel({
+  subsets: ["latin"],
+  weight: ["600", "700"],
+  display: "swap",
+});
 
 export function SignUpForm({
   className,
@@ -58,16 +75,24 @@ export function SignUpForm({
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
-      <Card>
+      <Card className={authCardClass}>
         <CardHeader>
-          <CardTitle className="text-2xl">Sign up</CardTitle>
-          <CardDescription>Create a new account</CardDescription>
+          <CardTitle
+            className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
+          >
+            Sign up
+          </CardTitle>
+          <CardDescription className={authCardDescriptionClass}>
+            Create your credentials. Entry is considered.
+          </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email" className={authLabelClass}>
+                  Email
+                </Label>
                 <Input
                   id="email"
                   type="email"
@@ -75,41 +100,49 @@ export function SignUpForm({
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
+                  className={authInputClass}
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="password">Password</Label>
-                </div>
+                <Label htmlFor="password" className={authLabelClass}>
+                  Password
+                </Label>
                 <Input
                   id="password"
                   type="password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
+                  className={authInputClass}
                 />
               </div>
               <div className="grid gap-2">
-                <div className="flex items-center">
-                  <Label htmlFor="repeat-password">Repeat Password</Label>
-                </div>
+                <Label htmlFor="repeat-password" className={authLabelClass}>
+                  Confirm password
+                </Label>
                 <Input
                   id="repeat-password"
                   type="password"
                   required
                   value={repeatPassword}
                   onChange={(e) => setRepeatPassword(e.target.value)}
+                  className={authInputClass}
                 />
               </div>
-              {error && <p className="text-sm text-red-500">{error}</p>}
-              <Button type="submit" className="w-full" disabled={isLoading}>
-                {isLoading ? "Creating an account..." : "Sign up"}
+              {error && <p className={authErrorTextClass}>{error}</p>}
+              <Button
+                type="submit"
+                variant="fortuna"
+                className="w-full"
+                disabled={isLoading}
+              >
+                {isLoading ? "Creating account…" : "Create account"}
               </Button>
             </div>
-            <div className="mt-4 text-center text-sm">
+            <div className={`mt-4 ${authFooterLineClass}`}>
               Already have an account?{" "}
-              <Link href="/auth/login" className="underline underline-offset-4">
-                Login
+              <Link href="/auth/login" className={authLinkClass}>
+                Sign in
               </Link>
             </div>
           </form>
