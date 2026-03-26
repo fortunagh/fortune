@@ -1,3 +1,4 @@
+import { RequestAccessButton } from "@/components/landing/request-access-dialog";
 import Image from "next/image";
 import { Cinzel, Inter } from "next/font/google";
 
@@ -32,8 +33,6 @@ const items = [
     description: "All submissions are handled with complete discretion.",
   },
 ] as const;
-
-const ctaButtonClass = `${cinzel.className} group min-w-[min(88vw,280px)] rounded-full bg-[linear-gradient(90deg,#D4AF37_0%,#FFD988_46%,#D4AF37_100%)] px-10 py-3.5 text-center text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-neutral-900 shadow-sm transition-transform duration-300 ease-out will-change-transform hover:scale-[1.045] hover:shadow-[0_14px_36px_rgba(0,0,0,0.22)] active:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[300px] sm:px-12 sm:py-4 sm:text-[0.78rem] md:min-w-[320px] md:text-[0.82rem]`;
 
 export function AccessQualificationSection() {
   return (
@@ -76,9 +75,7 @@ export function AccessQualificationSection() {
         </ul>
 
         <div className="mt-[25px] flex justify-center sm:mt-14 md:mt-[34px]">
-          <button type="button" className={ctaButtonClass}>
-            Request access
-          </button>
+          <RequestAccessButton />
         </div>
       </div>
     </section>

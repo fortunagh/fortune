@@ -57,6 +57,26 @@ export default {
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
       },
+      keyframes: {
+        successBadge: {
+          "0%": { transform: "scale(0)", opacity: "0" },
+          "55%": { transform: "scale(1.1)", opacity: "1" },
+          "100%": { transform: "scale(1)", opacity: "1" },
+        },
+        successCheck: {
+          "0%": { transform: "scale(0.2) rotate(-25deg)", opacity: "0" },
+          "100%": { transform: "scale(1) rotate(0deg)", opacity: "1" },
+        },
+        successRing: {
+          "0%": { transform: "scale(0.85)", opacity: "0.55" },
+          "100%": { transform: "scale(1.65)", opacity: "0" },
+        },
+      },
+      animation: {
+        "success-badge": "successBadge 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards",
+        "success-check": "successCheck 0.5s ease-out 0.22s both",
+        "success-ring": "successRing 1s ease-out 0.1s forwards",
+      },
     },
   },
   plugins: [require("tailwindcss-animate")],
