@@ -38,21 +38,21 @@ const ctaButtonClass = `${cinzel.className} group min-w-[min(88vw,280px)] rounde
 export function AccessQualificationSection() {
   return (
     <section
-      className="bg-white px-5 py-16 md:px-10 md:py-24 lg:py-28"
+      className="Access-main bg-white px-5 py-16 md:px-10 md:py-24 lg:py-28"
       aria-labelledby="access-qualification-heading"
     >
-      <div className="mx-auto max-w-6xl">
+      <div className="mx-auto max-w-7xl">
         <h2
           id="access-qualification-heading"
-          className={`${cinzel.className} mx-auto max-w-3xl text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text text-center text-[1.2rem] font-bold uppercase leading-tight tracking-[0.06em] text-transparent sm:text-xl sm:tracking-[0.08em] md:text-2xl lg:text-[1.75rem]`}
+          className={`${cinzel.className}   text-[22px] text-center md:font-[Engravers_MT] md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
         >
           <span className="block sm:inline">Access &amp; qualification</span>
         </h2>
 
-        <ul className="mt-12 grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-16 md:grid-cols-3 md:gap-8 lg:gap-10">
+        <ul className=" access-grid mt-[20px] grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-3 md:gap-8 lg:gap-10">
           {items.map((item) => (
             <li key={item.title}>
-              <article className="flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
+              <article className=" access-grid-grid flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
                 <Image
                   src={item.icon}
                   alt=""
@@ -66,7 +66,7 @@ export function AccessQualificationSection() {
                   {item.title}
                 </h3>
                 <p
-                  className={`${inter.className} mt-3 max-w-[28ch] text-pretty text-[13px] font-normal leading-relaxed text-neutral-600 sm:max-w-none sm:text-[14px] md:text-[15px]`}
+                  className={`${inter.className}`}
                 >
                   {item.description}
                 </p>
@@ -75,7 +75,7 @@ export function AccessQualificationSection() {
           ))}
         </ul>
 
-        <div className="mt-12 flex justify-center sm:mt-14 md:mt-16">
+        <div className="mt-[25px] flex justify-center sm:mt-14 md:mt-[34px]">
           <button type="button" className={ctaButtonClass}>
             Request access
           </button>

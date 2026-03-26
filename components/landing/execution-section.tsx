@@ -34,7 +34,7 @@ const cards = [
 export function ExecutionSection() {
   return (
     <section
-      className="bg-white px-5 pb-16 pt-6 md:px-10 md:pb-24 md:pt-8 lg:pb-28"
+      className="Execution-main bg-white px-5 pb-16 pt-6 md:px-10 md:pb-24 md:pt-8 lg:pb-28"
       aria-labelledby="execution-heading"
     >
       <div className="mx-auto max-w-6xl">
@@ -50,32 +50,32 @@ export function ExecutionSection() {
 
         <h2
           id="execution-heading"
-          className={`${cinzel.className} mx-auto mt-10 max-w-4xl text-balance bg-gradient-to-r from-neutral-950 via-[#b8942a] to-[#f0d78c] bg-clip-text px-2 text-center text-[1.05rem] font-bold uppercase leading-tight tracking-[0.06em] text-transparent sm:mt-12 sm:text-xl sm:tracking-[0.08em] md:text-2xl lg:text-[1.65rem] lg:leading-snug xl:text-[1.85rem]`}
+          className={`${cinzel.className}  text-[22px] text-center md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
         >
           Execution without compromise
         </h2>
 
         <p
-          className={`${inter.className} mx-auto mt-6 max-w-2xl text-pretty text-center text-[15px] font-medium leading-[1.6] text-black/75 sm:mt-7 sm:text-[16px] md:mt-8 md:max-w-[42rem] md:text-[17px] lg:text-[18px]`}
+          className={`${inter.className} mt-[20px] mb-[25px] mx-auto mt-6 max-w-2xl text-pretty text-center text-[15px] font-medium leading-[1.6] text-black/75 sm:mt-7 sm:text-[16px] md:mt-8 md:max-w-[42rem] md:text-[17px] lg:text-[18px]`}
         >
           A platform grounded in clarity and focus, executed with
           discipline—outcomes are approached with consistency, free from
           narrative, emotion, and unnecessary complexity.
         </p>
 
-        <ul className="mt-12 grid list-none grid-cols-1 gap-6 sm:mt-14 md:mt-16 md:grid-cols-3 md:gap-8">
+        <ul className="grid list-none grid-cols-1 gap-6 md:grid-cols-3 md:gap-8">
           {cards.map((card) => (
             <li key={card.title}>
-              <article className="flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
+              <article className="flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10 bg-white border border-[rgba(212,175,55,0.2)] shadow-[0px_0px_20px_rgba(0,0,0,0.3)] rounded-[10px]">
                 <Image
                   src={card.icon}
                   alt=""
-                  width={80}
-                  height={80}
-                  className="h-[72px] w-[72px] object-contain sm:h-20 sm:w-20"
+                  width={50}
+                  height={50}
+                  className="h-[50px] w-[50px] object-contain"
                 />
                 <h3
-                  className={`${cinzel.className} mt-6 text-base font-bold uppercase tracking-[0.08em] text-neutral-950 sm:text-lg`}
+                  className={`${cinzel.className} text-[20px] mt-6 text-base font-bold uppercase tracking-[0.08em] text-neutral-950 sm:text-[24px]`}
                 >
                   {card.title}
                 </h3>
