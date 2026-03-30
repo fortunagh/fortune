@@ -73,28 +73,14 @@ export function AdminShell({
           >
             <AdminSidebarBrand collapsed={collapsed} />
           </div>
-          <div className="flex shrink-0 items-center gap-0.5">
-            <button
-              type="button"
-              className="rounded-md p-2 text-neutral-600 hover:bg-neutral-100 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
-              aria-label="Close menu"
-              onClick={() => setMobileOpen(false)}
-            >
-              <X className="h-4 w-4" />
-            </button>
-            <button
-              type="button"
-              className="hidden rounded-md p-2 text-neutral-600 hover:bg-neutral-100 md:inline-flex dark:text-neutral-400 dark:hover:bg-neutral-800"
-              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-              onClick={() => setCollapsed((c) => !c)}
-            >
-              {collapsed ? (
-                <PanelLeft className="h-4 w-4" />
-              ) : (
-                <PanelLeftClose className="h-4 w-4" />
-              )}
-            </button>
-          </div>
+          <button
+            type="button"
+            className="rounded-md p-2 text-neutral-600 hover:bg-neutral-100 md:hidden dark:text-neutral-400 dark:hover:bg-neutral-800"
+            aria-label="Close menu"
+            onClick={() => setMobileOpen(false)}
+          >
+            <X className="h-4 w-4" />
+          </button>
         </div>
 
         <nav
@@ -139,7 +125,8 @@ export function AdminShell({
           <LogoutButton
             variant="outline"
             size="sm"
-            className={cn("w-full", collapsed && "px-2")}
+            iconOnly={collapsed}
+            className={cn("w-full", collapsed && "md:justify-center")}
           />
         </div>
       </aside>
@@ -154,6 +141,22 @@ export function AdminShell({
           >
             <Menu className="h-5 w-5" />
           </button>
+          <button
+            type="button"
+            className="hidden h-9 w-9 shrink-0 items-center justify-center rounded-md border border-neutral-300 bg-white text-neutral-800 shadow-sm transition-colors hover:bg-neutral-50 md:inline-flex dark:border-neutral-600 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
+            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            onClick={() => setCollapsed((c) => !c)}
+          >
+            {collapsed ? (
+              <PanelLeft className="h-4 w-4" />
+            ) : (
+              <PanelLeftClose className="h-4 w-4" />
+            )}
+          </button>
+          <div
+            className="hidden h-6 w-px shrink-0 bg-neutral-200 md:block dark:bg-neutral-700"
+            aria-hidden
+          />
           <div className="flex min-w-0 flex-1 items-center gap-2.5">
             <AdminBrandMark className="block h-5 w-5 shrink-0 text-neutral-500 md:hidden" />
             <div className="min-w-0">
