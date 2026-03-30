@@ -1,5 +1,6 @@
 "use client";
 
+import { AdminBrandMark, AdminSidebarBrand } from "@/components/admin/admin-brand";
 import { cn } from "@/lib/utils";
 import { LogoutButton } from "@/components/logout-button";
 import {
@@ -11,7 +12,6 @@ import {
   UserPlus,
   X,
 } from "lucide-react";
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import * as React from "react";
@@ -64,26 +64,15 @@ export function AdminShell({
           "md:relative md:z-0 md:shadow-none",
         )}
       >
-        <div className="flex h-14 shrink-0 items-center justify-between gap-1 border-b border-neutral-200 px-2 pt-[max(0.25rem,env(safe-area-inset-top))] dark:border-neutral-800">
-          <Link
-            href="/"
+        <div className="flex min-h-[3.25rem] shrink-0 items-center justify-between gap-1 border-b border-neutral-200 px-2 py-2 pt-[max(0.35rem,env(safe-area-inset-top))] dark:border-neutral-800">
+          <div
             className={cn(
-              "flex min-w-0 items-center justify-center overflow-hidden",
-              !collapsed && "flex-1 justify-start pl-1",
+              "flex min-w-0 flex-1 items-center overflow-hidden",
+              collapsed && "justify-center",
             )}
-            title="Fortuna home"
           >
-            <Image
-              src="/logo.png"
-              alt="Fortuna"
-              width={120}
-              height={40}
-              className={cn(
-                "h-8 w-auto object-contain object-left",
-                collapsed && "mx-auto h-7",
-              )}
-            />
-          </Link>
+            <AdminSidebarBrand collapsed={collapsed} />
+          </div>
           <div className="flex shrink-0 items-center gap-0.5">
             <button
               type="button"
@@ -165,13 +154,22 @@ export function AdminShell({
           >
             <Menu className="h-5 w-5" />
           </button>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-medium text-neutral-600 dark:text-neutral-300">
-              Fortuna admin
-            </p>
-            <p className="truncate text-xs text-neutral-400 md:hidden dark:text-neutral-500">
-              {userEmail}
-            </p>
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <AdminBrandMark className="block h-5 w-5 shrink-0 text-neutral-500 md:hidden" />
+            <div className="min-w-0">
+              <p
+                className="truncate text-sm font-semibold tracking-tight text-neutral-900 [text-shadow:0_0_1px_rgba(212,175,55,0.45)] dark:text-neutral-50 dark:[text-shadow:0_0_1px_rgba(212,175,55,0.35)]"
+                title="Fortuna Global Holdings"
+              >
+                Fortuna Global Holdings
+              </p>
+              <p className="truncate text-xs text-neutral-500 dark:text-neutral-400 md:hidden">
+                {userEmail}
+              </p>
+              <p className="hidden truncate text-xs text-neutral-500 dark:text-neutral-400 md:block">
+                Admin console
+              </p>
+            </div>
           </div>
         </header>
         <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] md:px-6 md:py-6">

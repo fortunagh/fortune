@@ -5,8 +5,14 @@ export function AdminChromeSkeleton() {
   return (
     <div className="flex min-h-svh w-full bg-neutral-50 dark:bg-neutral-950">
       <aside className="hidden h-svh w-64 shrink-0 flex-col border-r border-neutral-200 bg-white p-3 md:flex dark:border-neutral-800 dark:bg-neutral-900">
-        <Skeleton className="mx-auto h-9 w-28 rounded-md" />
-        <div className="mt-6 flex flex-1 flex-col gap-2">
+        <div className="-mx-3 -mt-3 mb-3 flex items-start gap-2.5 border-b border-neutral-200 px-3 pb-3 pt-3 dark:border-neutral-800">
+          <Skeleton className="mt-[3px] h-[18px] w-[18px] shrink-0 rounded-[2px]" />
+          <div className="flex min-w-0 flex-1 flex-col gap-1.5">
+            <Skeleton className="h-3 w-32 max-w-full rounded" />
+            <Skeleton className="h-2.5 w-24 max-w-full rounded" />
+          </div>
+        </div>
+        <div className="mt-1 flex flex-1 flex-col gap-2">
           <Skeleton className="h-10 w-full rounded-lg" />
           <Skeleton className="h-10 w-full rounded-lg" />
           <Skeleton className="h-10 w-full rounded-lg" />
@@ -16,7 +22,13 @@ export function AdminChromeSkeleton() {
       <div className="flex min-h-svh min-w-0 flex-1 flex-col">
         <header className="flex h-14 shrink-0 items-center gap-3 border-b border-neutral-200 bg-white px-4 dark:border-neutral-800 dark:bg-neutral-900 md:px-6">
           <Skeleton className="h-10 w-10 shrink-0 rounded-md md:hidden" />
-          <Skeleton className="h-5 w-32" />
+          <div className="flex min-w-0 flex-1 items-center gap-2.5">
+            <Skeleton className="h-5 w-5 shrink-0 rounded-[2px] md:hidden" />
+            <div className="min-w-0 flex-1 space-y-1.5">
+              <Skeleton className="h-4 w-48 max-w-full rounded" />
+              <Skeleton className="h-3 w-40 max-w-full rounded md:hidden" />
+            </div>
+          </div>
         </header>
         <div className="flex flex-1 flex-col gap-6 p-4 md:p-6">
           <div className="space-y-2">
