@@ -140,7 +140,7 @@ export function RequestAccessAdminTable({
 
   return (
     <>
-      <div className="w-full overflow-x-auto rounded-lg border border-neutral-200 bg-white shadow-sm dark:border-neutral-800 dark:bg-neutral-900">
+      <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white shadow-sm [-webkit-overflow-scrolling:touch] dark:border-neutral-800 dark:bg-neutral-900">
         <table className="w-full min-w-[900px] border-collapse text-left text-sm">
           <thead>
             <tr className="border-b border-neutral-200 bg-neutral-50/80 dark:border-neutral-800 dark:bg-neutral-950/50">

@@ -45,7 +45,7 @@ export function InviteUserForm() {
   return (
     <form
       onSubmit={onSubmit}
-      className="max-w-md space-y-4 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
+      className="mx-auto w-full max-w-md space-y-4 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
     >
       <div>
         <h2 className="text-lg font-semibold">Invite a user</h2>

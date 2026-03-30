@@ -16,9 +16,11 @@ export default async function AdminOverviewPage() {
     ).length ?? 0;
 
   return (
-    <div className="space-y-8">
+    <div className="mx-auto w-full max-w-6xl space-y-8">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Overview</h2>
+        <h2 className="text-2xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          Overview
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Request access pipeline at a glance.
         </p>

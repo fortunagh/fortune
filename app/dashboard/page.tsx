@@ -1,11 +1,10 @@
+import { CustomerDashboardSkeleton } from "@/components/admin/admin-skeletons";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 function Loading() {
-  return (
-    <div className="p-10 text-sm text-muted-foreground">Loading dashboard…</div>
-  );
+  return <CustomerDashboardSkeleton />;
 }
 
 async function DashboardHome() {

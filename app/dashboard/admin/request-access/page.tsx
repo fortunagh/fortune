@@ -22,9 +22,11 @@ export default async function AdminRequestAccessPage() {
   const rows = (data ?? []) as RequestAccessSubmissionRow[];
 
   return (
-    <div className="space-y-4">
+    <div className="mx-auto w-full max-w-6xl space-y-4">
       <div>
-        <h2 className="text-xl font-semibold tracking-tight">Request access</h2>
+        <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
+          Request access
+        </h2>
         <p className="mt-1 text-sm text-muted-foreground">
           Review leads from the public form. Edit status and notes, or delete
           records.

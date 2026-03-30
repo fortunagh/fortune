@@ -1,15 +1,10 @@
+import { AdminBootstrapFallback } from "@/components/admin/admin-bootstrap-fallback";
+import { AdminMainSkeleton } from "@/components/admin/admin-skeletons";
 import { AdminShell } from "@/components/admin/admin-shell";
+import { geistSans } from "@/lib/fonts/geist-admin";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-
-function AdminFallback() {
-  return (
-    <div className="flex min-h-svh items-center justify-center text-sm text-muted-foreground">
-      Loading admin…
-    </div>
-  );
-}
 
 async function AdminGate({ children }: { children: React.ReactNode }) {
   const session = await getSessionProfile();
@@ -21,13 +16,7 @@ async function AdminGate({ children }: { children: React.ReactNode }) {
   }
   return (
     <AdminShell userEmail={session.user.email ?? ""}>
-      <Suspense
-        fallback={
-          <div className="p-2 text-sm text-muted-foreground">Loading…</div>
-        }
-      >
-        {children}
-      </Suspense>
+      <Suspense fallback={<AdminMainSkeleton />}>{children}</Suspense>
     </AdminShell>
   );
 }
@@ -38,8 +27,10 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Suspense fallback={<AdminFallback />}>
-      <AdminGate>{children}</AdminGate>
-    </Suspense>
+    <div className={`${geistSans.className} min-h-svh antialiased`}>
+      <Suspense fallback={<AdminBootstrapFallback />}>
+        <AdminGate>{children}</AdminGate>
+      </Suspense>
+    </div>
   );
 }
