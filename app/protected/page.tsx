@@ -1,43 +1,59 @@
 import { redirect } from "next/navigation";
 
+import { RequestAccessRequests } from "@/components/dashboard/request-access-requests";
 import { createClient } from "@/lib/supabase/server";
 import { InfoIcon } from "lucide-react";
-import { FetchDataSteps } from "@/components/tutorial/fetch-data-steps";
 import { Suspense } from "react";
 
-async function UserDetails() {
+function DashboardFallback() {
+  return (
+    <div className="flex w-full flex-1 flex-col gap-10 p-1">
+      <div className="h-12 animate-pulse rounded-md bg-muted" />
+      <div className="h-40 animate-pulse rounded-md bg-muted" />
+    </div>
+  );
+}
+
+async function ProtectedDashboard() {
   const supabase = await createClient();
   const { data, error } = await supabase.auth.getClaims();
-
   if (error || !data?.claims) {
     redirect("/auth/login");
   }
 
-  return JSON.stringify(data.claims, null, 2);
+  return (
+    <div className="flex w-full flex-1 flex-col gap-10">
+      <div className="w-full">
+        <div className="flex items-center gap-3 rounded-md bg-accent p-3 px-5 text-sm text-foreground">
+          <InfoIcon size={16} strokeWidth={2} />
+          Dashboard — request access submissions from the Fortuna landing page.
+        </div>
+      </div>
+
+      <section className="flex w-full flex-col gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Request access</h1>
+          <p className="mt-2 max-w-2xl text-sm text-muted-foreground">
+            Each row is a completed submission from the public form. Apply the
+            SQL migration in Supabase if the table is missing.
+          </p>
+        </div>
+        <Suspense
+          fallback={
+            <p className="text-sm text-muted-foreground">Loading submissions…</p>
+          }
+        >
+          <RequestAccessRequests />
+        </Suspense>
+      </section>
+    </div>
+  );
 }
 
 export default function ProtectedPage() {
   return (
-    <div className="flex-1 w-full flex flex-col gap-12">
-      <div className="w-full">
-        <div className="bg-accent text-sm p-3 px-5 rounded-md text-foreground flex gap-3 items-center">
-          <InfoIcon size="16" strokeWidth={2} />
-          This is a protected page that you can only see as an authenticated
-          user
-        </div>
-      </div>
-      <div className="flex flex-col gap-2 items-start">
-        <h2 className="font-bold text-2xl mb-4">Your user details</h2>
-        <pre className="text-xs font-mono p-3 rounded border max-h-32 overflow-auto">
-          <Suspense>
-            <UserDetails />
-          </Suspense>
-        </pre>
-      </div>
-      <div>
-        <h2 className="font-bold text-2xl mb-4">Next steps</h2>
-        <FetchDataSteps />
-      </div>
-    </div>
+    <Suspense fallback={<DashboardFallback />}>
+      <ProtectedDashboard />
+    </Suspense>
   );
 }

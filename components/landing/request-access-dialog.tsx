@@ -207,6 +207,8 @@ export function RequestAccessButton({
   const [open, setOpen] = React.useState(false);
   const [submitted, setSubmitted] = React.useState(false);
   const [step, setStep] = React.useState(0);
+  const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [submitError, setSubmitError] = React.useState<string | null>(null);
   const timezones = useTimeZoneOptions();
 
   const form = useForm<RequestAccessFormValues>({
@@ -223,18 +225,34 @@ export function RequestAccessButton({
       bestContactTimes: "",
       occupationOrBusiness: "",
       platformInterest: "",
+      preferredContactMethod: undefined as unknown as RequestAccessFormValues["preferredContactMethod"],
     },
   });
 
-  function onSubmit(values: RequestAccessFormValues) {
-    const dial = getDialCode(values.phoneCountryIso2);
-    const digits = values.mobileNumber.replace(/\D/g, "");
-    const fullInternational = dial ? `+${dial}${digits}` : digits;
-    setSubmitted(true);
-    console.log("Request access submission", {
-      ...values,
-      fullInternationalNumber: fullInternational,
-    });
+  async function onSubmit(values: RequestAccessFormValues) {
+    setSubmitError(null);
+    setIsSubmitting(true);
+    try {
+      const res = await fetch("/api/request-access", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(values),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+      };
+      if (!res.ok) {
+        setSubmitError(
+          data.error ?? "Could not submit your request. Please try again.",
+        );
+        return;
+      }
+      setSubmitted(true);
+    } catch {
+      setSubmitError("Network error. Check your connection and try again.");
+    } finally {
+      setIsSubmitting(false);
+    }
   }
 
   function goNext() {
@@ -266,6 +284,7 @@ export function RequestAccessButton({
     if (!next) {
       setSubmitted(false);
       setStep(0);
+      setSubmitError(null);
       form.reset();
     }
   }
@@ -661,6 +680,15 @@ export function RequestAccessButton({
                   </>
                 )}
 
+                {submitError && (
+                  <p
+                    className={`${inter.className} rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800`}
+                    role="alert"
+                  >
+                    {submitError}
+                  </p>
+                )}
+
                 <div className="flex flex-col gap-2 border-t border-neutral-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
                   <div className="flex flex-wrap gap-2">
                     <button
@@ -702,13 +730,14 @@ export function RequestAccessButton({
                     ) : (
                       <button
                         type="submit"
+                        disabled={isSubmitting}
                         className={cn(
                           cinzel.className,
                           requestAccessButtonClass,
-                          "w-full min-w-[180px] sm:w-auto",
+                          "w-full min-w-[180px] disabled:pointer-events-none disabled:opacity-60 sm:w-auto",
                         )}
                       >
-                        Submit request
+                        {isSubmitting ? "Submitting…" : "Submit request"}
                       </button>
                     )}
                   </div>
