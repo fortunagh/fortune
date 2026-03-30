@@ -1,4 +1,10 @@
 /** Row shape for `public.request_access_submissions`. */
+export type RequestAccessStatus =
+  | "pending"
+  | "contacted"
+  | "approved"
+  | "declined";
+
 export type RequestAccessSubmissionRow = {
   id: string;
   created_at: string;
@@ -12,8 +18,10 @@ export type RequestAccessSubmissionRow = {
   city: string;
   timezone: string;
   best_contact_times: string;
-  /** Contact preference: WhatsApp, email, Zoom, or text */
   preferred_contact_method: "whatsapp" | "email" | "zoom" | "text";
   occupation_or_business: string;
   platform_interest: string;
+  /** Present after migration `20260330140000_profiles_roles_admin_rls.sql` */
+  status?: RequestAccessStatus;
+  admin_notes?: string | null;
 };
