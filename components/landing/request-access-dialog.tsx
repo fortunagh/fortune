@@ -118,7 +118,7 @@ function StepProgress({ step }: { step: number }) {
 
   return (
     <div
-      className="mb-5"
+      className="mb-5 form-request-progress "
       role="group"
       aria-label={`Step ${step + 1} of ${n}: ${REQUEST_ACCESS_STEP_META[step]?.title ?? ""}`}
     >
@@ -149,10 +149,10 @@ function StepProgress({ step }: { step: number }) {
                     cinzel.className,
                     "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[11px] font-semibold tabular-nums shadow-sm transition-colors sm:h-9 sm:w-9 sm:text-xs",
                     done &&
-                      "border-amber-600 bg-gradient-to-br from-[#D4AF37] to-[#b8942a] text-white",
+                      "border-[#e1bc50] bg-gradient-to-br from-[#D4AF37] to-[#b8942a] text-white",
                     active &&
                       !done &&
-                      "border-amber-600 bg-amber-50 text-amber-950",
+                      "border-[#e1bc50] bg-amber-50 text-amber-950",
                     !done &&
                       !active &&
                       "border-neutral-200 bg-white text-neutral-400",

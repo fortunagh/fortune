@@ -19,6 +19,9 @@ export function ReservedSection() {
       aria-labelledby="reserved-heading"
     >
       <div className="mx-auto max-w-3xl text-center">
+        <p className="pb-[30px] lg:pb-[60px]"> An exclusive, invitation-only environment for those who expect performance—not promises.
+          Where institutional-grade execution, disciplined architecture, and consistency converge—secured within a private,
+           controlled framework. </p>
         <h2
           id="reserved-heading"
           className={`${cinzel.className} text-[22px] md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}

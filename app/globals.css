@@ -90,216 +90,63 @@ line-height: 160%;
 align-items: center;
 color: rgba(0, 0, 0, 0.8);
 
- }
-
- .hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat; background-size: cover; background-position:bottom; height:959px; min-height:100%; position: relative;}
-
-.banner-inner-row {
-    padding-top: 56px !important;
-    padding-bottom: 0px !important;
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    left: 0px;
-    right: 0;
-    margin: 0 auto;
-    height: 100% !important;
-    min-height: 100% !important;
 }
 
-.banner-inner-row h1 {
-  margin-top:100px; font-family: 'Engravers MT', sans-serif !important;
-    font-size: 70px; font-weight: 900;
-    text-align: center; line-height: 1.2; 
-    background: url('.././public/heading-image-text.png') center/cover no-repeat;
-     -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-     background-size: cover;}
-
-    .banner-inner-row p {font-family: 'Inter';
-font-style: normal;
-font-weight: 400;
-font-size: 18px;
-line-height: 160%;
-text-align: center;
-color: rgba(0, 0, 0, 0.8) !important;
-max-width:100%;
-    margin-top: 10px;
-}
-
-.banner-inner-row button {
-  margin:25px 0px 0px; 
-  font-family: 'Engravers MT';
-   font-style: normal; 
-   font-weight: 500;
-    font-size: 18px; 
-    line-height: normal; 
-  }
-
-
+.hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat;   background-size: cover;  height: 1151px;  min-height: 100%;  position: relative;  width: 1920px;  margin: 0 auto;  max-width: 100%;  background-position: center;}
+.hero-banner::after {  position: absolute;  content: "";  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);  width: 100%;  height: 43px;  bottom: 0px;}
+.banner-inner-row {  padding-top: 56px !important;  padding-bottom: 0px !important;  position: absolute;  top: 50%;  transform: translateY(-50%);  left: 0px;  right: 0;  margin: 0 auto;  height: 100% !important;  min-height: 100% !important;}
+.banner-inner-row h1 { margin-top:70px; font-family: 'Engravers MT', sans-serif !important; font-size: 70px; font-weight: 900; text-align: center; line-height: 1.2;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent;  background-size: cover;}
+.banner-inner-row p {font-family: 'Inter';font-style: normal;font-weight: 400;font-size: 18px;line-height: 160%;text-align: center;color: rgba(0, 0, 0, 0.8) !important;max-width:100%; margin-top: 10px;}
+.banner-inner-row button {margin:50px 0px 0px; font-family: 'Engravers MT'; font-style: normal;  font-weight: 500;  font-size: 18px;   line-height: normal;  }
  /********/
+.every-thing-main { padding-top: 10px !important; padding-bottom: 40px !important;}
+.every-thing-main h2 { font-family: 'Engravers MT'; background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
+
+.every-thing-main  .para-graph p {  margin: 30px 0px 0px;   font-family: "DM Sans", sans-serif;  font-style: normal;  font-weight: 400;  line-height: 160%;  text-align: center;  color: rgba(0, 0, 0, 0.8) !important;}
+.Execution-main { padding-top: 0px;  padding-bottom: 80px;}
+.Execution-main h2 { margin-top:46px !important; font-family: 'Engravers MT'; max-width: 742px; margin: 0 auto; background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
+.Execution-main p {font-family: "DM Sans", sans-serif;font-style: normal;font-weight: 400;font-size: 18px;line-height: 160%;color: rgba(0, 0, 0, 0.8);max-width:856px; margin-left: auto; margin-right: auto;  }
+.Execution-main article:hover { border-color: #f4ce74 !important; cursor: pointer;  transition: all 0.3s;}
+.Execution-main article {  border: 2px solid transparent !important;}
+section.Vault-main {   height: 363px;   display: flex;   align-items: center;   justify-content: center;   text-align: center;   padding: 0px 15px !important;}
 
 
-.every-thing-main {
-    padding-top: 10px !important;
-    padding-bottom: 40px !important;
-}
+.Vault-main h2 {  font-family: 'Engravers MT';  max-width: 742px;  margin: 0 auto;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
+.Vault-main .font {   font-family: 'Engravers MT' !important ;}
+.Access-main {  padding-top: 70px !important;  padding-bottom: 70px !important;}
+.Access-main h2 {  font-family: 'Engravers MT';  max-width: 742px;  margin: 0 auto;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
 
-.every-thing-main h2 {
-    font-family: 'Engravers MT';
-background: url('.././public/heading-image-text.png')
- center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;
-}
-
-
-.every-thing-main  .para-graph p {
-    margin: 30px 0px 0px;
-     font-family: "DM Sans", sans-serif;
-    font-style: normal;
-    font-weight: 400;
-    line-height: 160%;
-    text-align: center;
-    color: rgba(0, 0, 0, 0.8) !important;
-}
-
- .Execution-main {
-    padding-top: 0px;
-    padding-bottom: 80px;
-}
-
-.Execution-main h2 {
-  margin-top:46px !important;
-    font-family: 'Engravers MT';
-    max-width: 742px;
-    margin: 0 auto;
-    background: url('.././public/heading-image-text.png')
- center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;
-}
-.Execution-main p {
-   font-family: "DM Sans", sans-serif;
-font-style: normal;
-font-weight: 400;
-font-size: 18px;
-line-height: 160%;
-color: rgba(0, 0, 0, 0.8);
-max-width:856px; margin-left: auto; margin-right: auto;  
-}
- 
-
-.Execution-main article:hover {
-    border-color: #f4ce74 !important;
-    cursor: pointer;
-    transition: all 0.3s;
-}
-
-.Execution-main article {
-    border: 2px solid transparent !important;
-}
-
-
-
-
-
-
-.Vault-main h2 {
-    font-family: 'Engravers MT';
-    max-width: 742px;
-    margin: 0 auto;
-    background: url('.././public/heading-image-text.png')
- center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;
-}
-
- 
-.Vault-main .font {
-    font-family: 'Engravers MT' !important ;
-}
-
-.Access-main {
-    padding-top: 70px !important;
-    padding-bottom: 70px !important;
-}
-
-.Access-main h2 {
-    font-family: 'Engravers MT';
-    max-width: 742px;
-    margin: 0 auto;
-    background: url('.././public/heading-image-text.png')
- center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;
-}
-
-/*******/
+/****access-grid***/
 .access-grid { display: grid; grid-template-columns: 1fr 1fr 1fr;  gap: 60px !important;}
 .access-grid li {  background: transparent !important;  width: 100% !important;  box-shadow: none;   border-right: 1px solid rgba(17, 17, 17, 0.1);  border-radius: 0px;  padding-right: 60px;}
 .access-grid li:last-child {border-right:0px; padding-right:0px}
 .access-grid li .access-grid-grid {  padding: 0px;  background: transparent !important;  box-shadow: none !important;  border: 0px;  display: flex;  flex-direction: column;  gap: 25px;}
 .access-grid li .access-grid-grid img {  width: 60px;  height: 60px;}
 .access-grid li .access-grid-grid h3 {  margin: 0px; font-family: 'Engravers MT';  font-style: normal;  font-weight: 500;  font-size: 20px;  line-height: 160%;  text-align: center;  color: #111111;}
+.Access-main button {  font-family: 'Engravers MT' !important;  font-style: normal;  font-weight: 500;  font-size: 18px;  line-height: normal;  color: #000000;}
+section.Private-consideration {   height: 450px !important;   min-height: 450px;   align-items: center;   justify-content: center;   display: flex;}
+.Private-consideration  h2 {  font-family: 'Engravers MT';  margin: 0 auto;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
+.Private-consideration button {  color: #000;  font-size: 18px;  font-style: normal;  font-weight: 500;  line-height: normal;  font-family: Engravers MT !important;}
+footer a {  font-family: 'Engravers MT';}
+.privacy a { font-family: 'Engravers MT'; font-style: normal; font-weight: 500; font-size: 18px; line-height: normal; color: rgba(17, 17, 17, 0.8);}
+.footer-wrapper { width: 100%;  max-width: 1350px; margin: 0 auto;}
+.copy-right p {  font-family: 'Engravers MT' !important;}
+.cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
 
-.Access-main button {
-    font-family: 'Engravers MT' !important;
-    font-style: normal;
-    font-weight: 500;
-    font-size: 18px;
-    line-height: normal;
-    color: #000000;
-}
-
-section.Private-consideration {
-    height: 450px !important;
-    min-height: 450px;
-    align-items: center;
-    justify-content: center;
-    display: flex;
+ @media only screen and (max-width:1440px) {
+ .banner-inner-row .fortune-logo { width: 293px !important; height: auto; max-width: 100%; object-fit: cover !important;}
+.banner-inner-row h1 span { font-size: 46px !important;}
+.hero-banner {   height: 949px;}
 }
 
-.Private-consideration  h2 {
-    font-family: 'Engravers MT';
-    margin: 0 auto;
-    background: url('.././public/heading-image-text.png')
- center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;
-}
-
-.Private-consideration button {
-    color: #000;
-    font-size: 18px;
-    font-style: normal;
-    font-weight: 500;
-    line-height: normal;
-    font-family: Engravers MT !important;
-}
-footer a {
-    font-family: 'Engravers MT';
-}
-
-.privacy a {
-    font-family: 'Engravers MT';
-    font-style: normal;
-    font-weight: 500;
-    font-size: 18px;
-    line-height: normal;
-    color: rgba(17, 17, 17, 0.8);
-}
-.footer-wrapper {
-    width: 100%;
-    max-width: 1350px;
-    margin: 0 auto;
-}
-.copy-right p {
-    font-family: 'Engravers MT' !important;
-}
 
 
 @media only screen and (max-width:1266px) {
-  .mail-footer a {
-    word-break: break-all;
-}
+.mail-footer a {  word-break: break-all;}
 }
 
 @media only screen and (max-width:1199px) {
-.footer-wrapper a {
-    font-size: 16px;
-    line-height: normal;
-}
-
+.footer-wrapper a { font-size: 16px; line-height: normal;}
 }
 
 @media only screen and (max-width:1024px) {
@@ -307,81 +154,49 @@ footer a {
 .access-grid li {
     padding-right: 20px;
 }
-.access-grid li .access-grid-grid img {
-    width: 40px;
-    height: 40px;
-}
-.access-grid li .access-grid-grid h3 {
-    font-size: 17px;
-}
-p {
-    font-size: 16px;
-}
-.footer-grid {
-    grid-template-columns: 1fr  !important;
-    place-items: center;
-    gap: 30px !important;
-        text-align: center;
-}
-.banner-inner-row h1 {
-    margin-top: 50px;
-}
-.banner-inner-row h1 span {
-    line-height: 140% !important;
-}
-.banner-inner-row button {
-    margin: 10px 0 0;
-    font-size: 16px;
-}
+.access-grid li .access-grid-grid img { width: 40px;  height: 40px;}
+.access-grid li .access-grid-grid h3 { font-size: 17px;}
+p {  font-size: 16px;}
+.footer-grid { grid-template-columns: 1fr  !important; place-items: center; gap: 30px !important;    text-align: center;}
+.banner-inner-row h1 { margin-top: 50px;}
+.banner-inner-row h1 span {  line-height: 140% !important;}
+.banner-inner-row button {  margin: 25px 0 0; font-size: 16px;}
+.hero-banner {  height: 700px;}
+.banner-inner-row { top: 45%; padding-left: 15px !important;  padding-right: 15px !important;}
+.banner-inner-row h1 {   margin-top: 30px;}
+.banner-inner-row h1 {  margin-top: 25px;}
+.banner-inner-row h1 span {  font-size: 40px !important;}
 }
 
 
 @media only screen and (max-width:767px) {
-.every-thing-main  .para-graph p {
-    margin: 20px 0px 0px; font-size:16px;
-}
-.Vault-main {
-    height: auto !important;
-    padding: 0px !important;
-    text-align: center;
-}
-
-.Vault-main .md\:backdrop-blur-none {
-    background: transparent !important;
-    box-shadow: none !important;
-    backdrop-filter: none;
-    text-align: center;
-    padding: 0px;
-}
-
-.Vault-main h2 {
-    text-align: center;
-}
-.Access-main {
-    padding-top: 60px !important;
-    padding-bottom: 60px !important;
-}
-
-.access-grid {
-    grid-template-columns: 1fr;
-    gap: 30px !important;
-        margin: 30px 0px 0px;
-}
-
-.access-grid li .access-grid-grid {
-    gap: 10px;
-    text-align: center;
-}
-.Access-main button {
-    font-size: 16px;
-}
-.Private-consideration button {
-    font-size: 16px;
-}
-.access-grid li {
-    padding-right: 0px;
-    border: 0px;
-}
+.every-thing-main  .para-graph p {  margin: 20px 0px 0px; font-size:16px;}
+.Vault-main { padding: 0px !important; text-align: center;}
+.Vault-main .md\:backdrop-blur-none { background: transparent !important; box-shadow: none !important; backdrop-filter: none; text-align: center; padding: 0px;}
+.Vault-main h2 { text-align: center;}
+.Access-main { padding-top: 60px !important; padding-bottom: 60px !important;}
+.access-grid { grid-template-columns: 1fr; gap: 30px !important;   margin: 30px 0px 0px;}
+.access-grid li .access-grid-grid {  gap: 10px;  text-align: center;}
+.Access-main button {  font-size: 16px;}
+.Private-consideration button { font-size: 16px;}
+.access-grid li { padding-right: 0px; border: 0px;}
+.hero-banner { height: 666px;}
+.banner-inner-row .fortune-logo { width: 100% !important;  max-width: 250px !important;}
+.banner-inner-row h1 span {  font-size: 36px !important;}
+section.Vault-main { padding: 0 115px !important;}
 }
 
 
+@media only screen and (max-width:599px) {
+.banner-inner-row h1 span { font-size: 23px !important;}
+section.Vault-main { padding: 0 50px !important;}
+.footer-wrapper a { font-size: 14px; line-height: normal;}
+.copy-right p {  font-size: 14px;}
+.Private-consideration h2 span { font-size: 21px;}
+button { font-size: 14px !important;}
+}
+
+@media only screen and (max-width:420px) {
+section.Vault-main { padding: 0 30px !important;}
+.Private-consideration h2 span { font-size: 18px;}
+}
