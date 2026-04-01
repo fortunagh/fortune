@@ -185,6 +185,8 @@ p {  font-size: 16px;}
 .banner-inner-row .fortune-logo { width: 100% !important;  max-width: 250px !important;}
 .banner-inner-row h1 span {  font-size: 36px !important;}
 section.Vault-main { padding: 0 115px !important;}
+.hero-banner { height: 100% !important; padding: 290px 0px;}
+.banner-inner-row .fortune-logo { width: 100% !important;  max-width: 200px!important;}
 }
 
 
@@ -195,6 +197,14 @@ section.Vault-main { padding: 0 50px !important;}
 .copy-right p {  font-size: 14px;}
 .Private-consideration h2 span { font-size: 21px;}
 button { font-size: 14px !important;}
+.hero-banner {
+    height: 100%;
+    padding: 250px 0px;
+}
+.banner-inner-row .fortune-logo {
+    width: 100%!important;
+    max-width: 150px!important;
+}
 }
 
 @media only screen and (max-width:420px) {

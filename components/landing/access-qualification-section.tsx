@@ -17,20 +17,21 @@ const cinzel = Cinzel({
 const items = [
   {
     icon: "/4.png",
-    title: "Private consideration",
-    description:
-      "Limited availability. Participation is reviewed selectively.",
+    title: "Participation is assessed.",
+
   },
   {
     icon: "/5.png",
-    title: "Invitation only",
-    description:
-      "Access is granted exclusively through approved invitations.",
+    title: "Participation is assessed.",
+
   },
   {
     icon: "/6.png",
-    title: "Confidential review",
-    description: "All submissions are handled with complete discretion.",
+    title: "All requests are reviewed confidentially.",
+  },
+    {
+    icon: "/new7.png",
+    title: "All requests are reviewed confidentially.",
   },
 ] as const;
 
@@ -48,7 +49,7 @@ export function AccessQualificationSection() {
           <span className="block sm:inline">Access &amp; qualification</span>
         </h2>
 
-        <ul className=" access-grid mt-[20px] grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-3 md:gap-8 lg:gap-10">
+        <ul className=" access-grid mt-[20px] grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-4 md:gap-8 lg:gap-10">
           {items.map((item) => (
             <li key={item.title}>
               <article className=" access-grid-grid flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
@@ -64,11 +65,7 @@ export function AccessQualificationSection() {
                 >
                   {item.title}
                 </h3>
-                <p
-                  className={`${inter.className}`}
-                >
-                  {item.description}
-                </p>
+             
               </article>
             </li>
           ))}
