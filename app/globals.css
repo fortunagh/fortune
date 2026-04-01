@@ -148,14 +148,12 @@ footer a {  font-family: 'Engravers MT';}
 .cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
 
 
-  @media only screen and (max-width:1920px) {
-.hero-banner {   height: 949px;}
-  }
+ 
 
  @media only screen and (max-width:1440px) {
  .banner-inner-row .fortune-logo { width: 293px !important; height: auto; max-width: 100%; object-fit: cover !important;}
 .banner-inner-row h1 span { font-size: 46px !important;}
-/* .hero-banner {   height: 949px;} */
+.hero-banner {   height: 949px;}
 }
 
  @media only screen and (max-width:1380px) {
@@ -237,7 +235,7 @@ p {  font-size: 16px;}
 .banner-inner-row .fortune-logo { width: 100% !important;  max-width: 250px !important;}
 .banner-inner-row h1 span {  font-size: 36px !important;}
 section.Vault-main { padding: 0 115px !important;}
-.hero-banner { height: 100% !important; padding: 290px 0px;}
+.hero-banner { height: 100% !important; padding: 300px 0px;}
 .banner-inner-row .fortune-logo { width: 100% !important;  max-width: 200px!important;}
 }
 
