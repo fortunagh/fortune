@@ -1,10 +1,37 @@
 @font-face {
     font-family: 'Engravers MT';
     src: url('EngraversMT.eot');
-    src: url('EngraversMT.eot?#iefix') format('embedded-opentype'),
+    src: local('Engravers MT'), local('EngraversMT'),
+        url('EngraversMT.eot?#iefix') format('embedded-opentype'),
         url('EngraversMT.woff2') format('woff2'),
         url('EngraversMT.woff') format('woff'),
         url('EngraversMT.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Engravers MT';
+    src: url('EngraversMT_1.eot');
+    src: local('Engravers MT'), local('EngraversMT'),
+        url('EngraversMT_1.eot?#iefix') format('embedded-opentype'),
+        url('EngraversMT_1.woff2') format('woff2'),
+        url('EngraversMT_1.woff') format('woff'),
+        url('EngraversMT_1.ttf') format('truetype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Engravers MT';
+    src: url('EngraversMT_2.eot');
+    src: local('Engravers MT'), local('EngraversMT'),
+        url('EngraversMT_2.eot?#iefix') format('embedded-opentype'),
+        url('EngraversMT_2.woff2') format('woff2'),
+        url('EngraversMT_2.woff') format('woff'),
+        url('EngraversMT_2.ttf') format('truetype');
     font-weight: 500;
     font-style: normal;
     font-display: swap;
