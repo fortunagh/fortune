@@ -47,8 +47,8 @@ export function Hero() {
         <h1
           className={`${ cinzel.className } !font-engravers heading-bg mt-8 max-w-[20ch] text-balance bg-gradient-to-b from-[#c6a035] via-[#f3e5a6] to-[#8a6d1e] bg-clip-text px-2 text-[1.25rem] font-semibold uppercase leading-[1.2] tracking-[0.06em] text-transparent sm:mt-10 sm:max-w-none sm:text-[1.75rem] sm:tracking-[0.08em] md:mt-12 md:text-[2.1rem] md:leading-[1.22] lg:text-[2.5rem] xl:text-[2.65rem]`}
         >
-          <span className="block higher-heading !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[59px] leading-[54px] flex items-center text-center text-[#111111] leading-normal tracking-normal  [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">A higher standard </span>
-          <span className="block access-heading !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[59px] leading-[54px] flex items-center text-center text-[#111111]  leading-normal tracking-normal [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)] justify-center"> of access</span>
+          <span className="block higher-heading text-center justify-center !leading-normal !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[59px] leading-[54px] flex items-center text-center text-[#111111] leading-normal tracking-normal  [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)]">A  Different  </span> 
+          <span className="block access-heading !text-[24px] font-[Engravers MT] not-italic font-medium md:!text-[36px] lg:!text-[59px] leading-[54px] flex items-center text-center text-[#111111]  leading-normal tracking-normal [text-shadow:0px_4px_4px_rgba(0,0,0,0.25)] justify-center">standard of access</span>
         </h1>
 
        

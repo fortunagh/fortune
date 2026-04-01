@@ -91,8 +91,8 @@ align-items: center;
 color: rgba(0, 0, 0, 0.8);
 
 }
-
-.hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat;   background-size: cover;  height: 1151px;  min-height: 100%;  position: relative;  width: 1920px;  margin: 0 auto;  max-width: 100%;  background-position: center;}
+.banner-inner-row h1 span {  line-height: normal;}
+.hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat;   background-size: cover;  height: 1151px;  min-height: 100%;  position: relative;  width: 100%;  margin: 0 auto;  max-width: 100%;  background-position: center;}
 .hero-banner::after {  position: absolute;  content: "";  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);  width: 100%;  height: 43px;  bottom: 0px;}
 .banner-inner-row {  padding-top: 56px !important;  padding-bottom: 0px !important;  position: absolute;  top: 50%;  transform: translateY(-50%);  left: 0px;  right: 0;  margin: 0 auto;  height: 100% !important;  min-height: 100% !important;}
 .banner-inner-row h1 { margin-top:70px; font-family: 'Engravers MT', sans-serif !important; font-size: 70px; font-weight: 900; text-align: center; line-height: 1.2;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent;  background-size: cover;}
@@ -101,7 +101,8 @@ color: rgba(0, 0, 0, 0.8);
  /********/
 .every-thing-main { padding-top: 10px !important; padding-bottom: 40px !important;}
 .every-thing-main h2 { font-family: 'Engravers MT'; background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
-
+section.every-thing-main  .wrapper { max-width: 1112px !important;  width: 100% !important;}
+section.every-thing-main  .top-para-wrapper { width: 100%; max-width: 795px; margin: 0 auto;}
 .every-thing-main  .para-graph p {  margin: 30px 0px 0px;   font-family: "DM Sans", sans-serif;  font-style: normal;  font-weight: 400;  line-height: 160%;  text-align: center;  color: rgba(0, 0, 0, 0.8) !important;}
 .Execution-main { padding-top: 0px;  padding-bottom: 80px;}
 .Execution-main h2 { margin-top:46px !important; font-family: 'Engravers MT'; max-width: 742px; margin: 0 auto; background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
