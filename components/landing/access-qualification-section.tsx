@@ -48,7 +48,7 @@ export function AccessQualificationSection() {
       <div className="mx-auto max-w-7xl">
         <h2
           id="access-qualification-heading"
-          className={`${cinzel.className}   text-[22px] text-center md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
+          className={`${cinzel.className}   text-[22px] text-center md:font-[Engravers_MT] md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
         >
           <span className="block sm:inline">Access &amp; qualification</span>
         </h2>
