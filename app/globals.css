@@ -1,18 +1,6 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-@font-face {
-  font-family: 'Engravers MT';
-  src: url('/Fonts/EngraversMT.eot');
-  src: url('/Fonts/EngraversMT.eot?#iefix') format('embedded-opentype'),
-       url('/Fonts/EngraversMT.woff2') format('woff2'),
-       url('/Fonts/EngraversMT.woff') format('woff'),
-       url('/Fonts/EngraversMT.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
+/* Engravers MT disabled because font files are invalid/corrupt in Vercel deployment (invalid sfntVersion). */
 
-
- 
 
 @tailwind base;
 @tailwind components;
