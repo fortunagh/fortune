@@ -24,7 +24,7 @@ export function ReservedSection() {
            controlled framework. </p>
         <h2
           id="reserved-heading"
-          className={`${cinzel.className} text-[22px] md:font-[Engravers_MT] md:text-[36px] md:leading-[38px] md:font-medium md:text-black`}
+          className={`${cinzel.className} text-[20px] md:font-[Engravers_MT] md:text-[36px] md:leading-[38px] md:font-medium md:text-black`}
         >
           <span className="block">Not everything is built for everyone.</span>
         </h2>

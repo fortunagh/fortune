@@ -48,12 +48,12 @@ export function AccessQualificationSection() {
       <div className="mx-auto max-w-7xl">
         <h2
           id="access-qualification-heading"
-          className={`${cinzel.className}   text-[22px] text-center md:font-[Engravers_MT] md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
+          className={`${cinzel.className}   text-[22px] text-center md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
         >
           <span className="block sm:inline">Access &amp; qualification</span>
         </h2>
 
-        <ul className=" access-grid mt-[20px] grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-4 md:gap-8 lg:gap-10">
+        <ul className=" access-grid mt-[20px] grid items-center list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-4 md:gap-8 lg:gap-10">
           {items.map((item) => (
             <li key={item.id}>
               <article className=" access-grid-grid flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
