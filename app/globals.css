@@ -1,6 +1,18 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap');
-/* Engravers MT disabled because font files are invalid/corrupt in Vercel deployment (invalid sfntVersion). */
+@font-face {
+  font-family: 'Engravers MT';
+  src: url('/Fonts/EngraversMT.eot');
+  src: url('/Fonts/EngraversMT.eot?#iefix') format('embedded-opentype'),
+       url('/Fonts/EngraversMT.woff2') format('woff2'),
+       url('/Fonts/EngraversMT.woff') format('woff'),
+       url('/Fonts/EngraversMT.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
 
+
+ 
 
 @tailwind base;
 @tailwind components;
@@ -124,12 +136,17 @@ footer a {  font-family: 'Engravers MT';}
 .copy-right p {  font-family: 'Engravers MT' !important;}
 .cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
 
+
+  @media only screen and (max-width:1920px) {
+.hero-banner {   height: 949px;}
+  }
+
  @media only screen and (max-width:1440px) {
  .banner-inner-row .fortune-logo { width: 293px !important; height: auto; max-width: 100%; object-fit: cover !important;}
 .banner-inner-row h1 span { font-size: 46px !important;}
 /* .hero-banner {   height: 949px;} */
 }
- 
+
  @media only screen and (max-width:1380px) {
 .hero-banner {   height: 1080px;}
 }
