@@ -16,22 +16,26 @@ const cinzel = Cinzel({
 
 const items = [
   {
+    id: "participation-1",
     icon: "/4.png",
     title: "Participation is assessed.",
 
   },
   {
+    id: "participation-2",
     icon: "/5.png",
     title: "Participation is assessed.",
 
   },
   {
+    id: "confidential-1",
     icon: "/6.png",
     title: "All requests are reviewed confidentially.",
   },
     {
+    id: "confidential-2",
     icon: "/new7.png",
-    title: "All requests are reviewed confidentially.",
+    title: "Admission is controlled.",
   },
 ] as const;
 
@@ -51,7 +55,7 @@ export function AccessQualificationSection() {
 
         <ul className=" access-grid mt-[20px] grid list-none grid-cols-1 gap-8 sm:mt-14 md:mt-[34px] md:grid-cols-4 md:gap-8 lg:gap-10">
           {items.map((item) => (
-            <li key={item.title}>
+            <li key={item.id}>
               <article className=" access-grid-grid flex h-full flex-col items-center rounded-xl border border-neutral-200/90 bg-white px-6 py-8 text-center shadow-[0_8px_30px_rgba(0,0,0,0.06)] sm:px-8 sm:py-10">
                 <Image
                   src={item.icon}
