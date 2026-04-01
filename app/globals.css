@@ -3,19 +3,20 @@
 @font-face {
   font-family: 'Engravers MT';
   src: local('Engravers MT'), local('EngraversMT'),
-       url('/Fonts/EngraversMT.woff2') format('woff2'),
-       url('/Fonts/EngraversMT.woff') format('woff'),
+       url('../public/Fonts/EngraversMT.woff2') format('woff2'),
+       url('../public/Fonts/EngraversMT.woff') format('woff'),
        url('/Fonts/EngraversMT.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
   font-display: swap;
 }
 
+
 @font-face {
   font-family: 'Engravers MT';
   src: local('Engravers MT'), local('EngraversMT'),
-       url('/Fonts/EngraversMT_1.woff2') format('woff2'),
-       url('/Fonts/EngraversMT_1.woff') format('woff'),
+       url('../public/Fonts/EngraversMT_1.woff2') format('woff2'),
+       url('../public/Fonts/EngraversMT_1.woff') format('woff'),
        url('/Fonts/EngraversMT_1.ttf') format('truetype');
   font-weight: 500;
   font-style: normal;
