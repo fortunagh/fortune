@@ -109,7 +109,7 @@ section.every-thing-main  .top-para-wrapper { width: 100%; max-width: 795px; mar
 .Execution-main p {font-family: "DM Sans", sans-serif;font-style: normal;font-weight: 400;font-size: 18px;line-height: 160%;color: rgba(0, 0, 0, 0.8);max-width:856px; margin-left: auto; margin-right: auto;  }
 .Execution-main article:hover { border-color: #f4ce74 !important; cursor: pointer;  transition: all 0.3s;}
 .Execution-main article {  border: 2px solid transparent !important;}
-section.Vault-main {   height: 363px;   display: flex;   align-items: center;   justify-content: center;   text-align: center;   padding: 0px 15px !important;}
+section.Vault-main {   height: 425px;   display: flex;   align-items: center;   justify-content: center;   text-align: center;   padding: 0px 15px !important;}
 
 
 .Vault-main h2 {  font-family: 'Engravers MT';  max-width: 742px;  margin: 0 auto;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}

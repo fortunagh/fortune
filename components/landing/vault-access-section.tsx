@@ -38,6 +38,9 @@ export function VaultAccessSection() {
             <p className="">
               This is a controlled environment—where participation is limited, and entry is considered.
             </p>
+            <p className="mt-5">
+              Designed for those who recognise that capital is preserved through discipline, and grown through consistency.
+            </p>
           </div>
         </div>
       </div>
