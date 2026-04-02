@@ -65,7 +65,7 @@ export function AccessQualificationSection() {
                   className="h-[72px] w-[72px] object-contain sm:h-20 sm:w-20"
                 />
                 <h3
-                  className={`${cinzel.className} mt-6 max-w-[22ch] bg-gradient-to-b from-[#9a7328] via-[#c9a227] to-[#e8c547] bg-clip-text text-xs font-bold uppercase leading-snug tracking-[0.11em] text-transparent sm:max-w-none sm:text-sm md:text-[0.95rem]`}
+                  className={`${cinzel.className} mt-6 max-w-[22ch] bg-gradient-to-b from-[#9a7328] via-[#c9a227] to-[#e8c547] bg-clip-text text-xs font-bold uppercase leading-snug tracking-[0.11em] text-transparent sm:max-w-none sm:text-sm md:text-[0.95rem] font-sixe-custom`}
                 >
                   {item.title}
                 </h3>
