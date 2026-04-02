@@ -22,16 +22,16 @@ export function VaultAccessSection() {
         quality={90}
       />
 
-      <div className="relative z-10 w-[625px] mx-auto grid min-h-[58vh] max-w-[625px] md:grid-cols-1">
+      <div className="access-wrapper relative z-10 w-[625px] mx-auto grid min-h-[58vh] max-w-[625px] md:grid-cols-1">
     
 
         <div className="flex flex-col justify-center px-0 py-14 sm:px-0 sm:py-16 md:px-0 md:bg-transparent md:py-20 md:pl-0 md:pr-0 lg:px-0 lg:pl-0 lg:pr-0 xl:px-0">
-          <div className="rounded-2xl bg-white/88 px-5 py-8 shadow-sm backdrop-blur-md sm:px-7 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none">
+          <div className="inner-arapp rounded-2xl bg-white/88 px-5 py-8 shadow-sm backdrop-blur-md sm:px-7 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none">
             <h2
               id="vault-access-heading"
               className={`${cinzel.className} !mb-[30px] text-[22px] text-start md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
             >
-              <span className="block text-center">Access is not open. It is secured. </span>
+              <span className="block text-left">Access is not open. It is secured. </span>
         
             </h2>
 

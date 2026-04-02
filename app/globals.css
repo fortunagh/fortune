@@ -141,8 +141,32 @@ section.every-thing-main  .top-para-wrapper { width: 100%; max-width: 795px; mar
 section.Vault-main {   height: 425px; display: flex;   align-items: center;   justify-content: center;   text-align: center;   padding: 0px 15px !important;}
 
 
+section.Vault-main .access-wrapper {
+    width: 100%;
+    max-width: 1320px !important;
+    padding: 0px 20px;
+    text-align: left;
+}
 
+section.Vault-main .access-wrapper h2 {
+    text-align: left !important;
+    margin-left: 0px;
+}
 
+section.Vault-main .access-wrapper .inner-arapp {
+    width: 733px !important;
+    max-width: 100%;
+}
+
+section.Vault-main .access-wrapper .inner-arapp h2 {
+    width: 590px;
+    max-width: 100%;
+}
+
+section.Vault-main .access-wrapper .inner-arapp p {
+    width: 657px;
+    max-width: 100%;
+}
 
 
 
@@ -295,6 +319,7 @@ p {  font-size: 16px;}
 .Vault-main { padding: 0px !important; text-align: center;}
 .Vault-main .md\:backdrop-blur-none { background: transparent !important; box-shadow: none !important; backdrop-filter: none; text-align: center; padding: 0px;}
 .Vault-main h2 { text-align: center;}
+
 .Access-main { padding-top: 60px !important; padding-bottom: 60px !important;}
 .access-grid { grid-template-columns: 1fr 1fr !important; gap: 30px !important;   margin: 30px 0px 0px;}
 .access-grid li .access-grid-grid {  gap: 10px;  text-align: center;}
