@@ -34,8 +34,8 @@ export function MainCtaSection() {
           id="main-cta-heading"
           className={`${cinzel.className}  text-[24px] md:font-[Engravers_MT] md:text-[48px] md:leading-[47px] md:font-medium md:text-black`}
         >
-          <span className="block">Private consideration.</span>
-          <span className="mt-1 block sm:mt-0.5">Limited availability.</span>
+          <span className="block">Private consideration</span>
+          <span className="mt-1 block sm:mt-0.5">Limited availability</span>
         </h2>
 
         <p

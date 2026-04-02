@@ -26,7 +26,7 @@ export function ReservedSection() {
           id="reserved-heading"
           className={`${cinzel.className} text-[20px] md:font-[Engravers_MT] md:text-[36px] md:leading-[38px] md:font-medium md:text-black`}
         >
-          <span className="block">Not everything is built for everyone.</span>
+          <span className="block">Not everything is built for everyone</span>
         </h2>
 
         <div
