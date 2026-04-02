@@ -329,15 +329,23 @@ p {  font-size: 16px;}
 .hero-banner { height: 666px;}
 .banner-inner-row .fortune-logo { width: 100% !important;  max-width: 250px !important;}
 .banner-inner-row h1 span {  font-size: 36px !important;}
-section.Vault-main { padding: 0 115px !important;}
+section.Vault-main { padding: 0px !important;}
 .hero-banner { height: 100% !important; padding: 300px 0px;}
 .banner-inner-row .fortune-logo { width: 100% !important;  max-width: 200px!important;}
+section.Vault-main img.access-img {
+    object-position: 100% center !important;
+}
+section.Vault-main .access-wrapper .inner-arapp h2 {
+    width: 100%;
+    margin: auto;
+    text-align: center !important;
+}
 }
 
 
 @media only screen and (max-width:599px) {
 .banner-inner-row h1 span { font-size: 23px !important;}
-section.Vault-main { padding: 0 50px !important;}
+section.Vault-main { padding: 0px !important;}
 .footer-wrapper a { font-size: 14px; line-height: normal;}
 .copy-right p {  font-size: 14px;}
 .Private-consideration h2 span { font-size: 21px;}
