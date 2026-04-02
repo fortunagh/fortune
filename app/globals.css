@@ -167,6 +167,36 @@ footer a {  font-family: 'Engravers MT';}
 .footer-wrapper { width: 100%;  max-width: 1350px; margin: 0 auto;}
 .copy-right p {  font-family: 'Engravers MT' !important;}
 .cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
+
+ @media only screen and (max-width:1920px) {
+.banner-inner-row h1 span {
+    line-height: normal;
+    font-size: 40px !important;
+}
+
+.banner-inner-row h1 {
+    margin-top: 40px;
+}
+ }
+ @media only screen and (max-width:1599px) {
+
+.hero-banner .fortune-logo {
+    height: 245px;
+    max-width: 245px;
+    width: 245px;
+}
+.banner-inner-row h1 span {
+    line-height: normal;
+    font-size: 36px !important;
+}
+.banner-inner-row button {
+    margin: 40px 0 0;
+    font-size: 16px;
+}
+ }
+
+
+
  @media only screen and (max-width:1440px) {
 .hero-banner {
     background-size: 100% 100%;
@@ -174,8 +204,8 @@ footer a {  font-family: 'Engravers MT';}
 }
 
  @media only screen and (max-width:1440px) {
- .banner-inner-row .fortune-logo { width: 293px !important; height: auto; max-width: 100%; object-fit: cover !important;}
-.banner-inner-row h1 span { font-size: 40px !important;}
+ .banner-inner-row .fortune-logo { width: 200px !important; height: auto; max-width: 100%; object-fit: cover !important;}
+.banner-inner-row h1 span { font-size: 36px !important;}
 .hero-banner {
     background-size: 100% 100%;
     width: 100%;
@@ -213,6 +243,9 @@ footer a {  font-family: 'Engravers MT';}
 .footer-wrapper a { font-size: 16px; line-height: normal;}
 .access-grid li .access-grid-grid h3 {  font-size: 16px;}
  .hero-banner {height: 966px;}
+ .banner-inner-row h1 span {
+    font-size: 32px !important;
+}
 }
 
 @media only screen and (max-width:1099px) {
@@ -248,7 +281,7 @@ p {  font-size: 16px;}
         
 .banner-inner-row { top: 50%; padding-left: 15px !important;  padding-right: 15px !important;}
 .banner-inner-row h1 span {
-    font-size: 36px !important;
+    font-size: 33px !important;
 }
 .banner-inner-row h1 {   margin-top: 30px;}
 .banner-inner-row h1 {  margin-top: 25px;}
