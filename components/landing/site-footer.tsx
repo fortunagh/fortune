@@ -57,7 +57,7 @@ export function SiteFooter() {
 
         <div className="copy-right mt-10 border-t border-neutral-200 pt-8">
           <p className="text-center text-[16px] !text-black/80 lg:text-[18px] font-[Engravers_MT] font-semibold uppercase leading-relaxed tracking-[0.12em] text-neutral-900 ">
-            © Copyright Couple Trails 2024. All rights reserved.
+            © Copyright Fortuna Global Holdings 2026. All rights reserved.
           </p>
         </div>
       </div>
