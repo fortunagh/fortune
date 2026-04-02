@@ -24,7 +24,7 @@ const items = [
   {
     id: "participation-2",
     icon: "/5.png",
-    title: "Access is granted selectively, alignment is required..",
+    title: "Access is granted selectively, alignment is required.",
 
   },
   {
