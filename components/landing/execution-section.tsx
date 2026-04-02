@@ -16,17 +16,17 @@ const cinzel = Cinzel({
 const cards = [
   {
     icon: "/1.png",
-    title: "No apps",
+    title: "No hype",
     description: "Focused on performance, not promises",
   },
   {
     icon: "/2.png",
-    title: "No ads",
+    title: "No dilution",
     description: "A clear, disciplined environment for execution.",
   },
   {
     icon: "/3.png",
-    title: "No noise.",
+    title: "No excess",
     description: "Only what matters—nothing unnecessary.",
   },
 ] as const;
