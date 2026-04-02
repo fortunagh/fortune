@@ -22,7 +22,7 @@ export function VaultAccessSection() {
         quality={90}
       />
 
-      <div className="access-wrapper relative z-10 w-[625px] mx-auto grid min-h-[58vh] max-w-[625px] md:grid-cols-1">
+      <div className="access-wrapper relative z-10  mx-auto grid  md:grid-cols-1">
     
 
         <div className="flex flex-col justify-center px-0 py-14 sm:px-0 sm:py-16 md:px-0 md:bg-transparent md:py-20 md:pl-0 md:pr-0 lg:px-0 lg:pl-0 lg:pr-0 xl:px-0">
