@@ -105,7 +105,23 @@ color: rgba(0, 0, 0, 0.8);
 
 }
 .banner-inner-row h1 span {  line-height: normal;}
-.hero-banner {background-image: url(../public/Hero.png); background-repeat: no-repeat;   background-size: cover;  height: 1151px;  min-height: 100%;  position: relative;  width: 100%;  margin: 0 auto;  max-width: 100%;  background-position: center;}
+ 
+
+.hero-banner {
+   background-image: url(../public/Hero.png);
+    background-position: 50%;
+    background-repeat: no-repeat;
+    background-size: 82% 100%;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh !important;
+    min-height: 100%;
+    margin: 0 auto;
+    position: relative;
+    background-color: #f9f8fc;
+}
+
+
 .hero-banner::after {  position: absolute;  content: "";  background: linear-gradient(180deg, rgba(255, 255, 255, 0) 0%, #FFFFFF 100%);  width: 100%;  height: 43px;  bottom: 0px;}
 .banner-inner-row {  padding-top: 56px !important;  padding-bottom: 0px !important;  position: absolute;  top: 50%;  transform: translateY(-50%);  left: 0px;  right: 0;  margin: 0 auto;  height: 100% !important;  min-height: 100% !important;}
 .banner-inner-row h1 { margin-top:70px; font-family: 'Engravers MT', sans-serif !important; font-size: 70px; font-weight: 900; text-align: center; line-height: 1.2;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent;  background-size: cover;}
@@ -123,6 +139,11 @@ section.every-thing-main  .top-para-wrapper { width: 100%; max-width: 795px; mar
 .Execution-main article:hover { border-color: #f4ce74 !important; cursor: pointer;  transition: all 0.3s;}
 .Execution-main article {  border: 2px solid transparent !important;}
 section.Vault-main {   height: 425px; display: flex;   align-items: center;   justify-content: center;   text-align: center;   padding: 0px 15px !important;}
+
+
+
+
+
 
 
 .Vault-main h2 {  font-family: 'Engravers MT';  max-width: 742px;  margin: 0 auto;  background: url('.././public/heading-image-text.png') center/cover no-repeat; -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-size: cover;}
@@ -146,16 +167,28 @@ footer a {  font-family: 'Engravers MT';}
 .footer-wrapper { width: 100%;  max-width: 1350px; margin: 0 auto;}
 .copy-right p {  font-family: 'Engravers MT' !important;}
 .cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
-
-
- 
+ @media only screen and (max-width:1440px) {
+.hero-banner {
+    background-size: 100% 100%;
+}
+}
 
  @media only screen and (max-width:1440px) {
  .banner-inner-row .fortune-logo { width: 293px !important; height: auto; max-width: 100%; object-fit: cover !important;}
-.banner-inner-row h1 span { font-size: 46px !important;}
-.hero-banner {   height: 949px;}
+.banner-inner-row h1 span { font-size: 40px !important;}
+.hero-banner {
+    background-size: 100% 100%;
+    width: 100%;
+    max-width: 100%;
+    height: 100vh !important;
+        background-size: contain;
+        background-position: top center !important;
 }
-
+.banner-inner-row h1 {
+    margin-top: 40px;
+}
+}
+ 
  @media only screen and (max-width:1380px) {
 .hero-banner {   height: 1080px;}
 }
@@ -203,8 +236,11 @@ p {  font-size: 16px;}
 .banner-inner-row h1 { margin-top: 50px;}
 .banner-inner-row h1 span {  line-height: 140% !important;}
 .banner-inner-row button {  margin: 25px 0 0; font-size: 16px;}
-.hero-banner { padding-top: 80%;
-        height: 100% !important;}
+.hero-banner {
+    padding-top: 80%;
+    height: 100% !important;
+    background-size: cover !important;
+}
         .banner-inner-row .fortune-logo {
     width: 100% !important;
     max-width: 250px !important;
@@ -217,6 +253,7 @@ p {  font-size: 16px;}
 .banner-inner-row h1 {   margin-top: 30px;}
 .banner-inner-row h1 {  margin-top: 25px;}
 .banner-inner-row h1 span {  font-size: 40px !important;}
+
 }
 
 
