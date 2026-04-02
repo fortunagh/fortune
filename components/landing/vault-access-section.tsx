@@ -17,7 +17,7 @@ export function VaultAccessSection() {
         src="/leftvailtbg.png"
         alt=""
         fill
-        className="object-cover object-[22%_center] sm:object-[18%_center] md:object-left md:object-center"
+        className="access-img object-cover object-[22%_center] sm:object-[18%_center] md:object-left md:object-center"
         sizes="100vw"
         quality={90}
       />
