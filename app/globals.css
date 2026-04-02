@@ -365,7 +365,7 @@ button { font-size: 14px !important;}
 }
 
 @media only screen and (max-width:420px) {
-section.Vault-main { padding: 0 30px !important;}
+section.Vault-main { padding:0px !important;}
 .Private-consideration h2 span { font-size: 18px;}
 .hero-banner {
     height: 100%;
