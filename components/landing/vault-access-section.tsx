@@ -31,7 +31,7 @@ export function VaultAccessSection() {
               id="vault-access-heading"
               className={`${cinzel.className} !mb-[30px] text-[22px] text-start md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
             >
-              <span className="block text-center">Access is not open. It is secured</span>
+              <span className="block text-center">Access is not open It is secured</span>
         
             </h2>
 
