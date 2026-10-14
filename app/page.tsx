@@ -1,19 +1,25 @@
-import { AccessQualificationSection } from "@/components/landing/access-qualification-section";
-import { ExecutionSection } from "@/components/landing/execution-section";
-import { Hero } from "@/components/landing/hero";
-import { MainCtaSection } from "@/components/landing/main-cta-section";
-import { ReservedSection } from "@/components/landing/reserved-section";
-import { VaultAccessSection } from "@/components/landing/vault-access-section";
+import type { Metadata } from "next";
+
+import { FortunaHome } from "@/components/landing/fortuna-home";
+
+export const metadata: Metadata = {
+  title: {
+    absolute: "Fortuna Global Holdings — Building Infinite Abundance",
+  },
+  description:
+    "Opportunity is the vehicle. Abundance is the vision. Impact is the legacy. Fortuna Global Holdings — Building Infinite Abundance.",
+  openGraph: {
+    title: "Fortuna Global Holdings — Building Infinite Abundance",
+    description:
+      "Opportunity is the vehicle. Abundance is the vision. Impact is the legacy.",
+  },
+  twitter: {
+    title: "Fortuna Global Holdings — Building Infinite Abundance",
+    description:
+      "Opportunity is the vehicle. Abundance is the vision. Impact is the legacy.",
+  },
+};
 
 export default function Home() {
-  return (
-    <main className="min-h-screen">
-      <Hero />
-      <ReservedSection />
-      <ExecutionSection />
-      <VaultAccessSection />
-      <AccessQualificationSection />
-      <MainCtaSection />
-    </main>
-  );
+  return <FortunaHome />;
 }
