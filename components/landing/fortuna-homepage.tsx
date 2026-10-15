@@ -70,9 +70,15 @@ export function FortunaHomepage({ onRequestAccess }: FortunaHomepageProps) {
               Menu <span aria-hidden="true">☰</span>
             </summary>
             <nav aria-label="Main navigation">
-              <a href="#approach">Our Approach</a>
-              <a href="#opportunities">Opportunities</a>
-              <a href="#collective">The Collective</a>
+              <a href="#approach" data-request-access="true">
+                Our Approach
+              </a>
+              <a href="#opportunities" data-request-access="true">
+                Opportunities
+              </a>
+              <a href="#collective" data-request-access="true">
+                The Collective
+              </a>
               <button
                 type="button"
                 className="button"
