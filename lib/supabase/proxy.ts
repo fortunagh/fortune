@@ -54,8 +54,12 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/register") ||
     pathname.startsWith("/present") ||
     pathname.startsWith("/api/request-access");
+  // public/ assets. Matcher should already skip these; this keeps a font
+  // request from being sent to the login page if it still reaches the proxy.
+  const isStaticAsset =
+    /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|eot)$/i.test(pathname);
 
-  if (!user && !isPublicPath) {
+  if (!user && !isPublicPath && !isStaticAsset) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth/login";
     return NextResponse.redirect(url);

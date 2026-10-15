@@ -1,35 +1,33 @@
 
-/* Bodoni Regular */
+/* Bundled from public/Fonts so production serves them from /_next/static,
+   which the auth proxy does not intercept. */
 @font-face {
     font-family: "Fortuna Bodoni";
-    src: url("/Fonts/bodoni-400.ttf") format("truetype");
+    src: url("../../public/Fonts/bodoni-400.ttf") format("truetype");
     font-style: normal;
     font-weight: 400;
     font-display: swap;
 }
 
-/* Bodoni Medium */
 @font-face {
     font-family: "Fortuna Bodoni";
-    src: url("/Fonts/bodoni-500.ttf") format("truetype");
+    src: url("../../public/Fonts/bodoni-500.ttf") format("truetype");
     font-style: normal;
     font-weight: 500;
     font-display: swap;
 }
 
-/* Cormorant Regular */
 @font-face {
     font-family: "Fortuna Garamond";
-    src: url("/Fonts/cormorant-400.ttf") format("truetype");
+    src: url("../../public/Fonts/cormorant-400.ttf") format("truetype");
     font-style: normal;
     font-weight: 400;
     font-display: swap;
 }
 
-/* Cormorant Italic */
 @font-face {
     font-family: "Fortuna Garamond";
-    src: url("/Fonts/cormorant-italic-400.ttf") format("truetype");
+    src: url("../../public/Fonts/cormorant-italic-400.ttf") format("truetype");
     font-style: italic;
     font-weight: 400;
     font-display: swap;
