@@ -65,7 +65,7 @@ export function FortunaHomepage({ onRequestAccess }: FortunaHomepageProps) {
               priority
             />
           </Link>
-          <details className="navigation" open>
+          <details className="navigation">
             <summary>
               Menu <span aria-hidden="true">☰</span>
             </summary>

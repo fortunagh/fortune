@@ -208,23 +208,6 @@ footer a {  font-family: 'Engravers MT';}
 .cinzel_5e2176bf-module__Nmkpfa__className { font-family: 'Engravers MT' !important;  font-style: normal;}
 
 /*****/
-.fortuna-site .steps svg {   
-    width: 6.5cqw;
-    height: 6.5cqw;
-}
-.fortuna-site .approach .steps p {
-    font-size: 20px !important;
-}
-/* .fortuna-site .approach-copy {
-  
-    padding-left: 0px !important;
-} */
-.fortuna-site .steps svg {
-    width: 6.5cqw !important;
-    height: 6.5cqw !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-}
 
 /* .fortuna-site .belief-copy {
     left: 0px !important;
@@ -266,10 +249,6 @@ footer a {  font-family: 'Engravers MT';}
  @media only screen and (max-width:1440px) {
 .hero-banner {
     background-size: 100% 100%;
-}
-.fortuna-site .steps svg {
-    width: 4.5cqw !important;
-    height: 4.5cqw !important;
 }
 
  }
@@ -316,16 +295,10 @@ footer a {  font-family: 'Engravers MT';}
  .banner-inner-row h1 span {
     font-size: 32px !important;
 }
-.fortuna-site .approach .steps p {
-    font-size: 16px !important;
-}
 }
 
 @media only screen and (max-width:1099px) {
   .hero-banner {height: 900px;}
-  .fortuna-site .approach .steps p {
-    font-size: 14px !important;
-}
 }
 
 @media only screen and (max-width:1024px) {
