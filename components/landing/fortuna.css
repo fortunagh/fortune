@@ -1,30 +1,52 @@
+
+/* Bodoni Regular */
 @font-face {
-  font-family: 'Fortuna Bodoni';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/fortuna/fonts/bodoni-400.ttf) format('truetype');
+    font-family: "Fortuna Bodoni";
+    src: url("/Fonts/bodoni-400.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
 }
+
+/* Bodoni Medium */
 @font-face {
-  font-family: 'Fortuna Bodoni';
-  font-style: normal;
-  font-weight: 500;
-  font-display: swap;
-  src: url(/fortuna/fonts/bodoni-500.ttf) format('truetype');
+    font-family: "Fortuna Bodoni";
+    src: url("/Fonts/bodoni-500.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 500;
+    font-display: swap;
 }
+
+/* Cormorant Regular */
 @font-face {
-  font-family: 'Fortuna Garamond';
-  font-style: italic;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/fortuna/fonts/cormorant-italic-400.ttf) format('truetype');
+    font-family: "Fortuna Garamond";
+    src: url("/Fonts/cormorant-400.ttf") format("truetype");
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
 }
+
+/* Cormorant Italic */
 @font-face {
-  font-family: 'Fortuna Garamond';
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url(/fortuna/fonts/cormorant-400.ttf) format('truetype');
+    font-family: "Fortuna Garamond";
+    src: url("/Fonts/cormorant-italic-400.ttf") format("truetype");
+    font-style: italic;
+    font-weight: 400;
+    font-display: swap;
+}
+
+/* Apply fonts */
+.fortuna-site {
+    font-family: "Fortuna Garamond", serif;
+}
+
+.fortuna-site h1,
+.fortuna-site h2,
+.fortuna-site h3,
+.fortuna-site h4,
+.fortuna-site h5,
+.fortuna-site h6 {
+    font-family: "Fortuna Bodoni", serif;
 }
 
 
