@@ -26,6 +26,9 @@
   font-display: swap;
   src: url(/fortuna/fonts/cormorant-400.ttf) format('truetype');
 }
+
+
+
 /* Fortuna reference implementation. All integrated design rules are scoped. */
 @media(max-width:1024px) { .fortuna-site .approach { grid-template-columns: 47.2% 52.8%;}
 .fortuna-site .steps > div { padding: 0 0.5cqw;}
