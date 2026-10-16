@@ -30,3 +30,4 @@ export const authInputClass = cn(
 );
 
 export const authErrorTextClass = cn("text-left text-sm text-red-600");
+
