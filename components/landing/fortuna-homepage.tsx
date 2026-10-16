@@ -60,8 +60,10 @@ export function FortunaHomepage({ onRequestAccess }: FortunaHomepageProps) {
             <Image
               src="/fortuna/logo-header.png"
               alt=""
-              width={335}
-              height={86}
+              width={1005}
+              height={258}
+              quality={100}
+              unoptimized
               priority
             />
           </Link>
@@ -167,7 +169,7 @@ export function FortunaHomepage({ onRequestAccess }: FortunaHomepageProps) {
                 <br />
                 is built
                 <br />
-                <span>for everyone.</span>
+                <span>for everyone</span>
               </h2>
             </div>
             <div className="collective-copy">
