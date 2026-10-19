@@ -29,13 +29,6 @@ export default function RegisterPage() {
             <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[#a84d0b]">
               Event registration
             </p>
-            <h1 className="font-serif text-3xl tracking-tight text-neutral-900 sm:text-4xl">
-              Register Now
-            </h1>
-            <p className="mx-auto max-w-md text-sm leading-relaxed text-neutral-600 sm:text-base">
-              Complete this form to request access. After approval, you will be
-              able to view Our Approach, Opportunities, and The Collective.
-            </p>
           </div>
         </header>
 
