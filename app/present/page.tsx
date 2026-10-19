@@ -29,7 +29,7 @@ const registerUrl = "https://www.fortunaglobalholdings.com/register";
 export default function PresentPage() {
   return (
     <main
-      className={`${inter.className} relative min-h-dvh overflow-x-hidden overflow-y-auto px-4 py-8 text-center sm:px-6 sm:py-10 md:px-10 md:py-14 lg:px-12`}
+      className={`${inter.className} relative min-h-dvh overflow-x-hidden overflow-y-auto px-4 py-8 text-center sm:px-6 sm:py-10 lg:flex lg:h-dvh lg:max-h-dvh lg:items-center lg:overflow-hidden lg:px-10 lg:py-8 xl:px-14`}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <Image
@@ -47,83 +47,92 @@ export default function PresentPage() {
 
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-[6%] left-2 w-px bg-gradient-to-b from-transparent via-[#a84d0b]/55 to-transparent sm:left-4 md:left-8 lg:left-12"
+        className="pointer-events-none absolute inset-y-[6%] left-2 w-px bg-gradient-to-b from-transparent via-[#a84d0b]/55 to-transparent sm:left-4 md:left-8 lg:left-10"
       />
       <div
         aria-hidden="true"
-        className="pointer-events-none absolute inset-y-[6%] right-2 w-px bg-gradient-to-b from-transparent via-[#a84d0b]/55 to-transparent sm:right-4 md:right-8 lg:right-12"
+        className="pointer-events-none absolute inset-y-[6%] right-2 w-px bg-gradient-to-b from-transparent via-[#a84d0b]/55 to-transparent sm:right-4 md:right-8 lg:right-10"
       />
 
-      <div className="relative z-10 mx-auto flex min-h-[calc(100dvh-4rem)] w-full max-w-[40rem] flex-col items-center justify-center px-1 sm:min-h-[calc(100dvh-5rem)] sm:max-w-2xl md:min-h-[calc(100dvh-7rem)]">
-        <div className="present-fade-in mb-4 w-full sm:mb-5 md:mb-6">
-          <Image
-            src="/fortuna/logo-header.png"
-            alt="Fortuna Global Holdings"
-            width={1005}
-            height={258}
-            priority
-            quality={100}
-            unoptimized
-            className="mx-auto h-auto w-[min(240px,70vw)] drop-shadow-sm sm:w-[min(300px,55vw)] md:w-[min(340px,42vw)]"
-          />
-          <p className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-[#8a6a2a] sm:mt-3 sm:text-[10px] sm:tracking-[0.28em] md:text-[11px]">
-            Building a brighter tomorrow
+      <div className="relative z-10 mx-auto flex w-full max-w-lg flex-col items-center lg:grid lg:max-w-6xl lg:grid-cols-2 lg:items-center lg:gap-10 xl:gap-16">
+        {/* Left: brand + copy + CTA (stacked on mobile) */}
+        <div className="flex w-full flex-col items-center lg:items-start lg:text-left">
+          <div className="present-fade-in mb-4 w-full sm:mb-5 lg:mb-6">
+            <Image
+              src="/fortuna/logo-header.png"
+              alt="Fortuna Global Holdings"
+              width={1005}
+              height={258}
+              priority
+              quality={100}
+              unoptimized
+              className="mx-auto h-auto w-[min(240px,70vw)] drop-shadow-sm sm:w-[min(300px,55vw)] lg:mx-0 lg:w-[min(320px,100%)]"
+            />
+            <p className="mt-2.5 text-[9px] font-semibold uppercase tracking-[0.22em] text-[#8a6a2a] sm:mt-3 sm:text-[10px] sm:tracking-[0.28em] lg:text-[11px]">
+              Building a brighter tomorrow
+            </p>
+          </div>
+
+          <h1
+            className={`${cinzel.className} present-fade-in present-delay-1 mb-3 w-full text-[clamp(1.65rem,7vw,3.25rem)] leading-[1.12] tracking-tight sm:mb-4 lg:text-[clamp(2.4rem,3.6vw,3.5rem)]`}
+          >
+            <span className="block text-[#101217]">Register For</span>
+            <span className="mt-0.5 block text-[1.12em] font-medium text-[#e9a544] sm:mt-1 sm:text-[1.15em]">
+              The Event
+            </span>
+          </h1>
+
+          <p className="present-fade-in present-delay-2 mb-5 max-w-[20rem] text-[13px] leading-relaxed text-neutral-700 sm:mb-6 sm:max-w-md sm:text-sm lg:mb-7 lg:max-w-md lg:text-base">
+            Join global investors, business leaders, and entrepreneurs for an
+            exclusive networking experience.
+          </p>
+
+          <Link
+            href="/register"
+            className="present-fade-in present-delay-2 group mb-5 inline-flex w-full max-w-[min(100%,280px)] min-h-11 items-center justify-center gap-2.5 border border-[#a84d0b] bg-transparent px-5 py-3 font-[Arial,Helvetica,sans-serif] text-xs font-semibold uppercase tracking-[0.09em] text-[#a84d0b] transition hover:bg-[#a84d0b] hover:text-white sm:mb-6 sm:min-h-12 sm:max-w-[280px] sm:gap-3 sm:px-8 sm:py-3.5 sm:text-sm lg:mb-0"
+          >
+            Register Now
+            <span
+              aria-hidden="true"
+              className="transition group-hover:translate-x-0.5"
+            >
+              ⟶
+            </span>
+          </Link>
+
+          {/* Mobile-only divider copy */}
+          <p className="present-fade-in present-delay-3 mb-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-neutral-500 sm:mb-5 sm:text-[10px] sm:tracking-[0.2em] lg:hidden">
+            — Or — Scan the QR code below
           </p>
         </div>
 
-        <h1
-          className={`${cinzel.className} present-fade-in present-delay-1 mb-3 w-full text-[clamp(1.65rem,7vw,3.4rem)] leading-[1.12] tracking-tight sm:mb-4`}
-        >
-          <span className="block text-[#101217]">Register For</span>
-          <span className="mt-0.5 block text-[1.12em] font-medium text-[#e9a544] sm:mt-1 sm:text-[1.15em]">
-            The Event
-          </span>
-        </h1>
+        {/* Right: QR (+ URL). Full-width stack on mobile */}
+        <div className="present-fade-in present-delay-3 flex w-full flex-col items-center lg:items-center">
+          <p className="mb-4 hidden text-[10px] font-semibold uppercase tracking-[0.2em] text-neutral-500 lg:mb-5 lg:block lg:text-[11px]">
+            Scan to register
+          </p>
 
-        <p className="present-fade-in present-delay-2 mb-5 max-w-[20rem] text-[13px] leading-relaxed text-neutral-700 sm:mb-7 sm:max-w-md sm:text-sm md:mb-8 md:text-base">
-          Join global investors, business leaders, and entrepreneurs for an
-          exclusive networking experience.
-        </p>
-
-        <Link
-          href="/register"
-          className="present-fade-in present-delay-2 group mb-5 inline-flex w-full max-w-[min(100%,280px)] min-h-11 items-center justify-center gap-2.5 border border-[#a84d0b] bg-transparent px-5 py-3 font-[Arial,Helvetica,sans-serif] text-xs font-medium uppercase tracking-[0.09em] text-[#a84d0b] transition hover:bg-[#a84d0b] hover:text-white sm:mb-6 sm:min-h-12 sm:max-w-[280px] sm:gap-3 sm:px-8 sm:py-3.5 sm:text-sm md:text-base"
-        >
-          Register Now
-          <span
-            aria-hidden="true"
-            className="transition group-hover:translate-x-0.5"
-          >
-            ⟶
-          </span>
-        </Link>
-
-        <p className="present-fade-in present-delay-3 mb-4 text-[9px] font-semibold uppercase tracking-[0.16em] text-neutral-500 sm:mb-5 sm:text-[10px] sm:tracking-[0.2em] md:text-[11px]">
-          — Or — Scan the QR code below
-        </p>
-
-        <div className="present-fade-in present-delay-3 relative mb-3 sm:mb-4">
-          <div
-            aria-hidden="true"
-            className="present-glow absolute -inset-3 rounded-[1.5rem] bg-[#e9a544]/20 blur-xl sm:-inset-4 sm:rounded-[2rem] sm:blur-2xl"
-          />
-          <div className="relative rounded-xl border border-[#a84d0b]/35 bg-white p-3 shadow-[0_14px_40px_rgba(120,80,20,0.16)] sm:rounded-2xl sm:border-[#a84d0b]/40 sm:p-4 md:p-5">
-            <Image
-              src="/event/register-qr.png"
-              alt="QR code linking to Fortuna registration"
-              width={1024}
-              height={1024}
-              priority
-              className="mx-auto h-auto w-[min(52vw,200px)] sm:w-[min(48vw,240px)] md:w-[min(42vw,280px)]"
+          <div className="relative mb-3 sm:mb-4 lg:mb-5">
+            <div
+              aria-hidden="true"
+              className="present-glow absolute -inset-3 rounded-[1.5rem] bg-[#e9a544]/20 blur-xl sm:-inset-4 sm:rounded-[2rem] sm:blur-2xl"
             />
+            <div className="relative rounded-xl border border-[#a84d0b]/35 bg-white p-3 shadow-[0_14px_40px_rgba(120,80,20,0.16)] sm:rounded-2xl sm:border-[#a84d0b]/40 sm:p-4 lg:p-5">
+              <Image
+                src="/event/register-qr.png"
+                alt="QR code linking to Fortuna registration"
+                width={1024}
+                height={1024}
+                priority
+                className="mx-auto h-auto w-[min(52vw,200px)] sm:w-[min(48vw,240px)] lg:w-[min(28vw,280px)] xl:w-[300px]"
+              />
+            </div>
           </div>
-        </div>
 
-        <div className="present-fade-in present-delay-4 flex max-w-full items-start justify-center gap-1 px-1 text-[11px] text-neutral-600 sm:items-center sm:text-xs md:text-sm">
-          <span className="min-w-0 break-all text-left sm:text-center">
-            {registerUrl}
-          </span>
-          <CopyUrlButton url={registerUrl} />
+          <div className="present-fade-in present-delay-4 flex max-w-full items-start justify-center gap-1 px-1 text-[11px] text-neutral-600 sm:items-center sm:text-xs lg:text-sm">
+            <span className="min-w-0 break-all text-center">{registerUrl}</span>
+            <CopyUrlButton url={registerUrl} />
+          </div>
         </div>
       </div>
 
