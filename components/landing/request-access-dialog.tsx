@@ -11,7 +11,6 @@ import {
 import {
   RequestAccessFormPanel,
   requestAccessButtonClass,
-  requestAccessCinzel,
 } from "@/components/landing/request-access-form";
 import { cn } from "@/lib/utils";
 
@@ -60,13 +59,12 @@ export function RequestAccessButton({
         <button
           type="button"
           className={cn(
-            requestAccessCinzel.className,
             requestAccessButtonClass,
             ringOffsetClassName,
             className,
           )}
         >
-          Request access
+          Request Access <span aria-hidden="true">⟶</span>
         </button>
       </DialogTrigger>
       <DialogContent

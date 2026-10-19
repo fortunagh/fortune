@@ -1,7 +1,6 @@
 "use client";
 
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Cinzel, Inter } from "next/font/google";
 import { Check } from "lucide-react";
 import * as React from "react";
 import { useForm } from "react-hook-form";
@@ -23,7 +22,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { phoneCountriesSorted } from "@/lib/data/phone-countries";
+import { PhoneCountryPicker } from "@/components/landing/phone-country-picker";
 import { cn } from "@/lib/utils";
 import {
   REQUEST_ACCESS_STEP_COUNT,
@@ -33,21 +32,19 @@ import {
   requestAccessStepSchemas,
 } from "@/lib/validation/request-access";
 
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
+import "@/components/landing/fortuna.css";
 
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
+/** Homepage display / body / UI stacks (Fortuna Bodoni, Garamond, Arial). */
+const fontDisplay =
+  "font-['Fortuna_Bodoni',Didot,'Times_New_Roman',serif]";
+const fontBody = "font-['Fortuna_Garamond',Georgia,serif]";
+const fontUi = "font-[Arial,Helvetica,sans-serif]";
 
-/** Matches homepage “Request access” pill (without outer margin). */
-export const requestAccessButtonClass =
-  "group min-w-[min(88vw,280px)] rounded-full bg-[linear-gradient(90deg,#D4AF37_0%,#FFD988_46%,#D4AF37_100%)] px-10 py-3.5 text-center text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-neutral-900 shadow-sm transition-transform duration-300 ease-out will-change-transform hover:scale-[1.045] hover:shadow-[0_14px_36px_rgba(0,0,0,0.22)] active:scale-[1.02] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white sm:min-w-[300px] sm:px-12 sm:py-4 sm:text-[0.78rem] md:min-w-[320px] md:text-[0.82rem]";
+/** Matches homepage `.button` — bronze outline, Arial uppercase. */
+export const requestAccessButtonClass = cn(
+  fontUi,
+  "inline-flex min-h-12 min-w-[min(88vw,240px)] items-center justify-center gap-3 border border-[#a84d0b] bg-transparent px-8 py-3.5 text-center text-xs font-semibold uppercase tracking-[0.09em] text-[#a84d0b] transition-[background,color] duration-150 hover:bg-[#a84d0b] hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#a84d0b]/35 focus-visible:ring-offset-2 focus-visible:ring-offset-[#f5f1ea] sm:min-w-[260px] sm:text-sm",
+);
 
 const contactMethodOptions = [
   { value: "whatsapp", label: "WhatsApp" },
@@ -56,19 +53,25 @@ const contactMethodOptions = [
   { value: "text", label: "Text message" },
 ] as const;
 
-const labelClass = `${cinzel.className} text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-800 sm:text-xs`;
+const labelClass = cn(
+  fontUi,
+  "text-[11px] font-semibold uppercase tracking-[0.14em] text-[#101217] sm:text-xs",
+);
 
 const fieldControlClass = cn(
-  inter.className,
-  "text-sm text-neutral-900 placeholder:font-normal placeholder:text-neutral-500",
+  fontUi,
+  "rounded-none border-[#b9764a55] bg-white text-sm text-[#101217] placeholder:font-normal placeholder:text-neutral-500 focus-visible:ring-[#a84d0b]/30",
 );
 
 const formMessageClass = cn(
-  inter.className,
+  fontUi,
   "text-[11px] font-medium leading-snug",
 );
 
-const secondaryActionClass = `${cinzel.className} rounded-md px-4 py-2 text-xs font-semibold uppercase tracking-[0.12em] transition-colors`;
+const secondaryActionClass = cn(
+  fontUi,
+  "px-4 py-2 text-xs font-medium uppercase tracking-[0.12em] text-[#101217] transition-colors",
+);
 
 const lastStepIndex = REQUEST_ACCESS_STEP_COUNT - 1;
 
@@ -125,11 +128,11 @@ function StepProgress({ step }: { step: number }) {
       <div className="px-1 sm:px-2">
         <div className="relative flex min-h-8 items-center justify-between sm:min-h-9">
           <div
-            className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-1/2 z-0 h-[6px] -translate-y-1/2 rounded-full bg-neutral-100"
+            className="pointer-events-none absolute left-[12.5%] right-[12.5%] top-1/2 z-0 h-px -translate-y-1/2 bg-[#b9764a40]"
             aria-hidden
           />
           <div
-            className="pointer-events-none absolute left-[12.5%] top-1/2 z-0 h-[6px] -translate-y-1/2 rounded-full bg-[linear-gradient(90deg,#D4AF37_0%,#FFD988_50%,#D4AF37_100%)] transition-[width] duration-300 ease-out"
+            className="pointer-events-none absolute left-[12.5%] top-1/2 z-0 h-px -translate-y-1/2 bg-[#a84d0b] transition-[width] duration-300 ease-out"
             style={{
               width: `${((step + 1) / n) * trackWidthPct}%`,
             }}
@@ -145,16 +148,15 @@ function StepProgress({ step }: { step: number }) {
               >
                 <div
                   className={cn(
-                    cinzel.className,
-                    "flex h-8 w-8 shrink-0 items-center justify-center rounded-full border-2 text-[11px] font-semibold tabular-nums shadow-sm transition-colors sm:h-9 sm:w-9 sm:text-xs",
-                    done &&
-                      "border-[#e1bc50] bg-gradient-to-br from-[#D4AF37] to-[#b8942a] text-white",
+                    fontUi,
+                    "flex h-8 w-8 shrink-0 items-center justify-center border text-[11px] font-semibold tabular-nums transition-colors sm:h-9 sm:w-9 sm:text-xs",
+                    done && "border-[#a84d0b] bg-[#a84d0b] text-white",
                     active &&
                       !done &&
-                      "border-[#e1bc50] bg-amber-50 text-amber-950",
+                      "border-[#a84d0b] bg-[#f5f1ea] text-[#a84d0b]",
                     !done &&
                       !active &&
-                      "border-neutral-200 bg-white text-neutral-400",
+                      "border-[#b9764a55] bg-white text-neutral-400",
                   )}
                 >
                   {done ? (
@@ -177,9 +179,9 @@ function StepProgress({ step }: { step: number }) {
               >
                 <span
                   className={cn(
-                    cinzel.className,
-                    "hidden max-w-[4.5rem] truncate text-center text-[10px] font-semibold tracking-[0.12em] text-neutral-500 sm:block sm:max-w-none sm:text-[11px]",
-                    active && "text-amber-950",
+                    fontUi,
+                    "hidden max-w-[4.5rem] truncate text-center text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500 sm:block sm:max-w-none sm:text-[11px]",
+                    active && "text-[#a84d0b]",
                   )}
                 >
                   {meta.short}
@@ -291,36 +293,36 @@ export function RequestAccessFormPanel({
       >
         <div className="relative mx-auto mb-8 flex h-[5.5rem] w-[5.5rem] items-center justify-center sm:mb-10 sm:h-24 sm:w-24">
           <div
-            className="absolute inset-0 rounded-full border-2 border-amber-400/50 animate-success-ring"
+            className="absolute inset-0 border border-[#a84d0b]/40 animate-success-ring"
             aria-hidden
           />
-          <div className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center rounded-full bg-[linear-gradient(145deg,#E8C547_0%,#D4AF37_40%,#9a7328_100%)] shadow-[0_12px_40px_rgba(180,140,40,0.35)] sm:h-20 sm:w-20 animate-success-badge">
+          <div className="relative flex h-[4.5rem] w-[4.5rem] items-center justify-center border border-[#a84d0b] bg-[#a84d0b] text-white sm:h-20 sm:w-20 animate-success-badge">
             <Check
-              className="h-10 w-10 text-white drop-shadow-sm sm:h-11 sm:w-11 animate-success-check"
+              className="h-10 w-10 text-white sm:h-11 sm:w-11 animate-success-check"
               strokeWidth={2.75}
               aria-hidden
             />
           </div>
         </div>
         <p
-          className={`${cinzel.className} text-balance bg-gradient-to-b from-[#1a1a1a] via-[#3d3518] to-[#a67c32] bg-clip-text text-3xl font-bold uppercase leading-tight tracking-[0.06em] text-transparent sm:text-4xl md:text-[2.75rem]`}
+          className={`${fontDisplay} text-balance text-3xl font-medium uppercase leading-tight tracking-[-0.03em] text-[#101217] sm:text-4xl md:text-[2.75rem]`}
         >
           Thank you
         </p>
         <p
-          className={`${cinzel.className} mt-3 text-lg font-semibold uppercase tracking-[0.12em] text-neutral-800 sm:mt-4 sm:text-xl`}
+          className={`${fontUi} mt-3 text-sm font-semibold uppercase tracking-[0.18em] text-[#a84d0b] sm:mt-4 sm:text-base`}
         >
           Request received
         </p>
         <p
-          className={`${inter.className} mx-auto mt-5 max-w-md text-base leading-relaxed text-neutral-600 sm:text-lg`}
+          className={`${fontBody} mx-auto mt-5 max-w-md text-base leading-relaxed text-[#101217]/80 sm:text-lg`}
         >
           If your profile aligns with our criteria, our team will be in touch.
         </p>
         {onCancel ? (
           <button
             type="button"
-            className={`${inter.className} mt-8 rounded-full border border-neutral-200 bg-white px-6 py-2.5 text-sm font-medium text-neutral-800 shadow-sm transition-colors hover:bg-neutral-50 sm:mt-10`}
+            className={cn(requestAccessButtonClass, "mt-8 sm:mt-10")}
             onClick={() => {
               resetAll();
               onCancel();
@@ -335,14 +337,15 @@ export function RequestAccessFormPanel({
 
   return (
     <div className={className}>
-      <div className="mb-4 space-y-1.5">
+      <div className="mb-4 space-y-2">
         <h2
-          className={`${cinzel.className} text-lg font-semibold uppercase tracking-[0.12em] text-neutral-900 sm:text-xl`}
+          className={`${fontDisplay} text-xl font-medium uppercase tracking-[-0.03em] text-[#101217] sm:text-2xl`}
         >
           {title}
         </h2>
+        <div className="h-px w-10 bg-[#a84d0b]" aria-hidden />
         <p
-          className={`${inter.className} text-left text-sm leading-relaxed text-neutral-600`}
+          className={`${fontBody} text-left text-sm leading-relaxed text-[#101217]/75 sm:text-[15px]`}
         >
           {description}
         </p>
@@ -424,65 +427,52 @@ export function RequestAccessFormPanel({
 
           {step === 1 && (
             <>
-              <div className="grid gap-3 sm:grid-cols-[minmax(0,1.05fr)_minmax(0,1fr)] sm:items-start">
-                <FormField
-                  control={form.control}
-                  name="phoneCountryIso2"
-                  render={({ field }) => (
-                    <FormItem className="min-w-0">
-                      <FormLabel className={labelClass}>
-                        Country code *
-                      </FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        value={field.value || undefined}
-                      >
-                        <FormControl>
-                          <SelectTrigger className={fieldControlClass}>
-                            <SelectValue placeholder="Select country" />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent className="max-h-[min(280px,50vh)]">
-                          {phoneCountriesSorted.map((c) => (
-                            <SelectItem key={c.iso2} value={c.iso2}>
-                              +{c.dialCode} · {c.name}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
-                      <FormMessage className={formMessageClass} />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="mobileNumber"
-                  render={({ field }) => (
-                    <FormItem className="min-w-0">
-                      <FormLabel className={labelClass}>
-                        Mobile number *
-                      </FormLabel>
+              <FormField
+                control={form.control}
+                name="mobileNumber"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel className={labelClass}>
+                      Mobile number *
+                    </FormLabel>
+                    <div className="flex min-h-10 items-stretch border border-[#b9764a55] bg-white focus-within:ring-2 focus-within:ring-[#a84d0b]/30">
+                      <FormField
+                        control={form.control}
+                        name="phoneCountryIso2"
+                        render={({ field: countryField }) => (
+                          <PhoneCountryPicker
+                            value={countryField.value}
+                            onChange={countryField.onChange}
+                          />
+                        )}
+                      />
                       <FormControl>
                         <Input
                           type="tel"
                           inputMode="tel"
                           autoComplete="tel-national"
                           placeholder="National number"
-                          className={fieldControlClass}
+                          className={cn(
+                            fieldControlClass,
+                            "h-auto min-h-10 flex-1 rounded-none border-0 shadow-none focus-visible:ring-0",
+                          )}
                           {...field}
                         />
                       </FormControl>
-                      <p
-                        className={`${inter.className} text-[10px] text-neutral-500`}
-                      >
-                        Validated for the country you selected (include leading
-                        0 if your number uses one).
+                    </div>
+                    <p className={`${fontUi} text-[10px] text-neutral-500`}>
+                      Validated for the country you selected (include leading 0
+                      if your number uses one).
+                    </p>
+                    <FormMessage className={formMessageClass} />
+                    {form.formState.errors.phoneCountryIso2?.message ? (
+                      <p className={cn(formMessageClass, "text-destructive")}>
+                        {form.formState.errors.phoneCountryIso2.message}
                       </p>
-                      <FormMessage className={formMessageClass} />
-                    </FormItem>
-                  )}
-                />
-              </div>
+                    ) : null}
+                  </FormItem>
+                )}
+              />
               <FormField
                 control={form.control}
                 name="email"
@@ -656,21 +646,21 @@ export function RequestAccessFormPanel({
 
           {submitError && (
             <p
-              className={`${inter.className} rounded-md border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800`}
+              className={`${fontUi} border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-800`}
               role="alert"
             >
               {submitError}
             </p>
           )}
 
-          <div className="flex flex-col gap-2 border-t border-neutral-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex flex-col gap-3 border-t border-[#b9764a40] pt-4 sm:flex-row sm:items-center sm:justify-between">
             <div className="flex flex-wrap gap-2">
               {onCancel ? (
                 <button
                   type="button"
                   className={cn(
                     secondaryActionClass,
-                    "text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900",
+                    "hover:text-[#a84d0b]",
                   )}
                   onClick={onCancel}
                 >
@@ -682,7 +672,7 @@ export function RequestAccessFormPanel({
                   type="button"
                   className={cn(
                     secondaryActionClass,
-                    "text-neutral-700 hover:bg-neutral-100 hover:text-neutral-950",
+                    "hover:text-[#a84d0b]",
                   )}
                   onClick={goBack}
                 >
@@ -695,25 +685,26 @@ export function RequestAccessFormPanel({
                 <button
                   type="button"
                   className={cn(
-                    cinzel.className,
                     requestAccessButtonClass,
-                    "w-full min-w-[160px] sm:w-auto",
+                    "w-full min-w-[160px] sm:w-auto sm:min-w-[180px]",
                   )}
                   onClick={goNext}
                 >
-                  Continue
+                  Continue <span aria-hidden="true">⟶</span>
                 </button>
               ) : (
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className={cn(
-                    cinzel.className,
                     requestAccessButtonClass,
                     "w-full min-w-[180px] disabled:pointer-events-none disabled:opacity-60 sm:w-auto",
                   )}
                 >
                   {isSubmitting ? "Submitting…" : "Submit request"}
+                  {!isSubmitting ? (
+                    <span aria-hidden="true">⟶</span>
+                  ) : null}
                 </button>
               )}
             </div>
@@ -724,4 +715,6 @@ export function RequestAccessFormPanel({
   );
 }
 
-export { cinzel as requestAccessCinzel, inter as requestAccessInter };
+/** @deprecated Kept for callers; now maps to homepage UI / body stacks. */
+export const requestAccessCinzel = { className: fontUi };
+export const requestAccessInter = { className: fontBody };
