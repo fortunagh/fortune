@@ -10,5 +10,6 @@ export function ConditionalSiteFooter() {
   if (pathname.startsWith("/dashboard")) return null;
   if (pathname.startsWith("/present")) return null;
   if (pathname.startsWith("/register")) return null;
+  if (pathname.startsWith("/onboarding")) return null;
   return <SiteFooter />;
 }
