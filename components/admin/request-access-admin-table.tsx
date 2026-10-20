@@ -24,7 +24,7 @@ import type {
   RequestAccessSubmissionRow,
 } from "@/lib/types/request-access-submission";
 import { cn } from "@/lib/utils";
-import { Pencil, Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -61,6 +61,44 @@ function statusBadgeVariant(
   }
 }
 
+function DetailField({
+  label,
+  children,
+  className,
+}: {
+  label: string;
+  children: React.ReactNode;
+  className?: string;
+}) {
+  return (
+    <div className={cn("min-w-0", className)}>
+      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500 dark:text-neutral-400">
+        {label}
+      </dt>
+      <dd className="mt-1 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100">
+        {children}
+      </dd>
+    </div>
+  );
+}
+
+function DetailSection({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <section className="rounded-lg border border-neutral-200 bg-neutral-50/80 p-4 dark:border-neutral-800 dark:bg-neutral-950/40">
+      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900/80 dark:text-amber-200/80">
+        {title}
+      </h3>
+      <dl className="grid gap-4 sm:grid-cols-2">{children}</dl>
+    </section>
+  );
+}
+
 export function RequestAccessAdminTable({
   initialRows,
 }: {
@@ -69,9 +107,8 @@ export function RequestAccessAdminTable({
   const router = useRouter();
   const [rows, setRows] =
     React.useState<RequestAccessSubmissionRow[]>(initialRows);
-  const [editing, setEditing] = React.useState<RequestAccessSubmissionRow | null>(
-    null,
-  );
+  const [viewing, setViewing] =
+    React.useState<RequestAccessSubmissionRow | null>(null);
   const [status, setStatus] = React.useState<RequestAccessStatus>("pending");
   const [notes, setNotes] = React.useState("");
   const [saving, setSaving] = React.useState(false);
@@ -81,17 +118,17 @@ export function RequestAccessAdminTable({
     setRows(initialRows);
   }, [initialRows]);
 
-  function openEdit(row: RequestAccessSubmissionRow) {
-    setEditing(row);
+  function openView(row: RequestAccessSubmissionRow) {
+    setViewing(row);
     setStatus(row.status ?? "pending");
     setNotes(row.admin_notes ?? "");
   }
 
   async function saveEdit() {
-    if (!editing) return;
+    if (!viewing) return;
     setSaving(true);
     try {
-      const res = await fetch(`/api/admin/request-access/${editing.id}`, {
+      const res = await fetch(`/api/admin/request-access/${viewing.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -109,10 +146,15 @@ export function RequestAccessAdminTable({
       }
       if (data.row) {
         setRows((prev) =>
-          prev.map((r) => (r.id === data.row!.id ? (data.row as RequestAccessSubmissionRow) : r)),
+          prev.map((r) =>
+            r.id === data.row!.id
+              ? (data.row as RequestAccessSubmissionRow)
+              : r,
+          ),
         );
+        setViewing(data.row as RequestAccessSubmissionRow);
       }
-      setEditing(null);
+      setViewing(null);
       router.refresh();
     } finally {
       setSaving(false);
@@ -132,6 +174,7 @@ export function RequestAccessAdminTable({
         return;
       }
       setRows((prev) => prev.filter((r) => r.id !== id));
+      if (viewing?.id === id) setViewing(null);
       router.refresh();
     } finally {
       setDeletingId(null);
@@ -172,7 +215,8 @@ export function RequestAccessAdminTable({
             {rows.map((row) => (
               <tr
                 key={row.id}
-                className="border-b border-neutral-100 last:border-0 dark:border-neutral-800"
+                className="cursor-pointer border-b border-neutral-100 transition-colors last:border-0 hover:bg-neutral-50/90 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
+                onClick={() => openView(row)}
               >
                 <td className="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">
                   {formatDate(row.created_at)}
@@ -196,17 +240,21 @@ export function RequestAccessAdminTable({
                   {row.platform_interest.slice(0, 120)}
                   {row.platform_interest.length > 120 ? "…" : ""}
                 </td>
-                <td className="whitespace-nowrap px-3 py-2 align-top text-right">
+                <td
+                  className="whitespace-nowrap px-3 py-2 align-top text-right"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   <div className="flex justify-end gap-1">
                     <Button
                       type="button"
                       variant="ghost"
                       size="icon"
                       className="h-8 w-8"
-                      onClick={() => openEdit(row)}
-                      aria-label="Edit"
+                      onClick={() => openView(row)}
+                      aria-label="View full registration"
+                      title="View full registration"
                     >
-                      <Pencil className="h-4 w-4" />
+                      <Eye className="h-4 w-4" />
                     </Button>
                     <Button
                       type="button"
@@ -216,6 +264,7 @@ export function RequestAccessAdminTable({
                       disabled={deletingId === row.id}
                       onClick={() => remove(row.id)}
                       aria-label="Delete"
+                      title="Delete"
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
@@ -227,67 +276,138 @@ export function RequestAccessAdminTable({
         </table>
       </div>
 
-      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-lg">
+      <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle>Manage submission</DialogTitle>
+            <DialogTitle>Full registration</DialogTitle>
             <DialogDescription>
-              Update workflow status and internal notes. Submitter:{" "}
-              <span className="font-medium text-foreground">
-                {editing?.email}
-              </span>
+              Everything submitted on the form, plus workflow status and
+              internal notes.
             </DialogDescription>
           </DialogHeader>
-          {editing && (
-            <div className="grid gap-4 py-2">
-              <div className="grid gap-2">
-                <Label>Status</Label>
-                <Select
-                  value={status}
-                  onValueChange={(v) => setStatus(v as RequestAccessStatus)}
+          {viewing && (
+            <div className="grid gap-4 py-1">
+              <DetailSection title="Info">
+                <DetailField label="Name">
+                  {viewing.first_name} {viewing.last_name}
+                </DetailField>
+                <DetailField label="Received">
+                  {formatDate(viewing.created_at)}
+                </DetailField>
+                <DetailField label="Referral / source" className="sm:col-span-2">
+                  <span className="whitespace-pre-wrap">
+                    {viewing.referral_source}
+                  </span>
+                </DetailField>
+              </DetailSection>
+
+              <DetailSection title="Contact">
+                <DetailField label="Email">
+                  <a
+                    href={`mailto:${viewing.email}`}
+                    className="break-all underline-offset-2 hover:underline"
+                  >
+                    {viewing.email}
+                  </a>
+                </DetailField>
+                <DetailField label="City">{viewing.city}</DetailField>
+                <DetailField label="Phone (E.164)">
+                  <span className="break-all">
+                    {viewing.phone_e164 ?? "—"}
+                  </span>
+                </DetailField>
+                <DetailField label="Country + national number">
+                  <span className="break-all">
+                    {viewing.phone_country_iso2.toUpperCase()} ·{" "}
+                    {viewing.mobile_number}
+                  </span>
+                </DetailField>
+              </DetailSection>
+
+              <DetailSection title="Schedule">
+                <DetailField label="Time zone">
+                  {viewing.timezone.replace(/_/g, " ")}
+                </DetailField>
+                <DetailField label="Preferred contact">
+                  <span className="capitalize">
+                    {viewing.preferred_contact_method}
+                  </span>
+                </DetailField>
+                <DetailField
+                  label="Best times to reach"
+                  className="sm:col-span-2"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {STATUS_OPTIONS.map((s) => (
-                      <SelectItem key={s} value={s}>
-                        {s}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label>Admin notes</Label>
-                <Textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Internal notes (not shown to the applicant)"
-                  className="min-h-[100px] resize-y"
-                />
-              </div>
-              <div
-                className={cn(
-                  "rounded-md border border-neutral-200 bg-neutral-50 p-3 text-xs leading-relaxed dark:border-neutral-800 dark:bg-neutral-950/50",
-                )}
-              >
-                <p className="font-semibold text-neutral-700 dark:text-neutral-300">
-                  Full message
-                </p>
-                <p className="mt-1 whitespace-pre-wrap text-muted-foreground">
-                  {editing.platform_interest}
-                </p>
-              </div>
+                  <span className="whitespace-pre-wrap">
+                    {viewing.best_contact_times}
+                  </span>
+                </DetailField>
+              </DetailSection>
+
+              <DetailSection title="Details">
+                <DetailField
+                  label="Occupation / business"
+                  className="sm:col-span-2"
+                >
+                  <span className="whitespace-pre-wrap">
+                    {viewing.occupation_or_business}
+                  </span>
+                </DetailField>
+                <DetailField
+                  label="Platform interest"
+                  className="sm:col-span-2"
+                >
+                  <span className="whitespace-pre-wrap">
+                    {viewing.platform_interest}
+                  </span>
+                </DetailField>
+              </DetailSection>
+
+              <section className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
+                <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900/80 dark:text-amber-200/80">
+                  Review
+                </h3>
+                <div className="grid gap-4">
+                  <div className="grid gap-2">
+                    <Label htmlFor="submission-status">Status</Label>
+                    <Select
+                      value={status}
+                      onValueChange={(v) =>
+                        setStatus(v as RequestAccessStatus)
+                      }
+                    >
+                      <SelectTrigger id="submission-status">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {STATUS_OPTIONS.map((s) => (
+                          <SelectItem key={s} value={s}>
+                            {s}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="grid gap-2">
+                    <Label htmlFor="submission-notes">Admin notes</Label>
+                    <Textarea
+                      id="submission-notes"
+                      value={notes}
+                      onChange={(e) => setNotes(e.target.value)}
+                      placeholder="Internal notes (not shown to the applicant)"
+                      className="min-h-[100px] resize-y"
+                    />
+                  </div>
+                </div>
+              </section>
             </div>
           )}
           <DialogFooter className="gap-2 sm:gap-0">
             <Button
               type="button"
               variant="outline"
-              onClick={() => setEditing(null)}
+              onClick={() => setViewing(null)}
             >
-              Cancel
+              Close
             </Button>
             <Button type="button" onClick={saveEdit} disabled={saving}>
               {saving ? "Saving…" : "Save"}

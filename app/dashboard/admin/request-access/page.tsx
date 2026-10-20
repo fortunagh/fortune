@@ -28,8 +28,8 @@ export default async function AdminRequestAccessPage() {
           Request access
         </h2>
         <p className="mt-1 text-sm text-muted-foreground">
-          Review leads from the public form. Edit status and notes, or delete
-          records.
+          Review leads from the public form. Open a row (or the eye icon) to see
+          the full registration, update status and notes, or delete records.
         </p>
       </div>
       <RequestAccessAdminTable initialRows={rows} />
