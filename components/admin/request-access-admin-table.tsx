@@ -23,6 +23,7 @@ import type {
   RequestAccessStatus,
   RequestAccessSubmissionRow,
 } from "@/lib/types/request-access-submission";
+import { geistSans } from "@/lib/fonts/geist-admin";
 import { cn } from "@/lib/utils";
 import { Eye, Trash2 } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -72,10 +73,10 @@ function DetailField({
 }) {
   return (
     <div className={cn("min-w-0", className)}>
-      <dt className="text-[11px] font-semibold uppercase tracking-[0.08em] text-neutral-500 dark:text-neutral-400">
+      <dt className="text-[11px] font-medium uppercase tracking-[0.06em] text-neutral-500 dark:text-neutral-400">
         {label}
       </dt>
-      <dd className="mt-1 text-sm leading-relaxed text-neutral-900 dark:text-neutral-100">
+      <dd className="mt-1 text-sm font-normal normal-case leading-relaxed tracking-normal text-neutral-900 dark:text-neutral-100">
         {children}
       </dd>
     </div>
@@ -277,10 +278,17 @@ export function RequestAccessAdminTable({
       </div>
 
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
+        <DialogContent
+          className={cn(
+            geistSans.className,
+            "max-h-[90dvh] overflow-y-auto font-normal antialiased sm:max-w-2xl",
+          )}
+        >
           <DialogHeader>
-            <DialogTitle>Full registration</DialogTitle>
-            <DialogDescription>
+            <DialogTitle className="text-lg font-semibold tracking-tight normal-case">
+              Full registration
+            </DialogTitle>
+            <DialogDescription className="text-sm font-normal normal-case tracking-normal">
               Everything submitted on the form, plus workflow status and
               internal notes.
             </DialogDescription>
@@ -378,9 +386,9 @@ export function RequestAccessAdminTable({
                       <SelectTrigger id="submission-status">
                         <SelectValue />
                       </SelectTrigger>
-                      <SelectContent>
+                      <SelectContent className={geistSans.className}>
                         {STATUS_OPTIONS.map((s) => (
-                          <SelectItem key={s} value={s}>
+                          <SelectItem key={s} value={s} className="capitalize">
                             {s}
                           </SelectItem>
                         ))}
