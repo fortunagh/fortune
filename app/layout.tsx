@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import { Suspense } from "react";
 import { ConditionalSiteFooter } from "@/components/conditional-site-footer";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -58,12 +59,14 @@ export default function RootLayout({
       <body className="font-sans antialiased" suppressHydrationWarning>
         <ThemeProvider
           attribute="class"
-          defaultTheme="system"
+          defaultTheme="dark"
           enableSystem
           disableTransitionOnChange
         >
           {children}
-          <ConditionalSiteFooter />
+          <Suspense fallback={null}>
+            <ConditionalSiteFooter />
+          </Suspense>
         </ThemeProvider>
       </body>
     </html>

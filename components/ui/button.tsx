@@ -20,7 +20,7 @@ const buttonVariants = cva(
         ghost: "hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         fortuna:
-          "h-auto min-h-[44px] rounded-full border-0 bg-[linear-gradient(90deg,#D4AF37_0%,#FFD988_46%,#D4AF37_100%)] px-6 py-3.5 text-[0.7rem] font-semibold uppercase tracking-[0.14em] text-neutral-900 shadow-sm transition-transform hover:scale-[1.02] hover:bg-[linear-gradient(90deg,#D4AF37_0%,#FFD988_46%,#D4AF37_100%)] hover:shadow-[0_10px_28px_rgba(0,0,0,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-700/40 focus-visible:ring-offset-2",
+          "h-auto min-h-11 rounded-none border border-primary bg-transparent px-8 py-3.5 font-[Arial,Helvetica,sans-serif] text-xs font-semibold uppercase tracking-[0.09em] text-primary shadow-none transition-[background,color] duration-150 hover:bg-primary hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-primary/35 sm:text-sm",
       },
       size: {
         default: "h-9 px-4 py-2",

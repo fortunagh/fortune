@@ -2,13 +2,17 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
+import { createAndSendInvitation } from "@/lib/onboarding/invite";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 const patchSchema = z.object({
   status: z
     .enum(["pending", "contacted", "approved", "declined"])
     .optional(),
   admin_notes: z.string().max(8000).nullable().optional(),
+  /** When true with status approved, send the single-use activation invite */
+  sendInvitation: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -67,6 +71,35 @@ export async function PATCH(
       { error: "Could not update submission" },
       { status: 500 },
     );
+  }
+
+  const shouldInvite =
+    parsed.data.status === "approved" &&
+    parsed.data.sendInvitation !== false;
+
+  if (shouldInvite && data) {
+    try {
+      const admin = createServiceRoleClient();
+      await createAndSendInvitation({
+        admin,
+        submissionId: data.id,
+        email: data.email,
+        firstName: data.first_name,
+        invitedBy: session.user.id,
+      });
+    } catch (e) {
+      console.error("invitation on approve", e);
+      return NextResponse.json(
+        {
+          row: data,
+          warning:
+            e instanceof Error
+              ? e.message
+              : "Approved, but invitation email failed",
+        },
+        { status: 200 },
+      );
+    }
   }
 
   return NextResponse.json({ row: data });

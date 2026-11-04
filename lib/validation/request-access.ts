@@ -123,7 +123,7 @@ export const requestAccessStepSchemas = [
 export const REQUEST_ACCESS_STEP_META = [
   { title: "Info", short: "Info" },
   { title: "Contact", short: "Contact" },
-  { title: "Schedule", short: "Schedule" },
+  { title: "Contact Preferences", short: "Prefs" },
   { title: "Details", short: "Details" },
 ] as const;
 

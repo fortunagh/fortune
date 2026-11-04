@@ -54,7 +54,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/register") ||
     pathname.startsWith("/present") ||
     pathname.startsWith("/onboarding") ||
-    pathname.startsWith("/api/request-access");
+    pathname.startsWith("/api/request-access") ||
+    pathname.startsWith("/api/webhooks/") ||
+    pathname.startsWith("/api/cron/");
   // public/ assets. Matcher should already skip these; this keeps a font
   // request from being sent to the login page if it still reaches the proxy.
   const isStaticAsset =

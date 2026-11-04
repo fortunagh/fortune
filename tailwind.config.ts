@@ -11,15 +11,15 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: [
-          '"Engravers MT"',
-          "ui-serif",
-          "Georgia",
-          "Cambria",
+        sans: ["Arial", "Helvetica", "sans-serif"],
+        display: [
+          '"Fortuna Bodoni"',
+          "Didot",
           '"Times New Roman"',
-          "Times",
           "serif",
         ],
+        body: ['"Fortuna Garamond"', "Georgia", "serif"],
+        ui: ["Arial", "Helvetica", "sans-serif"],
       },
       colors: {
         background: "hsl(var(--background))",
