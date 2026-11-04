@@ -1,5 +1,6 @@
 import Link from "next/link";
 
+import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
 import { Badge } from "@/components/ui/badge";
 import { createClient } from "@/lib/supabase/server";
 
@@ -23,21 +24,19 @@ export default async function AdminClientsPage() {
 
   return (
     <div className="mx-auto w-full max-w-6xl space-y-6">
-      <div>
-        <h2 className="font-display text-2xl tracking-tight">Clients</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Onboarding progress across activated accounts.
-        </p>
-      </div>
+      <PageHeader
+        title="Clients"
+        description="Onboarding progress across activated accounts."
+      />
 
-      <div className="overflow-x-auto border border-border">
+      <WidgetCard className="overflow-x-auto p-0 sm:p-0">
         <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-border bg-muted/40 text-[10px] uppercase tracking-[0.14em] text-muted-foreground">
+          <thead className="border-b border-neutral-100 bg-neutral-50/80 text-[10px] uppercase tracking-[0.14em] text-neutral-500">
             <tr>
-              <th className="px-4 py-3 font-semibold">Client</th>
-              <th className="px-4 py-3 font-semibold">Current step</th>
-              <th className="px-4 py-3 font-semibold">Status</th>
-              <th className="px-4 py-3 font-semibold" />
+              <th className="px-5 py-3 font-semibold">Client</th>
+              <th className="px-5 py-3 font-semibold">Current step</th>
+              <th className="px-5 py-3 font-semibold">Status</th>
+              <th className="px-5 py-3 font-semibold" />
             </tr>
           </thead>
           <tbody>
@@ -45,7 +44,7 @@ export default async function AdminClientsPage() {
               <tr>
                 <td
                   colSpan={4}
-                  className="px-4 py-8 text-center text-muted-foreground"
+                  className="px-5 py-8 text-center text-neutral-500"
                 >
                   No onboarding cases yet.
                 </td>
@@ -57,23 +56,25 @@ export default async function AdminClientsPage() {
                   [p?.first_name, p?.last_name].filter(Boolean).join(" ") ||
                   row.user_id.slice(0, 8);
                 return (
-                  <tr key={row.id} className="border-b border-border">
-                    <td className="px-4 py-3">{name}</td>
-                    <td className="px-4 py-3 font-mono text-xs">
+                  <tr key={row.id} className="border-b border-neutral-100 last:border-0">
+                    <td className="px-5 py-3 font-medium text-neutral-900">
+                      {name}
+                    </td>
+                    <td className="px-5 py-3 font-mono text-xs text-neutral-600">
                       {row.current_step_key ?? "—"}
                     </td>
-                    <td className="px-4 py-3">
+                    <td className="px-5 py-3">
                       <Badge
                         variant="outline"
-                        className="rounded-none uppercase"
+                        className="rounded-full border-neutral-200 uppercase"
                       >
                         {row.status}
                       </Badge>
                     </td>
-                    <td className="px-4 py-3 text-right">
+                    <td className="px-5 py-3 text-right">
                       <Link
                         href={`/dashboard/admin/clients/${row.user_id}`}
-                        className="text-xs font-semibold uppercase tracking-[0.12em] text-primary hover:underline"
+                        className="text-xs font-semibold uppercase tracking-[0.12em] text-[#a8842a] hover:underline"
                       >
                         Open
                       </Link>
@@ -84,7 +85,7 @@ export default async function AdminClientsPage() {
             )}
           </tbody>
         </table>
-      </div>
+      </WidgetCard>
     </div>
   );
 }

@@ -166,18 +166,18 @@ export function StepActionBar({
             {busy ? "Working…" : confirmLabel}
           </Button>
         ) : null}
-        <Button asChild variant="outline" className="rounded-none">
+        <Button asChild variant="outline" className="rounded-xl">
           <Link href={`/dashboard/support?step=${stepKey}`}>I need help</Link>
         </Button>
         {stepKey === "vps_setup" ? (
-          <Button asChild variant="secondary" className="rounded-none">
+          <Button asChild variant="secondary" className="rounded-xl">
             <a href={DEFAULT_LINKS.forexVps} target="_blank" rel="noreferrer">
               Sign up to ForexVPS
             </a>
           </Button>
         ) : null}
         {stepKey === "licence_portal" || stepKey === "demo_licence_apply" ? (
-          <Button asChild variant="secondary" className="rounded-none">
+          <Button asChild variant="secondary" className="rounded-xl">
             <a
               href={DEFAULT_LINKS.licencePortalSignup}
               target="_blank"

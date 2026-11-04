@@ -51,7 +51,7 @@ export function AdminStepOverride({
           Complete step
         </p>
         <Select value={stepKey} onValueChange={setStepKey}>
-          <SelectTrigger className="rounded-none">
+          <SelectTrigger className="rounded-xl">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>

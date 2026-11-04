@@ -46,23 +46,23 @@ export function AssistantPanel({ stepKey }: { stepKey: string | null }) {
 
   return (
     <div className={cn(fortunaUiClass, "space-y-4")}>
-      <p className="text-sm text-muted-foreground">
+      <p className="text-sm text-neutral-500">
         Answers come from approved Fortuna guides. For exceptions, use{" "}
-        <strong>I need help</strong>.
+        <strong className="text-neutral-800">I need help</strong>.
       </p>
-      <div className="max-h-80 space-y-3 overflow-y-auto border border-border p-4">
+      <div className="max-h-80 space-y-3 overflow-y-auto rounded-xl border border-neutral-100 bg-neutral-50/80 p-4">
         {messages.length === 0 ? (
-          <p className="text-sm text-muted-foreground">Ask a setup question.</p>
+          <p className="text-sm text-neutral-500">Ask a setup question.</p>
         ) : (
           messages.map((m, i) => (
             <div
               key={i}
               className={cn(
                 "text-sm leading-relaxed",
-                m.role === "assistant" ? "text-foreground" : "text-primary",
+                m.role === "assistant" ? "text-neutral-900" : "text-[#a8842a]",
               )}
             >
-              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+              <span className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-400">
                 {m.role === "assistant" ? "Fortuna" : "You"}
               </span>
               <p className="mt-1 whitespace-pre-wrap">{m.content}</p>
@@ -72,7 +72,7 @@ export function AssistantPanel({ stepKey }: { stepKey: string | null }) {
       </div>
       <form onSubmit={send} className="space-y-3">
         <Textarea
-          className="rounded-none"
+          className="rounded-xl"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="e.g. How do I apply for a demo licence?"

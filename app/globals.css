@@ -60,7 +60,11 @@
     --chart-3: 225 14% 8%;
     --chart-4: 36 33% 70%;
     --chart-5: 24 43% 51%;
-    --radius: 0rem;
+    /* Portal / auth mockup: rounded cards; marketing keeps its own square CSS */
+    --radius: 1rem;
+    --portal-shadow: 0 18px 50px rgba(16, 18, 23, 0.08);
+    --portal-gold: 38 70% 48%;
+    --portal-gold-soft: 40 55% 92%;
   }
   .dark {
     --background: 225 14% 8%;

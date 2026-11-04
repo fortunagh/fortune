@@ -36,13 +36,13 @@ export function ResourceList({ resources }: { resources: Resource[] }) {
         return (
           <li
             key={r.id}
-            className="flex items-center justify-between gap-3 border-b border-border pb-3"
+            className="flex items-center justify-between gap-3 border-b border-neutral-100 pb-3 last:border-0 last:pb-0"
           >
             <div className="flex min-w-0 items-center gap-2">
-              <Icon className="h-4 w-4 shrink-0 text-primary" aria-hidden />
-              <span className="truncate text-sm">{r.title}</span>
+              <Icon className="h-4 w-4 shrink-0 text-[#c59d3f]" aria-hidden />
+              <span className="truncate text-sm text-neutral-900">{r.title}</span>
             </div>
-            <Button asChild size="sm" variant="outline" className="rounded-none">
+            <Button asChild size="sm" variant="outline" className="rounded-xl">
               <a
                 href={href}
                 target="_blank"

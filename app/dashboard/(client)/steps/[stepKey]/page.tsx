@@ -3,15 +3,12 @@ import { notFound } from "next/navigation";
 
 import { QuestionnaireForm } from "@/components/portal/questionnaire-form";
 import { StepActionBar } from "@/components/portal/current-step-panel";
-import { ProgressRail } from "@/components/portal/progress-rail";
+import { JourneyTimeline } from "@/components/portal/journey-timeline";
 import {
-  BronzeRule,
-  Eyebrow,
-  NoticeBlock,
-  PortalCard,
-  PortalSubtitle,
-  PortalTitle,
-} from "@/components/portal/portal-primitives";
+  PageHeader,
+  SoftNotice,
+  WidgetCard,
+} from "@/components/portal/portal-ui";
 import { Button } from "@/components/ui/button";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import {
@@ -69,61 +66,67 @@ export default async function StepPage({
     caseRow.readiness_unlocked_at,
   );
 
+  const railStates = states.map((s) => ({
+    key: s.step_key,
+    status: s.status,
+    completedAt: s.completed_at,
+  }));
+
   return (
-    <div className="mx-auto grid w-full max-w-6xl gap-8 lg:grid-cols-[240px_1fr]">
+    <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
       <aside className="hidden lg:block">
-        <Eyebrow>Progress</Eyebrow>
-        <BronzeRule className="my-3" />
-        <ProgressRail
-          currentKey={caseRow.current_step_key}
-          states={states.map((s) => ({
-            key: s.step_key,
-            status: s.status,
-            completedAt: s.completed_at,
-          }))}
-        />
+        <WidgetCard>
+          <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+            My Journey
+          </p>
+          <JourneyTimeline
+            states={railStates}
+            currentKey={caseRow.current_step_key}
+          />
+        </WidgetCard>
       </aside>
 
-      <div className="space-y-6">
-        <div>
-          <Eyebrow>{def.eyebrow}</Eyebrow>
-          <PortalTitle className="mt-2">{def.title}</PortalTitle>
-          <BronzeRule className="mt-4" />
-          <PortalSubtitle className="mt-4">{def.description}</PortalSubtitle>
-        </div>
+      <div className="space-y-5">
+        <PageHeader
+          eyebrow={def.eyebrow}
+          title={def.title}
+          description={def.description}
+        />
 
         {locked ? (
-          <NoticeBlock>
+          <SoftNotice>
             This step is locked until previous milestones are complete.
-          </NoticeBlock>
+          </SoftNotice>
         ) : null}
 
         {completed ? (
-          <NoticeBlock>This step is complete.</NoticeBlock>
+          <SoftNotice variant="success">This step is complete.</SoftNotice>
         ) : null}
 
         {stepKey === "questionnaire" && !completed && !locked ? (
-          <PortalCard className="p-6">
+          <WidgetCard>
             <QuestionnaireForm
               brokers={(brokers ?? []).map((b) => ({
                 id: b.id,
                 name: b.name,
               }))}
             />
-          </PortalCard>
+          </WidgetCard>
         ) : null}
 
         {(stepKey === "broker_demo" || stepKey === "live_licence_apply") &&
         (brokers?.length ?? 0) > 0 ? (
-          <PortalCard className="space-y-3 p-6">
-            <Eyebrow>Approved brokers</Eyebrow>
-            <ul className="space-y-3 pt-2">
+          <WidgetCard className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              Approved brokers
+            </p>
+            <ul className="space-y-3">
               {(brokers ?? []).map((b) => (
                 <li
                   key={b.id}
-                  className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-3"
+                  className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 pb-3 last:border-0 last:pb-0"
                 >
-                  <span className="font-[Arial,Helvetica,sans-serif] text-sm font-medium">
+                  <span className="text-sm font-medium text-neutral-900">
                     {b.name}
                   </span>
                   <div className="flex gap-2">
@@ -135,7 +138,7 @@ export default async function StepPage({
                       </Button>
                     ) : null}
                     {b.secure_portal_url ? (
-                      <Button asChild size="sm" variant="outline" className="rounded-none">
+                      <Button asChild size="sm" variant="outline" className="rounded-xl">
                         <a
                           href={b.secure_portal_url}
                           target="_blank"
@@ -150,60 +153,60 @@ export default async function StepPage({
               ))}
             </ul>
             {(brokers ?? []).every((b) => !b.referral_url) ? (
-              <NoticeBlock>
+              <SoftNotice>
                 Fortuna has not published broker referral links yet.
-              </NoticeBlock>
+              </SoftNotice>
             ) : null}
-          </PortalCard>
+          </WidgetCard>
         ) : null}
 
         {stepKey === "demo_readiness" && !completed && !locked ? (
-          <PortalCard className="p-6">
+          <WidgetCard>
             {!ready ? (
-              <NoticeBlock>
+              <SoftNotice variant="warning">
                 Day {demoDays} of 28. Keep practising — the checklist unlocks
                 after 28 days from demo install.
-              </NoticeBlock>
+              </SoftNotice>
             ) : (
               <DemoReadinessForm items={[...DEMO_READINESS_ITEMS]} />
             )}
-          </PortalCard>
+          </WidgetCard>
         ) : null}
 
         {stepKey === "live_install" && !completed && !locked ? (
-          <PortalCard className="space-y-4 p-6">
-            <NoticeBlock variant="warning">
+          <WidgetCard className="space-y-4">
+            <SoftNotice variant="warning">
               <strong>
                 Before you turn on Algo Trading in MT5 on your live account, set,
                 save and verify your Equity Protect parameters.
               </strong>{" "}
               Enabling Algo Trading activates the EA and allows it to place live
               trades automatically. You are responsible for risk settings.
-            </NoticeBlock>
+            </SoftNotice>
             <LiveInstallActions
               payload={(state?.payload as Record<string, unknown>) ?? {}}
             />
-          </PortalCard>
+          </WidgetCard>
         ) : null}
 
         {(resources?.length ?? 0) > 0 ? (
-          <PortalCard className="p-6">
-            <Eyebrow>Guides</Eyebrow>
-            <div className="mt-4">
-              <ResourceList resources={resources ?? []} />
-            </div>
-          </PortalCard>
+          <WidgetCard>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              Guides
+            </p>
+            <ResourceList resources={resources ?? []} />
+          </WidgetCard>
         ) : (
-          <NoticeBlock>
+          <SoftNotice>
             Guides for this step will appear here when Fortuna publishes them.
-          </NoticeBlock>
+          </SoftNotice>
         )}
 
         {stepKey === "vps_setup" ? (
-          <NoticeBlock>
+          <SoftNotice>
             Affiliate signup:{" "}
             <a
-              className="underline"
+              className="font-medium text-[#a8842a] underline"
               href={DEFAULT_LINKS.forexVps}
               target="_blank"
               rel="noreferrer"
@@ -211,7 +214,7 @@ export default async function StepPage({
               ForexVPS
             </a>
             . VPS setup PDF/video are admin-uploadable resources.
-          </NoticeBlock>
+          </SoftNotice>
         ) : null}
 
         {!locked &&
@@ -219,16 +222,18 @@ export default async function StepPage({
         stepKey !== "questionnaire" &&
         stepKey !== "demo_readiness" &&
         stepKey !== "live_install" ? (
-          <StepActionBar
-            stepKey={stepKey}
-            confirmLabel={def.confirmLabel}
-            confirmationKind={def.confirmationKind}
-            disabled={stepKey === "demo_readiness" && !ready}
-          />
+          <WidgetCard>
+            <StepActionBar
+              stepKey={stepKey}
+              confirmLabel={def.confirmLabel}
+              confirmationKind={def.confirmationKind}
+              disabled={stepKey === "demo_readiness" && !ready}
+            />
+          </WidgetCard>
         ) : null}
 
-        <Button asChild variant="ghost" className="rounded-none px-0">
-          <Link href="/dashboard">← Back to overview</Link>
+        <Button asChild variant="ghost" className="rounded-xl px-0 text-neutral-600">
+          <Link href="/dashboard">← Back to dashboard</Link>
         </Button>
       </div>
     </div>

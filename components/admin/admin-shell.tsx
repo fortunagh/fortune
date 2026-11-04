@@ -1,32 +1,31 @@
 "use client";
 
-import { AdminBrandMark, AdminSidebarBrand } from "@/components/admin/admin-brand";
-import { ThemeSwitcher } from "@/components/theme-switcher";
-import { LogoutButton } from "@/components/logout-button";
-import { cn } from "@/lib/utils";
-import { fortunaUiClass } from "@/lib/fonts/fortuna";
+import Image from "next/image";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import * as React from "react";
 import {
   BookOpen,
   ClipboardList,
   CreditCard,
   Inbox,
   LayoutDashboard,
-  Menu,
-  PanelLeft,
-  PanelLeftClose,
-  Shield,
-  Users,
-  UserPlus,
   LifeBuoy,
+  Menu,
+  Shield,
+  UserPlus,
+  Users,
   X,
 } from "lucide-react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import * as React from "react";
+
+import { LogoutButton } from "@/components/logout-button";
+import { ThemeSwitcher } from "@/components/theme-switcher";
+import { InitialsAvatar, fortunaUiClass } from "@/components/portal/portal-ui";
+import { cn } from "@/lib/utils";
 import "@/components/landing/fortuna.css";
 
 const nav = [
-  { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard },
+  { href: "/dashboard/admin", label: "Overview", icon: LayoutDashboard, exact: true },
   {
     href: "/dashboard/admin/request-access",
     label: "Request access",
@@ -47,7 +46,6 @@ export function AdminShell({
   children: React.ReactNode;
   userEmail: string;
 }) {
-  const [collapsed, setCollapsed] = React.useState(false);
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const pathname = usePathname();
 
@@ -56,39 +54,36 @@ export function AdminShell({
   }, [pathname]);
 
   return (
-    <div className="flex min-h-[100dvh] w-full bg-background text-foreground">
-      {mobileOpen && (
+    <div className="flex min-h-[100dvh] w-full bg-[#f7f6f2] text-neutral-950">
+      {mobileOpen ? (
         <button
           type="button"
-          className="fixed inset-0 z-40 bg-black/50 md:hidden"
+          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
           aria-label="Close navigation"
           onClick={() => setMobileOpen(false)}
         />
-      )}
+      ) : null}
 
       <aside
         className={cn(
-          "fixed inset-y-0 left-0 z-50 flex h-[100dvh] flex-col border-r border-border bg-card transition-[transform,width] duration-200",
-          "w-[min(18rem,calc(100vw-1rem))] max-w-[85vw] shrink-0",
-          collapsed
-            ? "md:w-[72px] md:min-w-[72px] md:max-w-[72px]"
-            : "md:w-64 md:max-w-none",
-          mobileOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0",
-          "md:relative md:z-0",
+          "fixed inset-y-0 left-0 z-50 flex h-[100dvh] w-64 flex-col border-r border-black/[0.06] bg-white px-3 py-4 transition-transform lg:sticky lg:translate-x-0",
+          mobileOpen ? "translate-x-0" : "-translate-x-full",
         )}
       >
-        <div className="flex min-h-14 shrink-0 items-center justify-between gap-1 border-b border-border px-2 py-2">
-          <div
-            className={cn(
-              "flex min-w-0 flex-1 items-center overflow-hidden",
-              collapsed && "justify-center",
-            )}
-          >
-            <AdminSidebarBrand collapsed={collapsed} />
-          </div>
+        <div className="mb-6 flex items-center justify-between px-2">
+          <Link href="/dashboard/admin">
+            <Image
+              src="/fortuna/logo-header.png"
+              alt="Fortuna Global Holdings"
+              width={180}
+              height={46}
+              className="h-8 w-auto"
+              unoptimized
+            />
+          </Link>
           <button
             type="button"
-            className="p-2 text-muted-foreground md:hidden"
+            className="p-2 text-neutral-500 lg:hidden"
             aria-label="Close menu"
             onClick={() => setMobileOpen(false)}
           >
@@ -96,102 +91,84 @@ export function AdminShell({
           </button>
         </div>
 
-        <nav
+        <p
           className={cn(
             fortunaUiClass,
-            "flex flex-1 flex-col gap-0.5 overflow-y-auto p-2",
+            "mb-3 px-2 text-[10px] font-semibold uppercase tracking-[0.18em] text-neutral-400",
           )}
+        >
+          Admin
+        </p>
+
+        <nav
+          className={cn(fortunaUiClass, "flex flex-1 flex-col gap-1")}
           aria-label="Admin navigation"
         >
-          {nav.map(({ href, label, icon: Icon }) => {
-            const active =
-              href === "/dashboard/admin"
-                ? pathname === "/dashboard/admin"
-                : pathname === href || pathname.startsWith(`${href}/`);
+          {nav.map(({ href, label, icon: Icon, exact }) => {
+            const active = exact
+              ? pathname === href
+              : pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
                 key={href}
                 href={href}
-                title={collapsed ? label : undefined}
                 className={cn(
-                  "flex min-h-11 items-center gap-3 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.12em] transition-colors",
+                  "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
                   active
-                    ? "border-l-2 border-primary bg-primary/10 text-foreground"
-                    : "border-l-2 border-transparent text-muted-foreground hover:bg-muted/50 hover:text-foreground",
-                  collapsed && "justify-center px-2",
+                    ? "bg-[hsl(var(--portal-gold-soft))] text-[#8a6d1f]"
+                    : "text-neutral-600 hover:bg-neutral-50 hover:text-neutral-950",
                 )}
                 onClick={() => setMobileOpen(false)}
               >
                 <Icon className="h-4 w-4 shrink-0 opacity-90" aria-hidden />
-                {!collapsed && <span className="truncate">{label}</span>}
+                <span className="truncate">{label}</span>
               </Link>
             );
           })}
         </nav>
 
-        <div className="border-t border-border p-2">
-          {!collapsed && (
-            <p
-              className={cn(
-                fortunaUiClass,
-                "mb-2 truncate px-2 text-xs text-muted-foreground",
-              )}
-              title={userEmail || undefined}
-            >
+        <div className="mt-auto space-y-3 border-t border-black/[0.06] px-2 pt-4">
+          <div className="flex items-center gap-2">
+            <InitialsAvatar name={userEmail} />
+            <p className="min-w-0 truncate text-xs text-neutral-500" title={userEmail}>
               {userEmail}
             </p>
-          )}
+          </div>
           <LogoutButton
             variant="outline"
             size="sm"
-            iconOnly={collapsed}
-            className={cn("w-full rounded-none", collapsed && "md:justify-center")}
+            className="w-full rounded-xl"
           />
         </div>
       </aside>
 
       <div className="flex min-h-[100dvh] min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-30 flex h-14 shrink-0 items-center gap-3 border-b border-border bg-background/95 px-4 backdrop-blur md:px-6">
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-3 border-b border-black/[0.06] bg-[#f7f6f2]/90 px-4 backdrop-blur md:px-6">
           <button
             type="button"
-            className="inline-flex min-h-11 min-w-11 items-center justify-center text-foreground md:hidden"
+            className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-black/[0.08] bg-white text-neutral-700 lg:hidden"
             aria-label="Open navigation"
             onClick={() => setMobileOpen(true)}
           >
             <Menu className="h-5 w-5" />
           </button>
-          <button
-            type="button"
-            className="hidden h-9 w-9 shrink-0 items-center justify-center border border-border text-foreground md:inline-flex"
-            aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-            onClick={() => setCollapsed((c) => !c)}
-          >
-            {collapsed ? (
-              <PanelLeft className="h-4 w-4" />
-            ) : (
-              <PanelLeftClose className="h-4 w-4" />
-            )}
-          </button>
-          <div className="flex min-w-0 flex-1 items-center gap-2.5">
-            <AdminBrandMark className="block h-5 w-5 shrink-0 text-muted-foreground md:hidden" />
-            <div className="min-w-0">
-              <p
-                className={cn(
-                  fortunaUiClass,
-                  "truncate text-xs font-semibold uppercase tracking-[0.14em] text-foreground",
-                )}
-              >
-                Fortuna admin
-              </p>
-              <p className="truncate text-xs text-muted-foreground md:hidden">
-                {userEmail}
-              </p>
-            </div>
+          <div className="min-w-0 flex-1">
+            <p
+              className={cn(
+                fortunaUiClass,
+                "flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500",
+              )}
+            >
+              <Shield className="h-3.5 w-3.5 text-[#c59d3f]" aria-hidden />
+              Fortuna admin
+            </p>
+            <p className="truncate text-xs text-neutral-400 lg:hidden">
+              {userEmail}
+            </p>
           </div>
-          <Shield className="hidden h-4 w-4 text-primary sm:block" aria-hidden />
           <ThemeSwitcher />
         </header>
-        <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-5 md:px-6 md:py-6">
+        <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 md:px-6 md:py-8">
           {children}
         </div>
       </div>

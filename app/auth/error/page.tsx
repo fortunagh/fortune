@@ -2,16 +2,11 @@ import {
   authCardClass,
   authCardDescriptionClass,
   authCardTitleClass,
+  authLinkClass,
 } from "@/components/auth/auth-ui-classes";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Cinzel } from "next/font/google";
+import Link from "next/link";
 import { Suspense } from "react";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
 
 async function ErrorContent({
   searchParams,
@@ -44,16 +39,17 @@ export default function Page({
     <div className="flex flex-col gap-6">
       <Card className={authCardClass}>
         <CardHeader>
-          <CardTitle
-            className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
-          >
+          <CardTitle className={authCardTitleClass}>
             Something went wrong
           </CardTitle>
         </CardHeader>
-        <CardContent>
+        <CardContent className="space-y-4">
           <Suspense>
             <ErrorContent searchParams={searchParams} />
           </Suspense>
+          <Link href="/auth/login" className={authLinkClass}>
+            Return to sign in →
+          </Link>
         </CardContent>
       </Card>
     </div>

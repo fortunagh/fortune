@@ -1,13 +1,12 @@
+import Link from "next/link";
+
 import {
-  BronzeRule,
-  Eyebrow,
-  PortalCard,
-  PortalEmpty,
-  PortalTitle,
-} from "@/components/portal/portal-primitives";
+  PageHeader,
+  PortalMuted,
+  WidgetCard,
+} from "@/components/portal/portal-ui";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { createClient } from "@/lib/supabase/server";
-import Link from "next/link";
 
 export default async function NotificationsPage() {
   const session = await getSessionProfile();
@@ -21,7 +20,6 @@ export default async function NotificationsPage() {
     .order("created_at", { ascending: false })
     .limit(50);
 
-  // Mark visible as read
   await supabase
     .from("notifications")
     .update({ read_at: new Date().toISOString() })
@@ -30,21 +28,24 @@ export default async function NotificationsPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div>
-        <Eyebrow>Inbox</Eyebrow>
-        <PortalTitle className="mt-2">Notifications</PortalTitle>
-        <BronzeRule className="mt-4" />
-      </div>
+      <PageHeader eyebrow="Inbox" title="Notifications" />
       {(items?.length ?? 0) === 0 ? (
-        <PortalEmpty title="No notifications yet" />
+        <WidgetCard className="text-center">
+          <p className="text-base font-semibold text-neutral-950">
+            No notifications yet
+          </p>
+          <PortalMuted className="mt-2">
+            Step updates and billing notices will appear here.
+          </PortalMuted>
+        </WidgetCard>
       ) : (
         <ul className="space-y-3">
           {(items ?? []).map((n) => (
             <li key={n.id}>
-              <PortalCard className="p-4">
-                <p className="font-[Arial,Helvetica,sans-serif] text-sm font-semibold">
+              <WidgetCard>
+                <p className="text-sm font-semibold text-neutral-950">
                   {n.href ? (
-                    <Link href={n.href} className="hover:text-primary">
+                    <Link href={n.href} className="hover:text-[#a8842a]">
                       {n.title}
                     </Link>
                   ) : (
@@ -52,11 +53,11 @@ export default async function NotificationsPage() {
                   )}
                 </p>
                 {n.body ? (
-                  <p className="mt-1 text-sm text-muted-foreground line-clamp-3">
+                  <p className="mt-1 line-clamp-3 text-sm text-neutral-500">
                     {n.body}
                   </p>
                 ) : null}
-              </PortalCard>
+              </WidgetCard>
             </li>
           ))}
         </ul>

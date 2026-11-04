@@ -1,9 +1,7 @@
 import {
-  BronzeRule,
-  Eyebrow,
-  PortalCard,
-  PortalTitle,
-} from "@/components/portal/portal-primitives";
+  PageHeader,
+  WidgetCard,
+} from "@/components/portal/portal-ui";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { createClient } from "@/lib/supabase/server";
 
@@ -20,12 +18,8 @@ export default async function ProfilePage() {
 
   return (
     <div className="mx-auto w-full max-w-xl space-y-6">
-      <div>
-        <Eyebrow>Account</Eyebrow>
-        <PortalTitle className="mt-2">Profile</PortalTitle>
-        <BronzeRule className="mt-4" />
-      </div>
-      <PortalCard className="space-y-3 p-6 font-[Arial,Helvetica,sans-serif] text-sm">
+      <PageHeader eyebrow="Account" title="Profile" />
+      <WidgetCard className="space-y-3 text-sm">
         <Row label="Email" value={session.user.email ?? "—"} />
         <Row label="First name" value={profile?.first_name ?? "—"} />
         <Row label="Last name" value={profile?.last_name ?? "—"} />
@@ -38,18 +32,18 @@ export default async function ProfilePage() {
               : "—"
           }
         />
-      </PortalCard>
+      </WidgetCard>
     </div>
   );
 }
 
 function Row({ label, value }: { label: string; value: string }) {
   return (
-    <div className="flex justify-between gap-4 border-b border-border pb-2">
-      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-muted-foreground">
+    <div className="flex justify-between gap-4 border-b border-neutral-100 pb-3 last:border-0 last:pb-0">
+      <span className="text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-500">
         {label}
       </span>
-      <span className="text-right text-foreground">{value}</span>
+      <span className="text-right text-neutral-900">{value}</span>
     </div>
   );
 }

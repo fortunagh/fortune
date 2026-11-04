@@ -22,15 +22,8 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Cinzel } from "next/font/google";
 import Link from "next/link";
 import { useState } from "react";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
 
 export function ForgotPasswordForm({
   className,
@@ -48,7 +41,6 @@ export function ForgotPasswordForm({
     setError(null);
 
     try {
-      // The url which will be included in the email. This URL needs to be configured in your redirect URLs in the Supabase dashboard at https://supabase.com/dashboard/project/_/auth/url-configuration
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/auth/update-password`,
       });
@@ -66,17 +58,13 @@ export function ForgotPasswordForm({
       {success ? (
         <Card className={authCardClass}>
           <CardHeader>
-            <CardTitle
-              className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
-            >
-              Check your email
-            </CardTitle>
+            <CardTitle className={authCardTitleClass}>Check your email</CardTitle>
             <CardDescription className={authCardDescriptionClass}>
               Password reset instructions sent
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <p className={`text-sm leading-relaxed ${authCardDescriptionClass}`}>
+            <p className={cn("text-sm leading-relaxed", authCardDescriptionClass)}>
               If you registered using your email and password, you will receive
               a password reset email.
             </p>
@@ -85,18 +73,14 @@ export function ForgotPasswordForm({
       ) : (
         <Card className={authCardClass}>
           <CardHeader>
-            <CardTitle
-              className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
-            >
-              Reset password
-            </CardTitle>
+            <CardTitle className={authCardTitleClass}>Reset password</CardTitle>
             <CardDescription className={authCardDescriptionClass}>
               We&apos;ll send a secure link to the address on file.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleForgotPassword}>
-              <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-5">
                 <div className="grid gap-2">
                   <Label htmlFor="email" className={authLabelClass}>
                     Email
@@ -104,7 +88,7 @@ export function ForgotPasswordForm({
                   <Input
                     id="email"
                     type="email"
-                    placeholder="m@example.com"
+                    placeholder="Enter your email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
@@ -121,7 +105,7 @@ export function ForgotPasswordForm({
                   {isLoading ? "Sending…" : "Send reset link"}
                 </Button>
               </div>
-              <div className={`mt-4 ${authFooterLineClass}`}>
+              <div className={cn("mt-5", authFooterLineClass)}>
                 Already have an account?{" "}
                 <Link href="/auth/login" className={authLinkClass}>
                   Sign in

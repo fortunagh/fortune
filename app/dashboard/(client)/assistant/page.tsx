@@ -1,9 +1,8 @@
 import {
-  BronzeRule,
-  Eyebrow,
-  PortalCard,
-  PortalTitle,
-} from "@/components/portal/portal-primitives";
+  PageHeader,
+  SoftNotice,
+  WidgetCard,
+} from "@/components/portal/portal-ui";
 import { AssistantPanel } from "@/components/portal/assistant-panel";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { getCaseForUser } from "@/lib/onboarding/case";
@@ -18,14 +17,17 @@ export default async function AssistantPage() {
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div>
-        <Eyebrow>Guides</Eyebrow>
-        <PortalTitle className="mt-2">Assistant</PortalTitle>
-        <BronzeRule className="mt-4" />
-      </div>
-      <PortalCard className="p-6">
+      <PageHeader
+        eyebrow="Guides"
+        title="Assistant"
+        description="Ask questions about your current onboarding step."
+      />
+      <SoftNotice>
+        The assistant will not ask for broker passwords or account credentials.
+      </SoftNotice>
+      <WidgetCard>
         <AssistantPanel stepKey={caseRow?.current_step_key ?? null} />
-      </PortalCard>
+      </WidgetCard>
     </div>
   );
 }

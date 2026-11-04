@@ -1,33 +1,32 @@
 import { cn } from "@/lib/utils";
 
-/** Card on hero-style background (light, readable) */
+/** Premium auth card — matches mockup floating panel */
 export const authCardClass = cn(
-  "border-[#e5dcc4]/90 bg-white/95 text-left text-neutral-900 shadow-[0_1px_0_rgba(0,0,0,0.04)]",
+  "rounded-2xl border border-black/[0.06] bg-white text-left text-neutral-900 shadow-[var(--portal-shadow)]",
 );
 
 export const authCardTitleClass = cn(
-  "text-[#111111]",
+  "font-display text-2xl font-normal tracking-tight text-neutral-950 sm:text-[1.75rem]",
 );
 
 export const authCardDescriptionClass = cn(
-  "text-neutral-600",
+  "text-sm leading-relaxed text-neutral-500",
 );
 
 export const authFooterLineClass = cn(
-  "text-left text-sm text-neutral-600",
+  "text-center text-sm text-neutral-500",
 );
 
 export const authLinkClass = cn(
-  "font-['Engravers_MT',sans-serif] text-sm text-neutral-800 underline-offset-4 hover:text-neutral-950 hover:underline",
+  "text-sm font-medium text-[#b8922e] underline-offset-4 transition-colors hover:text-[#9a7a22] hover:underline",
 );
 
 export const authLabelClass = cn(
-  "text-left text-[11px] font-semibold uppercase tracking-[0.12em] text-neutral-800",
+  "text-left text-sm font-medium text-neutral-700",
 );
 
 export const authInputClass = cn(
-  "text-left border-neutral-200/90 focus-visible:border-amber-600/40 focus-visible:ring-amber-700/25",
+  "h-11 rounded-xl border-neutral-200 bg-neutral-50/80 text-left text-sm shadow-none placeholder:text-neutral-400 focus-visible:border-[#c59d3f]/50 focus-visible:bg-white focus-visible:ring-[#c59d3f]/25",
 );
 
 export const authErrorTextClass = cn("text-left text-sm text-red-600");
-

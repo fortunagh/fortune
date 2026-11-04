@@ -1,4 +1,5 @@
 import { RequestAccessAdminTable } from "@/components/admin/request-access-admin-table";
+import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
 import { createClient } from "@/lib/supabase/server";
 import type { RequestAccessSubmissionRow } from "@/lib/types/request-access-submission";
 
@@ -22,17 +23,16 @@ export default async function AdminRequestAccessPage() {
   const rows = (data ?? []) as RequestAccessSubmissionRow[];
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-4">
-      <div>
-        <h2 className="text-xl font-semibold tracking-tight text-neutral-900 dark:text-neutral-50">
-          Request access
-        </h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Review leads from the public form. Open a row (or the eye icon) to see
-          the full registration, update status and notes, or delete records.
-        </p>
-      </div>
-      <RequestAccessAdminTable initialRows={rows} />
+    <div className="mx-auto w-full max-w-6xl space-y-6">
+      <PageHeader
+        title="Request access"
+        description="Review leads from the public form. Open a row to see the full registration, update status and notes, or delete records."
+      />
+      <WidgetCard className="overflow-x-auto p-0 sm:p-0">
+        <div className="p-4 sm:p-5">
+          <RequestAccessAdminTable initialRows={rows} />
+        </div>
+      </WidgetCard>
     </div>
   );
 }

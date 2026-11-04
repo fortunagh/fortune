@@ -60,7 +60,7 @@ export function AdminContentForms({
     <div className="space-y-10">
       {message ? <p className="text-sm text-primary">{message}</p> : null}
 
-      <section className="space-y-4 border border-border p-5">
+      <section className="space-y-4 rounded-xl border border-neutral-200 p-5">
         <h3 className="text-xs font-semibold uppercase tracking-[0.14em]">
           Add resource
         </h3>
@@ -88,14 +88,14 @@ export function AdminContentForms({
         >
           <div className="space-y-1">
             <Label>Title</Label>
-            <Input name="title" required className="rounded-none" />
+            <Input name="title" required className="rounded-xl" />
           </div>
           <div className="space-y-1">
             <Label>Kind</Label>
             <select
               name="kind"
               defaultValue="pdf"
-              className="flex h-9 w-full rounded-none border border-input bg-transparent px-3 text-sm"
+              className="flex h-9 w-full rounded-xl border border-input bg-transparent px-3 text-sm"
             >
               <option value="pdf">PDF</option>
               <option value="video">Video</option>
@@ -104,14 +104,14 @@ export function AdminContentForms({
           </div>
           <div className="space-y-1 sm:col-span-2">
             <Label>External URL</Label>
-            <Input name="externalUrl" className="rounded-none" />
+            <Input name="externalUrl" className="rounded-xl" />
           </div>
           <div className="space-y-1 sm:col-span-2">
             <Label>Related step keys (comma-separated)</Label>
             <Input
               name="relatedStepKeys"
               placeholder="vps_setup,demo_install"
-              className="rounded-none"
+              className="rounded-xl"
             />
           </div>
           <label className="flex items-center gap-2 text-sm">
@@ -124,14 +124,14 @@ export function AdminContentForms({
 
         <ul className="space-y-2 text-sm">
           {resources.map((r) => (
-            <li key={r.id} className="border-b border-border py-2">
+            <li key={r.id} className="border-b border-neutral-100 py-2">
               {r.title} · {r.kind} · {r.published ? "published" : "draft"}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="space-y-4 border border-border p-5">
+      <section className="space-y-4 rounded-xl border border-neutral-200 p-5">
         <h3 className="text-xs font-semibold uppercase tracking-[0.14em]">
           Add broker
         </h3>
@@ -154,15 +154,15 @@ export function AdminContentForms({
         >
           <div className="space-y-1 sm:col-span-2">
             <Label>Name</Label>
-            <Input name="name" required className="rounded-none" />
+            <Input name="name" required className="rounded-xl" />
           </div>
           <div className="space-y-1">
             <Label>Referral URL</Label>
-            <Input name="referralUrl" className="rounded-none" />
+            <Input name="referralUrl" className="rounded-xl" />
           </div>
           <div className="space-y-1">
             <Label>Secure portal URL</Label>
-            <Input name="securePortalUrl" className="rounded-none" />
+            <Input name="securePortalUrl" className="rounded-xl" />
           </div>
           <Button type="submit" variant="fortuna">
             Add broker
@@ -170,14 +170,14 @@ export function AdminContentForms({
         </form>
         <ul className="space-y-2 text-sm">
           {brokers.map((b) => (
-            <li key={b.id} className="border-b border-border py-2">
+            <li key={b.id} className="border-b border-neutral-100 py-2">
               {b.name}
             </li>
           ))}
         </ul>
       </section>
 
-      <section className="space-y-3 border border-border p-5">
+      <section className="space-y-3 rounded-xl border border-neutral-200 p-5">
         <h3 className="text-xs font-semibold uppercase tracking-[0.14em]">
           Reminder rules
         </h3>
@@ -195,7 +195,7 @@ export function AdminContentForms({
         </p>
       </section>
 
-      <section className="space-y-3 border border-border p-5">
+      <section className="space-y-3 rounded-xl border border-neutral-200 p-5">
         <h3 className="text-xs font-semibold uppercase tracking-[0.14em]">
           Step catalogue
         </h3>

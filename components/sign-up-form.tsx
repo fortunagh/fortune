@@ -22,16 +22,9 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Cinzel } from "next/font/google";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
 
 export function SignUpForm({
   className,
@@ -77,18 +70,18 @@ export function SignUpForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card className={authCardClass}>
         <CardHeader>
-          <CardTitle
-            className={`${cinzel.className} text-2xl font-semibold tracking-wide ${authCardTitleClass}`}
-          >
-            Sign up
-          </CardTitle>
+          <CardTitle className={authCardTitleClass}>Create account</CardTitle>
           <CardDescription className={authCardDescriptionClass}>
-            Create your credentials. Entry is considered.
+            Prefer{" "}
+            <Link href="/" className={authLinkClass}>
+              Request Access
+            </Link>{" "}
+            for onboarding invitations.
           </CardDescription>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSignUp}>
-            <div className="flex flex-col gap-6">
+            <div className="flex flex-col gap-5">
               <div className="grid gap-2">
                 <Label htmlFor="email" className={authLabelClass}>
                   Email
@@ -96,7 +89,7 @@ export function SignUpForm({
                 <Input
                   id="email"
                   type="email"
-                  placeholder="m@example.com"
+                  placeholder="Enter your email"
                   required
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -139,7 +132,7 @@ export function SignUpForm({
                 {isLoading ? "Creating account…" : "Create account"}
               </Button>
             </div>
-            <div className={`mt-4 ${authFooterLineClass}`}>
+            <div className={cn("mt-5", authFooterLineClass)}>
               Already have an account?{" "}
               <Link href="/auth/login" className={authLinkClass}>
                 Sign in

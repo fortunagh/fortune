@@ -1,4 +1,5 @@
-import { AdminContentForms } from "@/components/admin/admin-content-forms";
+import { AdminContentForms } from "@/components/admin/admin-content-panel";
+import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminContentPage() {
@@ -16,18 +17,18 @@ export default async function AdminContentPage() {
 
   return (
     <div className="mx-auto w-full max-w-4xl space-y-8">
-      <div>
-        <h2 className="font-display text-2xl tracking-tight">Content</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Guides, brokers, reminder timing, and step link configuration.
-        </p>
-      </div>
-      <AdminContentForms
-        resources={resources ?? []}
-        brokers={brokers ?? []}
-        reminderRules={rules ?? []}
-        steps={steps ?? []}
+      <PageHeader
+        title="Content"
+        description="Guides, brokers, reminder timing, and step link configuration."
       />
+      <WidgetCard>
+        <AdminContentForms
+          resources={resources ?? []}
+          brokers={brokers ?? []}
+          reminderRules={rules ?? []}
+          steps={steps ?? []}
+        />
+      </WidgetCard>
     </div>
   );
 }

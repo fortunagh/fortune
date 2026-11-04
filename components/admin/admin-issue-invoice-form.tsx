@@ -54,7 +54,7 @@ export function AdminIssueInvoiceForm({ userIds }: { userIds: string[] }) {
         <Input
           name="userId"
           required
-          className="rounded-none font-mono text-xs"
+          className="rounded-xl font-mono text-xs"
           list="completed-users"
           placeholder="uuid"
         />
@@ -71,25 +71,25 @@ export function AdminIssueInvoiceForm({ userIds }: { userIds: string[] }) {
           type="number"
           step="0.01"
           min="0"
-          className="rounded-none"
+          className="rounded-xl"
           placeholder="e.g. 10"
         />
       </div>
       <div className="space-y-1">
         <Label>Amount cents (optional override)</Label>
-        <Input name="amountCents" type="number" className="rounded-none" />
+        <Input name="amountCents" type="number" className="rounded-xl" />
       </div>
       <div className="space-y-1">
         <Label>Period start</Label>
-        <Input name="periodStart" type="date" required className="rounded-none" />
+        <Input name="periodStart" type="date" required className="rounded-xl" />
       </div>
       <div className="space-y-1">
         <Label>Period end</Label>
-        <Input name="periodEnd" type="date" required className="rounded-none" />
+        <Input name="periodEnd" type="date" required className="rounded-xl" />
       </div>
       <div className="space-y-1">
         <Label>Currency</Label>
-        <Input name="currency" defaultValue="usd" className="rounded-none" />
+        <Input name="currency" defaultValue="usd" className="rounded-xl" />
       </div>
       <div className="flex items-end">
         <Button type="submit" variant="fortuna" disabled={busy}>

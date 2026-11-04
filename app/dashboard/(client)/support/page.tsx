@@ -1,9 +1,7 @@
 import {
-  BronzeRule,
-  Eyebrow,
-  PortalCard,
-  PortalTitle,
-} from "@/components/portal/portal-primitives";
+  PageHeader,
+  WidgetCard,
+} from "@/components/portal/portal-ui";
 import { SupportComposer } from "@/components/portal/support-composer";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { createClient } from "@/lib/supabase/server";
@@ -26,25 +24,27 @@ export default async function SupportPage({
 
   return (
     <div className="mx-auto w-full max-w-3xl space-y-6">
-      <div>
-        <Eyebrow>Support</Eyebrow>
-        <PortalTitle className="mt-2">I need help</PortalTitle>
-        <BronzeRule className="mt-4" />
-      </div>
+      <PageHeader
+        eyebrow="Support"
+        title="I need help"
+        description="Software help without sharing broker credentials."
+      />
 
-      <PortalCard className="p-6">
+      <WidgetCard>
         <SupportComposer stepKey={step ?? null} />
-      </PortalCard>
+      </WidgetCard>
 
       <div className="space-y-3">
         {(requests ?? []).map((r) => (
-          <PortalCard key={r.id} className="p-4">
-            <p className="font-[Arial,Helvetica,sans-serif] text-[10px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+          <WidgetCard key={r.id}>
+            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
               {r.status}
               {r.step_key ? ` · ${r.step_key}` : ""}
             </p>
-            <p className="mt-2 text-sm leading-relaxed">{r.body}</p>
-          </PortalCard>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-800">
+              {r.body}
+            </p>
+          </WidgetCard>
         ))}
       </div>
     </div>

@@ -1,63 +1,117 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BookOpen, Headset, Layers } from "lucide-react";
 
-import "@/components/landing/fortuna.css";
 import { fortunaDisplayClass, fortunaUiClass } from "@/lib/fonts/fortuna";
 import { cn } from "@/lib/utils";
 
-/** Fortuna auth shell — paper/ink, header logo, no Cinzel / hero-banner. */
+const features = [
+  {
+    icon: Layers,
+    title: "Guided Onboarding",
+    body: "A step-by-step setup to take you live",
+  },
+  {
+    icon: BookOpen,
+    title: "Your Resources",
+    body: "Guides, videos, and documentation",
+  },
+  {
+    icon: Headset,
+    title: "Dedicated Support",
+    body: "Get help from our specialist team",
+  },
+] as const;
+
+/** Two-column premium auth shell — light mockup. Marketing homepage unchanged. */
 export function AuthVaultShell({ children }: { children: React.ReactNode }) {
   return (
     <section
-      className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-[hsl(var(--fortuna-paper))] text-[hsl(var(--fortuna-ink))] dark:bg-background dark:text-foreground"
+      className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-[#f7f6f2] text-neutral-950"
       aria-label="Fortuna authentication"
     >
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-0 opacity-[0.12]"
-        style={{
-          backgroundImage: "url('/fortuna/artwork-plate.png')",
-          backgroundPosition: "center top",
-          backgroundRepeat: "no-repeat",
-          backgroundSize: "min(1400px, 180%) auto",
-        }}
+        className="pointer-events-none absolute -bottom-24 -left-16 h-72 w-72 rounded-full bg-[radial-gradient(circle,rgba(197,157,63,0.18),transparent_70%)]"
       />
-      <div className="relative z-10 mx-auto flex min-h-[100dvh] w-full max-w-lg flex-col items-center justify-center px-5 py-12">
-        <Link href="/" className="mb-8 inline-flex flex-col items-center gap-2">
-          <Image
-            src="/fortuna/logo-header.png"
-            alt="Fortuna Global Holdings — Building Infinite Abundance"
-            width={280}
-            height={72}
-            priority
-            unoptimized
-            className="h-auto w-[min(220px,70vw)]"
-          />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-8 -right-20 h-80 w-80 rounded-full bg-[radial-gradient(circle,rgba(168,77,11,0.1),transparent_70%)]"
+      />
+
+      <div className="relative z-10 mx-auto grid min-h-[100dvh] w-full max-w-6xl gap-10 px-5 py-10 lg:grid-cols-2 lg:items-center lg:gap-16 lg:px-10 lg:py-16">
+        <aside className="order-2 flex flex-col justify-center lg:order-1">
+          <Link href="/" className="mb-10 inline-flex w-fit">
+            <Image
+              src="/fortuna/logo-header.png"
+              alt="Fortuna Global Holdings"
+              width={220}
+              height={56}
+              priority
+              unoptimized
+              className="h-auto w-[min(200px,55vw)]"
+            />
+          </Link>
+
           <p
             className={cn(
               fortunaUiClass,
-              "text-[10px] font-semibold uppercase tracking-[0.2em] text-[hsl(var(--fortuna-bronze))]",
+              "mb-3 text-[11px] font-semibold uppercase tracking-[0.22em] text-[#b8922e]",
             )}
           >
-            Private access
+            Client Portal
           </p>
-        </Link>
-
-        <div className="w-full border border-[hsl(var(--fortuna-hairline)/0.4)] bg-[hsl(var(--fortuna-paper)/0.95)] p-6 shadow-none dark:border-border dark:bg-card sm:p-8">
-          {children}
-        </div>
-
-        <p className="mt-8 w-full text-left">
-          <Link
-            href="/"
+          <div className="mb-4 h-px w-10 bg-[#c59d3f]" aria-hidden />
+          <h1
             className={cn(
               fortunaDisplayClass,
-              "text-sm text-[hsl(var(--fortuna-ink))] underline-offset-4 transition-colors hover:text-[hsl(var(--fortuna-bronze))] hover:underline dark:text-foreground",
+              "text-4xl leading-[1.1] tracking-tight text-neutral-950 sm:text-5xl",
             )}
           >
-            ← Return to Fortuna
-          </Link>
-        </p>
+            Client Portal
+          </h1>
+          <p
+            className={cn(
+              fortunaUiClass,
+              "mt-4 max-w-md text-base leading-relaxed text-neutral-600",
+            )}
+          >
+            Access your account, continue your onboarding, and manage your
+            journey with Fortuna.
+          </p>
+
+          <ul className="mt-10 space-y-5">
+            {features.map(({ icon: Icon, title, body }) => (
+              <li key={title} className="flex gap-4">
+                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-[hsl(var(--portal-gold-soft))] text-[#a8842a]">
+                  <Icon className="h-5 w-5" aria-hidden />
+                </span>
+                <div>
+                  <p
+                    className={cn(
+                      fortunaUiClass,
+                      "text-sm font-semibold text-neutral-900",
+                    )}
+                  >
+                    {title}
+                  </p>
+                  <p
+                    className={cn(
+                      fortunaUiClass,
+                      "mt-0.5 text-sm text-neutral-500",
+                    )}
+                  >
+                    {body}
+                  </p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </aside>
+
+        <div className="order-1 flex w-full items-center justify-center lg:order-2">
+          <div className="w-full max-w-md">{children}</div>
+        </div>
       </div>
     </section>
   );
