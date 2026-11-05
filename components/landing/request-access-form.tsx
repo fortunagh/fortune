@@ -23,6 +23,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { PhoneCountryPicker } from "@/components/landing/phone-country-picker";
+import { SmsConsentBlock } from "@/components/landing/sms-consent-block";
 import { cn } from "@/lib/utils";
 import {
   REQUEST_ACCESS_STEP_COUNT,
@@ -89,6 +90,7 @@ const defaultValues: RequestAccessFormValues = {
   platformInterest: "",
   preferredContactMethod:
     undefined as unknown as RequestAccessFormValues["preferredContactMethod"],
+  smsOptIn: false,
 };
 
 function useTimeZoneOptions(): string[] {
@@ -470,6 +472,22 @@ export function RequestAccessFormPanel({
                         {form.formState.errors.phoneCountryIso2.message}
                       </p>
                     ) : null}
+                  </FormItem>
+                )}
+              />
+              <FormField
+                control={form.control}
+                name="smsOptIn"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormControl>
+                      <SmsConsentBlock
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                        id="request-access-sms-opt-in"
+                      />
+                    </FormControl>
+                    <FormMessage className={formMessageClass} />
                   </FormItem>
                 )}
               />

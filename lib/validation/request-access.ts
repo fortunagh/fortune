@@ -86,6 +86,8 @@ const baseFields = {
     .trim()
     .min(20, "Please write at least 20 characters")
     .max(2000, "Too long"),
+  /** Optional SMS program consent; defaults unchecked via form defaultValues. */
+  smsOptIn: z.boolean(),
 };
 
 export const requestAccessFormSchema = z
@@ -107,6 +109,7 @@ export const requestAccessStepSchemas = [
       mobileNumber: baseFields.mobileNumber,
       email: baseFields.email,
       city: baseFields.city,
+      smsOptIn: baseFields.smsOptIn,
     })
     .superRefine(refinePhone),
   z.object({

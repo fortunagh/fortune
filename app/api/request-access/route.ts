@@ -68,7 +68,7 @@ export async function POST(request: Request) {
     ? await createClient()
     : resolved.client;
 
-  const { error } = await supabase.from("request_access_submissions").insert({
+  const baseRow = {
     first_name: values.firstName.trim(),
     last_name: values.lastName.trim(),
     referral_source: values.referralSource.trim(),
@@ -82,7 +82,22 @@ export async function POST(request: Request) {
     preferred_contact_method: values.preferredContactMethod,
     occupation_or_business: values.occupationOrBusiness.trim(),
     platform_interest: values.platformInterest.trim(),
+  };
+
+  let { error } = await supabase.from("request_access_submissions").insert({
+    ...baseRow,
+    sms_opt_in: values.smsOptIn === true,
   });
+
+  // Column may not exist until sms_opt_in migration is applied.
+  if (
+    error &&
+    /sms_opt_in/i.test(`${error.message} ${error.details ?? ""} ${error.hint ?? ""}`)
+  ) {
+    ({ error } = await supabase
+      .from("request_access_submissions")
+      .insert(baseRow));
+  }
 
   if (error) {
     console.error("request_access insert error", {

@@ -8,6 +8,7 @@ import * as React from "react";
 import { useForm } from "react-hook-form";
 
 import { PhoneCountryPicker } from "@/components/landing/phone-country-picker";
+import { SmsConsentBlock } from "@/components/landing/sms-consent-block";
 import {
   Form,
   FormControl,
@@ -105,6 +106,7 @@ const defaultValues: RequestAccessFormValues = {
   platformInterest: "",
   preferredContactMethod:
     undefined as unknown as RequestAccessFormValues["preferredContactMethod"],
+  smsOptIn: false,
 };
 
 function useTimeZoneOptions(): string[] {
@@ -539,6 +541,22 @@ export function OnboardingWizard() {
                                 }
                               </p>
                             ) : null}
+                          </FormItem>
+                        )}
+                      />
+                      <FormField
+                        control={form.control}
+                        name="smsOptIn"
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormControl>
+                              <SmsConsentBlock
+                                checked={field.value}
+                                onCheckedChange={field.onChange}
+                                id="onboarding-sms-opt-in"
+                              />
+                            </FormControl>
+                            <FormMessage className={formMessageClass} />
                           </FormItem>
                         )}
                       />

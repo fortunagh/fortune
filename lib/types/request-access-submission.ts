@@ -21,6 +21,8 @@ export type RequestAccessSubmissionRow = {
   preferred_contact_method: "whatsapp" | "email" | "zoom" | "text";
   occupation_or_business: string;
   platform_interest: string;
+  /** Present after migration `20261105150000_request_access_sms_opt_in.sql` */
+  sms_opt_in?: boolean;
   /** Present after migration `20260330140000_profiles_roles_admin_rls.sql` */
   status?: RequestAccessStatus;
   admin_notes?: string | null;
