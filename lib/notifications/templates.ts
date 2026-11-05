@@ -1,18 +1,12 @@
 import { getStepDef } from "@/lib/onboarding/steps";
 
+import { wrapFortunaEmail } from "./email-layout";
+
 export type EmailTemplate = {
   subject: string;
   html: string;
   text: string;
 };
-
-function wrap(firstName: string, bodyHtml: string, bodyText: string): EmailTemplate {
-  return {
-    subject: "",
-    html: `<p>Hi ${firstName},</p>${bodyHtml}<p>Fortuna Global Holdings</p>`,
-    text: `Hi ${firstName},\n\n${bodyText}\n\nFortuna Global Holdings`,
-  };
-}
 
 export function renderNextStepEmail(options: {
   firstName: string;
@@ -115,27 +109,40 @@ export function renderNextStepEmail(options: {
   };
 
   const link = `${portalUrl.replace(/\/$/, "")}/dashboard/steps/${stepKey}`;
-  const tpl = wrap(
+  const { html, text } = wrapFortunaEmail({
     firstName,
-    `<p>${entry.intro}</p><p><a href="${link}">${entry.cta}</a></p>`,
-    `${entry.intro}\n\n${entry.cta}: ${link}`,
-  );
-  tpl.subject = entry.subject;
-  return tpl;
+    previewText: entry.subject,
+    bodyHtml: `<p style="margin:0 0 12px">${entry.intro}</p>`,
+    bodyText: entry.intro,
+    ctaLabel: entry.cta,
+    ctaUrl: link,
+  });
+
+  return { subject: entry.subject, html, text };
 }
 
+/** Branded set-password email after admin approval. */
 export function renderAccessApprovedEmail(options: {
   firstName: string;
   activateUrl: string;
 }): EmailTemplate {
   const { firstName, activateUrl } = options;
-  const tpl = wrap(
+  const { html, text } = wrapFortunaEmail({
     firstName,
-    `<p>Your Fortuna access has been approved. Use the link below to activate your account and begin onboarding.</p><p><a href="${activateUrl}">Activate my Fortuna account</a></p>`,
-    `Your Fortuna access has been approved. Use the link below to activate your account and begin onboarding.\n\nActivate my Fortuna account: ${activateUrl}`,
-  );
-  tpl.subject = "Your Fortuna access is ready";
-  return tpl;
+    previewText: "Set your Fortuna password",
+    bodyHtml: `<p style="margin:0 0 12px">Your Fortuna access has been approved. Set your password with the button below, then sign in to complete your onboarding payment and setup steps.</p>
+<p style="margin:0;color:#737373;font-size:13px">This link expires for security. If it no longer works, contact support@fortunaglobal.com.</p>`,
+    bodyText:
+      "Your Fortuna access has been approved. Set your password with the link below, then sign in to complete your onboarding payment and setup steps.",
+    ctaLabel: "Set your Fortuna password",
+    ctaUrl: activateUrl,
+  });
+
+  return {
+    subject: "Set your Fortuna password",
+    html,
+    text,
+  };
 }
 
 export function renderInvoiceEmail(options: {
@@ -150,18 +157,24 @@ export function renderInvoiceEmail(options: {
   invoiceUrl: string;
 }): EmailTemplate {
   const o = options;
-  const tpl = wrap(
-    o.firstName,
-    `<p>Your Fortuna invoice for <strong>${o.billingMonth}</strong> is ready. It covers software usage fees for <strong>${o.periodStart} to ${o.periodEnd}</strong>.</p>
-<ul>
+  const { html, text } = wrapFortunaEmail({
+    firstName: o.firstName,
+    previewText: `Invoice ${o.invoiceNumber}`,
+    bodyHtml: `<p style="margin:0 0 12px">Your Fortuna invoice for <strong>${o.billingMonth}</strong> is ready. It covers software usage fees for <strong>${o.periodStart} to ${o.periodEnd}</strong>.</p>
+<ul style="margin:0 0 12px;padding-left:18px">
 <li>Invoice number — ${o.invoiceNumber}</li>
 <li>Amount due — ${o.amount} ${o.currency}</li>
 <li>Payment due — ${o.dueDate}</li>
 </ul>
-<p><a href="${o.invoiceUrl}">View invoice and payment instructions</a></p>
-<p>If you have a question about this invoice, reply to this email and include your invoice number.</p>`,
-    `Your Fortuna invoice for ${o.billingMonth} is ready.\nInvoice number — ${o.invoiceNumber}\nAmount due — ${o.amount} ${o.currency}\nPayment due — ${o.dueDate}\n\n${o.invoiceUrl}`,
-  );
-  tpl.subject = `Fortuna software usage invoice | ${o.billingMonth}`;
-  return tpl;
+<p style="margin:0;color:#737373;font-size:13px">If you have a question about this invoice, reply to this email and include your invoice number.</p>`,
+    bodyText: `Your Fortuna invoice for ${o.billingMonth} is ready.\nInvoice number — ${o.invoiceNumber}\nAmount due — ${o.amount} ${o.currency}\nPayment due — ${o.dueDate}`,
+    ctaLabel: "View invoice and pay",
+    ctaUrl: o.invoiceUrl,
+  });
+
+  return {
+    subject: `Fortuna software usage invoice | ${o.billingMonth}`,
+    html,
+    text,
+  };
 }

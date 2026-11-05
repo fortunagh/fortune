@@ -24,6 +24,9 @@ export default async function AssistantPage() {
       />
       <SoftNotice>
         The assistant will not ask for broker passwords or account credentials.
+        {!process.env.OPENAI_API_KEY
+          ? " The AI assistant is not configured yet — use Resources or I need help for support."
+          : null}
       </SoftNotice>
       <WidgetCard>
         <AssistantPanel stepKey={caseRow?.current_step_key ?? null} />

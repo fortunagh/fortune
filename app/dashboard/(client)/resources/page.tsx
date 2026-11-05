@@ -42,7 +42,9 @@ export default async function ResourcesPage({
             No guides published yet
           </p>
           <PortalMuted className="mt-2">
-            EA, VPS, Equity Protect and MT5 mobile guides will appear here.
+            EA, VPS (tag step key <span className="font-mono">vps_setup</span>),
+            Equity Protect and MT5 mobile guides will appear here once Fortuna
+            publishes them in Admin → Content.
           </PortalMuted>
         </WidgetCard>
       ) : filtered.length === 0 ? (

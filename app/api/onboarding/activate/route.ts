@@ -2,8 +2,10 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
-import { bootstrapOnboardingCase } from "@/lib/onboarding/case";
-import { activateInvitation } from "@/lib/onboarding/invite";
+import {
+  activateInvitation,
+  finalizeInviteAfterPassword,
+} from "@/lib/onboarding/invite";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 
 const bodySchema = z.object({
@@ -42,12 +44,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true });
   }
 
-  await bootstrapOnboardingCase(admin, session.user.id);
-  await admin
-    .from("profiles")
-    .update({ activated_at: new Date().toISOString() })
-    .eq("id", session.user.id)
-    .is("activated_at", null);
-
+  await finalizeInviteAfterPassword(admin, session.user.id);
   return NextResponse.json({ ok: true });
 }

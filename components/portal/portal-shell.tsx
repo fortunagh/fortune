@@ -120,14 +120,10 @@ export function PortalShell({
               item.matchPrefix,
             );
             const Icon = item.icon;
-            const href =
-              item.href === "/dashboard/steps"
-                ? "/dashboard"
-                : item.href;
             return (
               <Link
                 key={item.label}
-                href={href}
+                href={item.href}
                 className={cn(
                   "flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium transition-colors",
                   active
@@ -237,13 +233,12 @@ export function PortalShell({
             <nav className="flex flex-col gap-1">
               {mainNav.map((item) => {
                 const Icon = item.icon;
-                const href =
-                  item.href === "/dashboard/steps" ? "/dashboard" : item.href;
                 return (
                   <Link
                     key={item.label}
-                    href={href}
+                    href={item.href}
                     className="flex min-h-11 items-center gap-3 rounded-xl px-3 text-sm font-medium text-neutral-700"
+                    onClick={() => setMobileMenu(false)}
                   >
                     <Icon className="h-4 w-4" />
                     {item.label}
@@ -272,12 +267,10 @@ export function PortalShell({
               item.matchPrefix,
             );
             const Icon = item.icon;
-            const href =
-              item.href === "/dashboard/steps" ? "/dashboard" : item.href;
             return (
               <li key={item.label} className="flex-1">
                 <Link
-                  href={href}
+                  href={item.href}
                   className={cn(
                     "flex flex-col items-center gap-0.5 rounded-2xl px-1 py-1.5 text-[10px] font-semibold",
                     active ? "text-[#a8842a]" : "text-neutral-500",

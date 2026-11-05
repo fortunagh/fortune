@@ -218,18 +218,28 @@ export default async function StepPage({
         )}
 
         {stepKey === "vps_setup" ? (
-          <SoftNotice>
-            Affiliate signup:{" "}
+          <WidgetCard>
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              What is a VPS?
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-neutral-700">
+              A VPS (Virtual Private Server) is a remote Windows computer that
+              stays online so MetaTrader 5 and your Fortuna EA can run 24/7.
+              Fortuna uses ForexVPS for this setup — not your laptop.
+            </p>
+            <p className="mt-3 text-sm text-neutral-600">
+              Sign up via the affiliate link, follow the PDF/video guides below
+              (when published), then confirm when your VPS is ready.
+            </p>
             <a
-              className="font-medium text-[#a8842a] underline"
+              className="mt-4 inline-flex text-sm font-semibold text-[#a8842a] underline"
               href={DEFAULT_LINKS.forexVps}
               target="_blank"
               rel="noreferrer"
             >
-              ForexVPS
+              Sign up to ForexVPS
             </a>
-            . VPS setup PDF/video are admin-uploadable resources.
-          </SoftNotice>
+          </WidgetCard>
         ) : null}
 
         {!locked &&

@@ -1,4 +1,4 @@
-import { CustomerDashboardSkeleton } from "@/components/admin/admin-skeletons";
+import { CustomerDashboardSkeleton } from "@/components/portal/portal-skeletons";
 
 export default function DashboardLoading() {
   return <CustomerDashboardSkeleton />;

@@ -18,12 +18,12 @@ import {
 import { Button } from "@/components/ui/button";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import {
-  bootstrapOnboardingCase,
   demoDaysElapsed,
   getCaseForUser,
   readinessUnlocked,
 } from "@/lib/onboarding/case";
 import { requireRequest } from "@/lib/onboarding/connection";
+import { finalizeInviteAfterPassword } from "@/lib/onboarding/invite";
 import { getStepDef, ONBOARDING_STEPS } from "@/lib/onboarding/steps";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
@@ -37,29 +37,30 @@ export default async function ClientHomePage() {
   const supabase = await createClient();
   let { caseRow, states } = await getCaseForUser(supabase, session.user.id);
 
-  if (!caseRow) {
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("first_name, activated_at")
+    .eq("id", session.user.id)
+    .maybeSingle();
+
+  // Only bootstrap when the user completed invite / set-password activation.
+  if (!caseRow && profile?.activated_at) {
     try {
       const admin = createServiceRoleClient();
-      await bootstrapOnboardingCase(admin, session.user.id);
+      await finalizeInviteAfterPassword(admin, session.user.id);
       ({ caseRow, states } = await getCaseForUser(supabase, session.user.id));
     } catch {
       /* empty */
     }
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("first_name")
-    .eq("id", session.user.id)
-    .maybeSingle();
-
   if (!caseRow) {
     return (
       <WidgetCard className="mx-auto max-w-lg text-center">
         <PortalPageTitle className="text-2xl">Activation pending</PortalPageTitle>
         <PortalMuted className="mt-2">
-          Your onboarding case will appear after your Fortuna invitation is
-          activated.
+          Your onboarding case will appear after you set your password from the
+          Fortuna invitation email and sign in.
         </PortalMuted>
       </WidgetCard>
     );
@@ -171,12 +172,10 @@ export default async function ClientHomePage() {
           <JourneyTimeline
             states={railStates}
             currentKey={currentKey}
-            limit={8}
+            limit={10}
           />
           <Button asChild variant="outline" className="mt-2 w-full rounded-xl">
-            <Link href={currentKey ? `/dashboard/steps/${currentKey}` : "/dashboard"}>
-              View all {total} steps
-            </Link>
+            <Link href="/dashboard/steps">View all {total} steps</Link>
           </Button>
         </WidgetCard>
 

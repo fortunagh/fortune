@@ -3,6 +3,7 @@ import {
   WidgetCard,
 } from "@/components/portal/portal-ui";
 import { SupportComposer } from "@/components/portal/support-composer";
+import { Badge } from "@/components/ui/badge";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { createClient } from "@/lib/supabase/server";
 
@@ -37,10 +38,19 @@ export default async function SupportPage({
       <div className="space-y-3">
         {(requests ?? []).map((r) => (
           <WidgetCard key={r.id}>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-neutral-500">
-              {r.status}
-              {r.step_key ? ` · ${r.step_key}` : ""}
-            </p>
+            <div className="flex flex-wrap items-center gap-2">
+              <Badge
+                variant="outline"
+                className="rounded-full border-neutral-200 uppercase"
+              >
+                {r.status}
+              </Badge>
+              {r.step_key ? (
+                <span className="font-mono text-xs text-neutral-500">
+                  {r.step_key}
+                </span>
+              ) : null}
+            </div>
             <p className="mt-2 text-sm leading-relaxed text-neutral-800">
               {r.body}
             </p>

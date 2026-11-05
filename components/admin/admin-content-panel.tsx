@@ -110,7 +110,7 @@ export function AdminContentForms({
             <Label>Related step keys (comma-separated)</Label>
             <Input
               name="relatedStepKeys"
-              placeholder="vps_setup,demo_install"
+              placeholder="vps_setup,demo_install (use vps_setup for VPS PDF/video)"
               className="rounded-xl"
             />
           </div>

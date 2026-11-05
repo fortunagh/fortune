@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { Suspense } from "react";
 
 import { PortalShell } from "@/components/portal/portal-shell";
-import { CustomerDashboardSkeleton } from "@/components/admin/admin-skeletons";
+import { CustomerDashboardSkeleton } from "@/components/portal/portal-skeletons";
 import { getSessionProfile } from "@/lib/auth/get-session-profile";
 import { requireRequest } from "@/lib/onboarding/connection";
 import { createClient } from "@/lib/supabase/server";

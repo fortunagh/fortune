@@ -16,11 +16,25 @@ export function PaymentToast() {
   useEffect(() => {
     if (!paid && !cancelled) return;
     setVisible(true);
+
+    // Refresh so Stripe webhook completion is reflected in the dashboard.
+    router.refresh();
+    const refreshTimers = paid
+      ? [1500, 3500].map((ms) =>
+          window.setTimeout(() => router.refresh(), ms),
+        )
+      : [];
+
     const t = window.setTimeout(() => {
       setVisible(false);
       router.replace("/dashboard");
-    }, 2000);
-    return () => window.clearTimeout(t);
+      router.refresh();
+    }, 2500);
+
+    return () => {
+      window.clearTimeout(t);
+      refreshTimers.forEach((id) => window.clearTimeout(id));
+    };
   }, [paid, cancelled, router]);
 
   if (!visible || (!paid && !cancelled)) return null;

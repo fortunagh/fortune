@@ -170,11 +170,17 @@ export function StepActionBar({
           <Link href={`/dashboard/support?step=${stepKey}`}>I need help</Link>
         </Button>
         {stepKey === "vps_setup" ? (
-          <Button asChild variant="secondary" className="rounded-xl">
-            <a href={DEFAULT_LINKS.forexVps} target="_blank" rel="noreferrer">
-              Sign up to ForexVPS
-            </a>
-          </Button>
+          <>
+            <p className="w-full text-sm leading-relaxed text-neutral-600">
+              A VPS is a remote Windows PC that keeps MT5 and your Fortuna EA
+              running 24/7. Use ForexVPS, then confirm when it is ready.
+            </p>
+            <Button asChild variant="secondary" className="rounded-xl">
+              <a href={DEFAULT_LINKS.forexVps} target="_blank" rel="noreferrer">
+                Sign up to ForexVPS
+              </a>
+            </Button>
+          </>
         ) : null}
         {stepKey === "licence_portal" || stepKey === "demo_licence_apply" ? (
           <Button asChild variant="secondary" className="rounded-xl">
