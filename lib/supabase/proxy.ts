@@ -54,6 +54,9 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/register") ||
     pathname.startsWith("/present") ||
     pathname.startsWith("/onboarding") ||
+    pathname.startsWith("/privacy-policy") ||
+    pathname.startsWith("/terms-and-conditions") ||
+    pathname.startsWith("/sms-opt-in") ||
     pathname.startsWith("/api/request-access") ||
     pathname.startsWith("/api/webhooks/") ||
     pathname.startsWith("/api/cron/");
