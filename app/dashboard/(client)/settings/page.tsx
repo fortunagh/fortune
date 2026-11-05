@@ -3,7 +3,6 @@ import {
   PortalMuted,
   WidgetCard,
 } from "@/components/portal/portal-ui";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 
 export default function SettingsPage() {
   return (
@@ -11,18 +10,15 @@ export default function SettingsPage() {
       <PageHeader
         eyebrow="Preferences"
         title="Settings"
-        description="Appearance and account preferences."
+        description="Account preferences for your Fortuna portal."
       />
-      <WidgetCard className="flex items-center justify-between gap-4">
-        <div>
-          <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-            Appearance
-          </p>
-          <PortalMuted className="mt-1">
-            Light is the portal default. Dark remains available.
-          </PortalMuted>
-        </div>
-        <ThemeSwitcher />
+      <WidgetCard>
+        <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+          Appearance
+        </p>
+        <PortalMuted className="mt-1">
+          The Fortuna portal uses a light theme only.
+        </PortalMuted>
       </WidgetCard>
     </div>
   );

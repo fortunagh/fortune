@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 
 import { LogoutButton } from "@/components/logout-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { InitialsAvatar, fortunaUiClass } from "@/components/portal/portal-ui";
 import { cn } from "@/lib/utils";
 import "@/components/landing/fortuna.css";
@@ -166,7 +165,6 @@ export function AdminShell({
               {userEmail}
             </p>
           </div>
-          <ThemeSwitcher />
         </header>
         <div className="flex-1 overflow-x-hidden overflow-y-auto px-4 py-6 md:px-6 md:py-8">
           {children}

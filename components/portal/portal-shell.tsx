@@ -21,7 +21,6 @@ import {
 } from "lucide-react";
 
 import { LogoutButton } from "@/components/logout-button";
-import { ThemeSwitcher } from "@/components/theme-switcher";
 import { InitialsAvatar, fortunaUiClass } from "@/components/portal/portal-ui";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
@@ -203,9 +202,6 @@ export function PortalShell({
           <Link href="/dashboard/profile" className="hidden sm:block">
             <InitialsAvatar name={displayName} />
           </Link>
-          <div className="hidden sm:block">
-            <ThemeSwitcher />
-          </div>
         </header>
 
         <main className="flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>

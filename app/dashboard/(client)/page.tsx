@@ -1,8 +1,10 @@
 import Link from "next/link";
+import { Suspense } from "react";
 import { ExternalLink, Target } from "lucide-react";
 
 import { AssistantPanel } from "@/components/portal/assistant-panel";
 import { JourneyTimeline } from "@/components/portal/journey-timeline";
+import { PaymentToast } from "@/components/portal/payment-toast";
 import { ResourceList } from "@/components/portal/resource-list";
 import { StepActionBar } from "@/components/portal/current-step-panel";
 import {
@@ -112,6 +114,9 @@ export default async function ClientHomePage() {
 
   return (
     <div className="mx-auto w-full max-w-7xl space-y-6">
+      <Suspense fallback={null}>
+        <PaymentToast />
+      </Suspense>
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <PortalPageTitle>
