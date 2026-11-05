@@ -44,11 +44,16 @@ export async function GET(request: Request) {
       if (!caseRow) continue;
 
       const idempotencyKey = `reminder:${state.id}:${rule.delay_hours}h`;
+      const channel =
+        rule.channel === "sms" || rule.channel === "in_app"
+          ? rule.channel
+          : "email";
       const result = await enqueueNextStepNotification(admin, {
         userId: caseRow.user_id,
         stepKey: state.step_key,
         idempotencyKey,
         templateKey: rule.template_key,
+        channel,
       });
       if (!("skipped" in result && result.skipped)) sent += 1;
     }

@@ -1,6 +1,8 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendEmail } from "@/lib/integrations/resend";
+import { sendSms } from "@/lib/integrations/twilio";
+import { resolveUserPhone } from "@/lib/onboarding/phone";
 import {
   renderAccessApprovedEmail,
   renderInvoiceEmail,
@@ -8,6 +10,7 @@ import {
 } from "./templates";
 
 type AdminClient = SupabaseClient;
+type NotifyChannel = "email" | "sms" | "in_app";
 
 async function profileName(
   admin: AdminClient,
@@ -43,9 +46,16 @@ export async function enqueueNextStepNotification(
     stepKey: string;
     idempotencyKey: string;
     templateKey?: string;
+    channel?: NotifyChannel;
   },
 ) {
-  const { userId, stepKey, idempotencyKey, templateKey } = options;
+  const {
+    userId,
+    stepKey,
+    idempotencyKey,
+    templateKey,
+    channel = "email",
+  } = options;
 
   const { data: existing } = await admin
     .from("deliveries")
@@ -69,20 +79,75 @@ export async function enqueueNextStepNotification(
           portalUrl: siteUrl(),
         });
 
+  const template = templateKey ?? `next_step_${stepKey}`;
+  const smsBody = `Fortuna: ${tpl.subject}. Open ${siteUrl()}/dashboard/steps/${stepKey}`;
+
   await admin.from("notifications").insert({
     user_id: userId,
     title: tpl.subject,
     body: tpl.text.slice(0, 500),
     href: `/dashboard/steps/${stepKey}`,
-    template_key: templateKey ?? `next_step_${stepKey}`,
+    template_key: template,
   });
+
+  if (channel === "in_app") {
+    await admin.from("deliveries").insert({
+      user_id: userId,
+      channel: "in_app",
+      template_key: template,
+      idempotency_key: idempotencyKey,
+      status: "sent",
+      sent_at: new Date().toISOString(),
+      meta: { stepKey },
+    });
+    return { ok: true as const };
+  }
+
+  if (channel === "sms") {
+    const phone = await resolveUserPhone(admin, userId);
+    const { data: delivery } = await admin
+      .from("deliveries")
+      .insert({
+        user_id: userId,
+        channel: "sms",
+        template_key: template,
+        idempotency_key: idempotencyKey,
+        status: "pending",
+        meta: { stepKey, to: phone },
+      })
+      .select("id")
+      .single();
+
+    if (!phone) {
+      if (delivery) {
+        await admin
+          .from("deliveries")
+          .update({ status: "skipped", meta: { stepKey, error: "no_phone" } })
+          .eq("id", delivery.id);
+      }
+      return { skipped: true as const };
+    }
+
+    const sent = await sendSms({ to: phone, body: smsBody });
+    if (delivery) {
+      await admin
+        .from("deliveries")
+        .update({
+          status: sent.ok ? "sent" : "failed",
+          sent_at: sent.ok ? new Date().toISOString() : null,
+          meta: { stepKey, to: phone, sid: sent.sid ?? null, error: sent.error ?? null },
+        })
+        .eq("id", delivery.id);
+    }
+    return sent;
+  }
 
   const { data: delivery } = await admin
     .from("deliveries")
     .insert({
       user_id: userId,
       channel: "email",
-      template_key: templateKey ?? `next_step_${stepKey}`,
+      template_key: template,
       idempotency_key: idempotencyKey,
       status: "pending",
       meta: { stepKey },

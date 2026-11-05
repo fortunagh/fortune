@@ -29,11 +29,14 @@ import { requireRequest } from "@/lib/onboarding/connection";
 
 export default async function StepPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ stepKey: string }>;
+  searchParams: Promise<{ paid?: string; cancelled?: string }>;
 }) {
   await requireRequest();
   const { stepKey } = await params;
+  const { paid, cancelled } = await searchParams;
   const def = getStepDef(stepKey);
   if (!def) notFound();
 
@@ -92,6 +95,18 @@ export default async function StepPage({
           title={def.title}
           description={def.description}
         />
+
+        {paid === "1" && !completed ? (
+          <SoftNotice variant="success">
+            Payment received. Your portal updates when Stripe confirms the
+            charge — refresh in a moment if this step still looks unpaid.
+          </SoftNotice>
+        ) : null}
+        {cancelled === "1" && !completed ? (
+          <SoftNotice variant="warning">
+            Checkout was cancelled. You can try paying again when ready.
+          </SoftNotice>
+        ) : null}
 
         {locked ? (
           <SoftNotice>

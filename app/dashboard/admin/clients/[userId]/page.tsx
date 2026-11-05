@@ -53,12 +53,21 @@ export default async function AdminClientDetailPage({
         }
         description={`Case ${caseRow.id.slice(0, 8)}`}
       />
-      <Badge
-        variant="outline"
-        className="rounded-full border-neutral-200 uppercase"
-      >
-        {caseRow.status}
-      </Badge>
+      <div className="flex flex-wrap items-center gap-3">
+        <Badge
+          variant="outline"
+          className="rounded-full border-neutral-200 uppercase"
+        >
+          {caseRow.status}
+        </Badge>
+        {profile?.phone_e164 ? (
+          <span className="text-sm text-neutral-600">
+            SMS: {profile.phone_e164}
+          </span>
+        ) : (
+          <span className="text-sm text-neutral-400">No phone on profile</span>
+        )}
+      </div>
 
       <WidgetCard>
         <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">

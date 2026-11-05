@@ -4,6 +4,7 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendAccessApprovedEmail } from "@/lib/notifications/enqueue";
 import { bootstrapOnboardingCase } from "./case";
+import { normalizePhoneE164 } from "./phone";
 
 type AdminClient = SupabaseClient;
 
@@ -83,9 +84,21 @@ export async function createAndSendInvitation(options: {
   }
 
   if (authInvite?.user?.id) {
+    const { data: subPhone } = await admin
+      .from("request_access_submissions")
+      .select("phone_e164, mobile_number")
+      .eq("id", submissionId)
+      .maybeSingle();
+    const phone =
+      normalizePhoneE164(subPhone?.phone_e164) ||
+      normalizePhoneE164(subPhone?.mobile_number);
+
     await admin
       .from("profiles")
-      .update({ first_name: firstName })
+      .update({
+        first_name: firstName,
+        ...(phone ? { phone_e164: phone } : {}),
+      })
       .eq("id", authInvite.user.id);
 
     await admin
@@ -150,16 +163,20 @@ export async function activateInvitation(options: {
 
     const { data: sub } = await admin
       .from("request_access_submissions")
-      .select("first_name, last_name")
+      .select("first_name, last_name, phone_e164, mobile_number")
       .eq("id", invite.submission_id)
       .maybeSingle();
 
     if (sub) {
+      const phone =
+        normalizePhoneE164(sub.phone_e164) ||
+        normalizePhoneE164(sub.mobile_number);
       await admin
         .from("profiles")
         .update({
           first_name: sub.first_name,
           last_name: sub.last_name,
+          phone_e164: phone,
           activated_at: new Date().toISOString(),
         })
         .eq("id", userId);
