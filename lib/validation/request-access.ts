@@ -84,7 +84,7 @@ const baseFields = {
   platformInterest: z
     .string()
     .trim()
-    .min(20, "Please write at least 20 characters")
+    .min(1, "Enter your interest in the platform")
     .max(2000, "Too long"),
   /** Optional SMS program consent; defaults unchecked via form defaultValues. */
   smsOptIn: z.boolean(),
