@@ -35,8 +35,8 @@ export async function answerFromGuides(options: {
 
   const openai = new OpenAI({ apiKey: key });
   const completion = await openai.chat.completions.create({
-    model: process.env.OPENAI_MODEL || "gpt-6-luna",
-    // Luna reasons by default. "none" keeps a fast chat reply and allows temperature.
+    // Hardcoded — not env-editable. Luna reasons by default; "none" keeps a fast chat reply.
+    model: "gpt-6-luna",
     reasoning_effort: "none",
     temperature: 0.2,
     messages: [
