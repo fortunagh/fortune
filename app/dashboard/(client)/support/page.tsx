@@ -50,10 +50,23 @@ export default async function SupportPage({
                   {r.step_key}
                 </span>
               ) : null}
+              <span className="text-xs text-neutral-400">
+                {new Date(r.created_at).toLocaleString()}
+              </span>
             </div>
             <p className="mt-2 text-sm leading-relaxed text-neutral-800">
               {r.body}
             </p>
+            {r.admin_notes ? (
+              <div className="mt-3 rounded-xl border border-[#c59d3f]/25 bg-[hsl(var(--portal-gold-soft))]/50 p-3">
+                <p className="text-[11px] font-semibold uppercase tracking-wide text-[#8a6d1f]">
+                  Fortuna reply
+                </p>
+                <p className="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-neutral-900">
+                  {r.admin_notes}
+                </p>
+              </div>
+            ) : null}
           </WidgetCard>
         ))}
       </div>

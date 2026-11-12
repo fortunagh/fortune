@@ -68,9 +68,10 @@ export default async function AdminSupportPage({
 
   const enriched = (requests ?? []).map((r) => {
     const profile = profileById.get(r.user_id as string);
+    const email = emailById.get(r.user_id as string) ?? null;
     const name =
       [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
-      emailById.get(r.user_id as string) ||
+      email?.split("@")[0] ||
       "Unknown client";
     return {
       id: r.id as string,
@@ -79,8 +80,9 @@ export default async function AdminSupportPage({
       status: r.status as string,
       step_key: (r.step_key as string | null) ?? null,
       created_at: r.created_at as string,
+      admin_notes: (r.admin_notes as string | null) ?? null,
       clientName: name,
-      clientEmail: emailById.get(r.user_id as string) ?? null,
+      clientEmail: email,
     };
   });
 

@@ -41,6 +41,15 @@ export function AdminIssueInvoiceForm({
         <DialogHeader>
           <DialogTitle>Issue usage invoice</DialogTitle>
         </DialogHeader>
+        <p className="text-sm text-neutral-500">
+          Choose who should receive the invoice. Stripe emails their account
+          login address (shown next to each name).
+        </p>
+        {clients.length === 0 ? (
+          <p className="rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-900">
+            No billable clients yet. Activate an onboarding case first.
+          </p>
+        ) : null}
         <form
           className="grid gap-3"
           onSubmit={async (e) => {

@@ -23,36 +23,63 @@ export default async function AdminClientDetailPage({
     .maybeSingle();
 
   let email: string | null = null;
+  let metaFirst: string | undefined;
+  let metaLast: string | undefined;
   try {
     const admin = createServiceRoleClient();
     const { data } = await admin.auth.admin.getUserById(userId);
     email = data.user?.email ?? null;
+    const meta = data.user?.user_metadata ?? {};
+    metaFirst =
+      typeof meta.first_name === "string" ? meta.first_name : undefined;
+    metaLast = typeof meta.last_name === "string" ? meta.last_name : undefined;
   } catch {
     email = null;
   }
 
-  const [{ data: support }, { data: payments }, { data: auditByEntity }] =
-    await Promise.all([
-      supabase
-        .from("support_requests")
-        .select("id, body, status, step_key, created_at")
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(50),
-      supabase
-        .from("payments")
-        .select(
-          "id, kind, amount_cents, currency, status, period_start, period_end, created_at",
-        )
-        .eq("user_id", userId)
-        .order("created_at", { ascending: false })
-        .limit(50),
-      supabase
-        .from("audit_log")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(80),
-    ]);
+  const [
+    { data: support },
+    { data: payments },
+    { data: auditByEntity },
+    { data: submission },
+  ] = await Promise.all([
+    supabase
+      .from("support_requests")
+      .select("id, body, status, step_key, created_at")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("payments")
+      .select(
+        "id, kind, amount_cents, currency, status, period_start, period_end, created_at",
+      )
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(50),
+    supabase
+      .from("audit_log")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .limit(80),
+    supabase
+      .from("request_access_submissions")
+      .select("first_name, last_name, email, phone_e164")
+      .eq("user_id", userId)
+      .maybeSingle(),
+  ]);
+
+  let linkedSubmission = submission;
+  if (!linkedSubmission && email) {
+    const { data: byEmail } = await supabase
+      .from("request_access_submissions")
+      .select("first_name, last_name, email, phone_e164")
+      .eq("email", email)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    linkedSubmission = byEmail;
+  }
 
   const relatedAudit = (auditByEntity ?? []).filter(
     (a) =>
@@ -61,16 +88,29 @@ export default async function AdminClientDetailPage({
   );
 
   const name =
-    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
+    [
+      profile?.first_name || metaFirst || linkedSubmission?.first_name,
+      profile?.last_name || metaLast || linkedSubmission?.last_name,
+    ]
+      .filter(Boolean)
+      .join(" ") ||
     email ||
     "Client";
+
+  if (!email && linkedSubmission?.email) {
+    email = linkedSubmission.email as string;
+  }
 
   return (
     <ClientWorkspace
       userId={userId}
       name={name}
       email={email}
-      phone={profile?.phone_e164 ?? null}
+      phone={
+        profile?.phone_e164 ??
+        (linkedSubmission?.phone_e164 as string | null) ??
+        null
+      }
       caseStatus={caseRow.status}
       caseId={caseRow.id}
       currentStepKey={caseRow.current_step_key}

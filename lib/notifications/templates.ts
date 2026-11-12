@@ -179,6 +179,36 @@ export function renderAccessApprovedEmail(options: {
   };
 }
 
+export function renderSupportReplyEmail(options: {
+  firstName: string;
+  reply: string;
+  originalMessage: string;
+  supportUrl: string;
+}): EmailTemplate {
+  const o = options;
+  const safeReply = o.reply.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+  const safeOriginal = o.originalMessage
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+  const { html, text } = wrapFortunaEmail({
+    firstName: o.firstName,
+    previewText: "Reply from Fortuna support",
+    bodyHtml: `<p style="margin:0 0 12px">Our team replied to your support request:</p>
+<blockquote style="margin:0 0 16px;padding:12px 14px;border-left:3px solid #c59d3f;background:#fbf8f3;color:#171717;white-space:pre-wrap">${safeReply}</blockquote>
+<p style="margin:0 0 8px;color:#737373;font-size:13px">Your original message:</p>
+<p style="margin:0;color:#737373;font-size:13px;white-space:pre-wrap">${safeOriginal}</p>`,
+    bodyText: `Our team replied to your support request:\n\n${o.reply}\n\nYour original message:\n${o.originalMessage}`,
+    ctaLabel: "Open support in portal",
+    ctaUrl: o.supportUrl,
+  });
+
+  return {
+    subject: "Fortuna support replied to your request",
+    html,
+    text,
+  };
+}
+
 export function renderInvoiceEmail(options: {
   firstName: string;
   billingMonth: string;

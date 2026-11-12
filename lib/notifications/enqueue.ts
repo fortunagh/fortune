@@ -9,6 +9,7 @@ import {
   renderInvoiceEmail,
   renderNewRequestAccessAdminEmail,
   renderNextStepEmail,
+  renderSupportReplyEmail,
 } from "./templates";
 
 type AdminClient = SupabaseClient;
@@ -341,6 +342,55 @@ export async function sendInvoiceEmail(
     status: sent.ok ? "sent" : "failed",
     sent_at: sent.ok ? new Date().toISOString() : null,
     meta: { paymentId: options.paymentId },
+  });
+
+  return sent;
+}
+
+export async function sendSupportReplyEmail(
+  admin: AdminClient,
+  options: {
+    userId: string;
+    supportRequestId: string;
+    reply: string;
+    originalMessage: string;
+  },
+) {
+  const idempotencyKey = `support_reply:${options.supportRequestId}:${Date.now()}`;
+  const { firstName, email } = await profileName(admin, options.userId);
+  if (!email) return { ok: false as const, error: "User email not found" };
+
+  const supportUrl = `${siteUrl()}/dashboard/support`;
+  const tpl = renderSupportReplyEmail({
+    firstName,
+    reply: options.reply,
+    originalMessage: options.originalMessage,
+    supportUrl,
+  });
+
+  await admin.from("notifications").insert({
+    user_id: options.userId,
+    title: tpl.subject,
+    body: options.reply.slice(0, 500),
+    href: "/dashboard/support",
+    template_key: "support_reply",
+  });
+
+  const sent = await sendEmail({
+    to: email,
+    subject: tpl.subject,
+    html: tpl.html,
+    text: tpl.text,
+  });
+
+  await admin.from("deliveries").insert({
+    user_id: options.userId,
+    channel: "email",
+    template_key: "support_reply",
+    idempotency_key: idempotencyKey,
+    status: sent.ok ? "sent" : "failed",
+    sent_at: sent.ok ? new Date().toISOString() : null,
+    meta: { supportRequestId: options.supportRequestId },
   });
 
   return sent;
