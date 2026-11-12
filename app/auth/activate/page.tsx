@@ -71,6 +71,7 @@ function ActivateInner() {
         <Button
           type="button"
           variant="fortuna"
+          size="lg"
           className="w-full"
           disabled={!token || busy}
           onClick={activate}

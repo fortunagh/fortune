@@ -152,6 +152,7 @@ export function UpdatePasswordForm({
                 <Button
                   type="submit"
                   variant="fortuna"
+                  size="lg"
                   className="w-full"
                   disabled={isLoading}
                 >

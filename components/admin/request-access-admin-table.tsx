@@ -10,7 +10,6 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -21,16 +20,18 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
-import { fortunaUiClass } from "@/components/portal/portal-ui";
+import { AdminStatus } from "@/components/admin/ui/admin-status";
+import {
+  AdminTable,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableRow,
+  AdminTableShell,
+} from "@/components/admin/ui/admin-table";
 import type {
   RequestAccessStatus,
   RequestAccessSubmissionRow,
@@ -39,6 +40,7 @@ import { cn } from "@/lib/utils";
 import { Check, Eye, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 
 function formatDate(iso: string) {
   try {
@@ -48,21 +50,6 @@ function formatDate(iso: string) {
     }).format(new Date(iso));
   } catch {
     return iso;
-  }
-}
-
-function statusBadgeVariant(
-  s: RequestAccessStatus,
-): "default" | "secondary" | "destructive" | "outline" {
-  switch (s) {
-    case "approved":
-      return "default";
-    case "declined":
-      return "destructive";
-    case "contacted":
-      return "secondary";
-    default:
-      return "outline";
   }
 }
 
@@ -122,8 +109,6 @@ export function RequestAccessAdminTable({
     kind: ConfirmKind;
     row: RequestAccessSubmissionRow | null;
   }>({ kind: null, row: null });
-  const [actionError, setActionError] = React.useState<string | null>(null);
-
   React.useEffect(() => {
     setRows(initialRows);
   }, [initialRows]);
@@ -131,7 +116,6 @@ export function RequestAccessAdminTable({
   function openView(row: RequestAccessSubmissionRow) {
     setViewing(row);
     setNotes(row.admin_notes ?? "");
-    setActionError(null);
   }
 
   async function patchRow(
@@ -143,7 +127,6 @@ export function RequestAccessAdminTable({
     },
   ) {
     setBusyId(id);
-    setActionError(null);
     try {
       const res = await fetch(`/api/admin/request-access/${id}`, {
         method: "PATCH",
@@ -156,7 +139,7 @@ export function RequestAccessAdminTable({
         warning?: string;
       };
       if (!res.ok) throw new Error(data.error ?? "Could not update");
-      if (data.warning) setActionError(data.warning);
+      if (data.warning) toast.warning(data.warning);
       if (data.row) {
         setRows((prev) =>
           prev.map((r) =>
@@ -187,11 +170,15 @@ export function RequestAccessAdminTable({
           sendInvitation: true,
           admin_notes: notes.trim() === "" ? undefined : notes.trim(),
         });
+        toast.success(
+          kind === "resend" ? "Invite resent" : "Accepted and invite sent",
+        );
       } else if (kind === "reject") {
         await patchRow(row.id, {
           status: "declined",
           sendInvitation: false,
         });
+        toast.success("Request declined");
       } else if (kind === "delete") {
         setBusyId(row.id);
         const res = await fetch(`/api/admin/request-access/${row.id}`, {
@@ -207,10 +194,11 @@ export function RequestAccessAdminTable({
         if (viewing?.id === row.id) setViewing(null);
         router.refresh();
         setBusyId(null);
+        toast.success("Submission deleted");
       }
     } catch (e) {
       setBusyId(null);
-      setActionError(e instanceof Error ? e.message : "Action failed");
+      toast.error(e instanceof Error ? e.message : "Action failed");
     }
   }
 
@@ -220,9 +208,10 @@ export function RequestAccessAdminTable({
       await patchRow(viewing.id, {
         admin_notes: notes.trim() === "" ? null : notes.trim(),
       });
+      toast.success("Notes saved");
       setViewing(null);
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : "Could not save notes");
+      toast.error(e instanceof Error ? e.message : "Could not save notes");
     }
   }
 
@@ -253,26 +242,21 @@ export function RequestAccessAdminTable({
 
   return (
     <>
-      <div className="rounded-2xl border border-black/[0.06] bg-white">
-        <Table>
-          <TableHeader>
-            <TableRow className="hover:bg-transparent bg-[#fbf8f3]">
-              <TableHead>Applicant</TableHead>
-              <TableHead className="hidden sm:table-cell">Received</TableHead>
-              <TableHead>Status</TableHead>
-              <TableHead className="text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
-          <TableBody>
+      <AdminTableShell>
+        <AdminTable>
+          <AdminTableHeader>
+            <AdminTableRow className="hover:bg-transparent">
+              <AdminTableHead>Applicant</AdminTableHead>
+              <AdminTableHead className="hidden sm:table-cell">
+                Received
+              </AdminTableHead>
+              <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead className="text-right">Actions</AdminTableHead>
+            </AdminTableRow>
+          </AdminTableHeader>
+          <AdminTableBody>
             {rows.length === 0 ? (
-              <TableRow>
-                <TableCell
-                  colSpan={4}
-                  className="h-24 text-center text-neutral-500"
-                >
-                  No submissions yet.
-                </TableCell>
-              </TableRow>
+              <AdminTableEmpty colSpan={4}>No submissions found.</AdminTableEmpty>
             ) : (
               rows.map((row) => {
                 const status = (row.status ??
@@ -281,8 +265,8 @@ export function RequestAccessAdminTable({
                   status === "pending" || status === "contacted";
                 const busy = busyId === row.id;
                 return (
-                  <TableRow key={row.id}>
-                    <TableCell className="min-w-0">
+                  <AdminTableRow key={row.id}>
+                    <AdminTableCell className="min-w-0">
                       <div className="font-medium text-neutral-950">
                         {row.first_name} {row.last_name}
                       </div>
@@ -292,28 +276,22 @@ export function RequestAccessAdminTable({
                       <div className="mt-1 text-xs text-neutral-400 sm:hidden">
                         {formatDate(row.created_at)}
                       </div>
-                    </TableCell>
-                    <TableCell className="hidden whitespace-nowrap text-neutral-500 sm:table-cell">
+                    </AdminTableCell>
+                    <AdminTableCell className="hidden whitespace-nowrap text-xs text-neutral-500 sm:table-cell">
                       {formatDate(row.created_at)}
-                    </TableCell>
-                    <TableCell>
-                      <Badge
-                        variant={statusBadgeVariant(status)}
-                        className="rounded-full capitalize"
-                      >
-                        {status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right">
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminStatus status={status} />
+                    </AdminTableCell>
+                    <AdminTableCell className="text-right">
                       <div className="flex flex-wrap justify-end gap-1.5">
                         <Button
                           type="button"
                           variant="outline"
                           size="sm"
-                          className="rounded-xl"
                           onClick={() => openView(row)}
                         >
-                          <Eye className="mr-1 h-3.5 w-3.5" />
+                          <Eye className="size-3.5" />
                           View
                         </Button>
                         {pending ? (
@@ -327,20 +305,20 @@ export function RequestAccessAdminTable({
                                 setConfirm({ kind: "accept", row })
                               }
                             >
-                              <Check className="mr-1 h-3.5 w-3.5" />
+                              <Check className="size-3.5" />
                               Accept
                             </Button>
                             <Button
                               type="button"
                               variant="outline"
                               size="sm"
-                              className="rounded-xl border-red-200 text-red-700 hover:bg-red-50"
+                              className="border-red-200 text-red-700 hover:bg-red-50"
                               disabled={busy}
                               onClick={() =>
                                 setConfirm({ kind: "reject", row })
                               }
                             >
-                              <X className="mr-1 h-3.5 w-3.5" />
+                              <X className="size-3.5" />
                               Reject
                             </Button>
                           </>
@@ -349,7 +327,6 @@ export function RequestAccessAdminTable({
                             type="button"
                             variant="outline"
                             size="sm"
-                            className="rounded-xl"
                             disabled={busy}
                             onClick={() =>
                               setConfirm({ kind: "resend", row })
@@ -361,27 +338,23 @@ export function RequestAccessAdminTable({
                         <Button
                           type="button"
                           variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 text-destructive"
+                          size="icon-sm"
+                          className="text-destructive"
                           disabled={busy}
                           onClick={() => setConfirm({ kind: "delete", row })}
                           aria-label="Delete"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="size-3.5" />
                         </Button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </AdminTableCell>
+                  </AdminTableRow>
                 );
               })
             )}
-          </TableBody>
-        </Table>
-      </div>
-
-      {actionError && !viewing ? (
-        <p className="mt-3 text-sm text-amber-800">{actionError}</p>
-      ) : null}
+          </AdminTableBody>
+        </AdminTable>
+      </AdminTableShell>
 
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
@@ -396,15 +369,8 @@ export function RequestAccessAdminTable({
           {viewing && (
             <div className="grid gap-4 py-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge
-                  variant={statusBadgeVariant(
-                    (viewing.status ?? "pending") as RequestAccessStatus,
-                  )}
-                  className="rounded-full capitalize"
-                >
-                  {viewing.status ?? "pending"}
-                </Badge>
-                <span className={cn(fortunaUiClass, "text-xs text-neutral-500")}>
+                <AdminStatus status={viewing.status ?? "pending"} />
+                <span className="text-xs text-neutral-500">
                   {formatDate(viewing.created_at)}
                 </span>
               </div>
@@ -478,16 +444,13 @@ export function RequestAccessAdminTable({
                 />
               </section>
 
-              {actionError ? (
-                <p className="text-sm text-amber-800">{actionError}</p>
-              ) : null}
             </div>
           )}
           <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
             <Button
               type="button"
               variant="outline"
-              className="rounded-xl"
+              size="sm"
               onClick={() => setViewing(null)}
             >
               Close
@@ -496,7 +459,7 @@ export function RequestAccessAdminTable({
               <Button
                 type="button"
                 variant="outline"
-                className="rounded-xl"
+                size="sm"
                 disabled={!viewing || busyId === viewing?.id}
                 onClick={saveNotes}
               >
@@ -509,7 +472,8 @@ export function RequestAccessAdminTable({
                   <Button
                     type="button"
                     variant="outline"
-                    className="rounded-xl border-red-200 text-red-700"
+                    size="sm"
+                    className="border-red-200 text-red-700"
                     disabled={busyId === viewing.id}
                     onClick={() =>
                       setConfirm({ kind: "reject", row: viewing })
@@ -520,6 +484,7 @@ export function RequestAccessAdminTable({
                   <Button
                     type="button"
                     variant="fortuna"
+                    size="sm"
                     disabled={busyId === viewing.id}
                     onClick={() =>
                       setConfirm({ kind: "accept", row: viewing })
@@ -532,6 +497,7 @@ export function RequestAccessAdminTable({
                 <Button
                   type="button"
                   variant="fortuna"
+                  size="sm"
                   disabled={busyId === viewing.id}
                   onClick={() => setConfirm({ kind: "resend", row: viewing })}
                 >

@@ -11,12 +11,24 @@ import {
   YAxis,
 } from "recharts";
 
-import { WidgetCard, fortunaUiClass } from "@/components/portal/portal-ui";
-import { cn } from "@/lib/utils";
-
 const GOLD = "#a8842a";
 const GOLD_SOFT = "#e8d9a8";
 const NEUTRAL = "#a3a3a3";
+
+function ChartCard({
+  title,
+  children,
+}: {
+  title: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="rounded-xl border border-neutral-200/80 bg-white p-4">
+      <p className="mb-3 text-xs font-medium text-neutral-500">{title}</p>
+      {children}
+    </div>
+  );
+}
 
 export function AdminOverviewCharts({
   funnel,
@@ -26,20 +38,19 @@ export function AdminOverviewCharts({
   byStep: { name: string; value: number; fullLabel: string }[];
 }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2">
-      <WidgetCard>
-        <p
-          className={cn(
-            fortunaUiClass,
-            "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500",
-          )}
-        >
-          Client funnel
-        </p>
-        <div className="h-64 w-full">
+    <div className="grid gap-3 lg:grid-cols-2">
+      <ChartCard title="Client funnel">
+        <div className="h-52 w-full">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={funnel} margin={{ top: 8, right: 8, left: 0, bottom: 0 }}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" vertical={false} />
+            <BarChart
+              data={funnel}
+              margin={{ top: 4, right: 4, left: 0, bottom: 0 }}
+            >
+              <CartesianGrid
+                strokeDasharray="3 3"
+                stroke="#e5e5e5"
+                vertical={false}
+              />
               <XAxis
                 dataKey="name"
                 tick={{ fill: "#737373", fontSize: 11 }}
@@ -56,34 +67,32 @@ export function AdminOverviewCharts({
               <Tooltip
                 cursor={{ fill: "rgba(168,132,42,0.08)" }}
                 contentStyle={{
-                  borderRadius: 12,
+                  borderRadius: 8,
                   border: "1px solid rgba(0,0,0,0.06)",
                   fontSize: 12,
                 }}
               />
-              <Bar dataKey="value" radius={[8, 8, 0, 0]} maxBarSize={48}>
+              <Bar dataKey="value" radius={[6, 6, 0, 0]} maxBarSize={40}>
                 {funnel.map((_, i) => (
                   <Cell
                     key={`funnel-${i}`}
-                    fill={i === funnel.length - 1 ? GOLD : i === 0 ? NEUTRAL : GOLD_SOFT}
+                    fill={
+                      i === funnel.length - 1
+                        ? GOLD
+                        : i === 0
+                          ? NEUTRAL
+                          : GOLD_SOFT
+                    }
                   />
                 ))}
               </Bar>
             </BarChart>
           </ResponsiveContainer>
         </div>
-      </WidgetCard>
+      </ChartCard>
 
-      <WidgetCard>
-        <p
-          className={cn(
-            fortunaUiClass,
-            "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500",
-          )}
-        >
-          Active clients by step
-        </p>
-        <div className="h-64 w-full">
+      <ChartCard title="Active clients by step">
+        <div className="h-52 w-full">
           {byStep.every((s) => s.value === 0) ? (
             <p className="flex h-full items-center justify-center text-sm text-neutral-500">
               No active onboarding cases yet.
@@ -93,9 +102,13 @@ export function AdminOverviewCharts({
               <BarChart
                 data={byStep}
                 layout="vertical"
-                margin={{ top: 8, right: 16, left: 8, bottom: 0 }}
+                margin={{ top: 4, right: 12, left: 4, bottom: 0 }}
               >
-                <CartesianGrid strokeDasharray="3 3" stroke="#e5e5e5" horizontal={false} />
+                <CartesianGrid
+                  strokeDasharray="3 3"
+                  stroke="#e5e5e5"
+                  horizontal={false}
+                />
                 <XAxis type="number" allowDecimals={false} hide />
                 <YAxis
                   type="category"
@@ -108,21 +121,26 @@ export function AdminOverviewCharts({
                 <Tooltip
                   formatter={(value) => [value as number, "Clients"]}
                   labelFormatter={(_, payload) =>
-                    (payload?.[0]?.payload as { fullLabel?: string })?.fullLabel ??
-                    ""
+                    (payload?.[0]?.payload as { fullLabel?: string })
+                      ?.fullLabel ?? ""
                   }
                   contentStyle={{
-                    borderRadius: 12,
+                    borderRadius: 8,
                     border: "1px solid rgba(0,0,0,0.06)",
                     fontSize: 12,
                   }}
                 />
-                <Bar dataKey="value" fill={GOLD} radius={[0, 8, 8, 0]} maxBarSize={18} />
+                <Bar
+                  dataKey="value"
+                  fill={GOLD}
+                  radius={[0, 6, 6, 0]}
+                  maxBarSize={16}
+                />
               </BarChart>
             </ResponsiveContainer>
           )}
         </div>
-      </WidgetCard>
+      </ChartCard>
     </div>
   );
 }

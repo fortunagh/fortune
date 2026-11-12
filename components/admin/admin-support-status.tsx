@@ -2,6 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -18,11 +19,9 @@ export function AdminSupportStatus({
   const router = useRouter();
   const [value, setValue] = useState(status);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   async function save(next: string) {
     setBusy(true);
-    setError(null);
     setValue(next);
     try {
       const res = await fetch(`/api/admin/support/${id}`, {
@@ -32,9 +31,10 @@ export function AdminSupportStatus({
       });
       const json = (await res.json().catch(() => ({}))) as { error?: string };
       if (!res.ok) throw new Error(json.error || "Update failed");
+      toast.success(`Marked ${next.replace(/_/g, " ")}`);
       router.refresh();
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Update failed");
+      toast.error(e instanceof Error ? e.message : "Update failed");
       setValue(status);
     } finally {
       setBusy(false);
@@ -42,26 +42,20 @@ export function AdminSupportStatus({
   }
 
   return (
-    <div className="flex flex-col gap-2">
-      <div className="flex flex-wrap gap-1.5">
-        {STATUSES.map((s) => (
-          <Button
-            key={s}
-            type="button"
-            size="sm"
-            variant={value === s ? "fortuna" : "outline"}
-            className={cn(
-              "rounded-full text-[10px] uppercase tracking-wide",
-              value === s ? "" : "rounded-full",
-            )}
-            disabled={busy}
-            onClick={() => save(s)}
-          >
-            {s.replace(/_/g, " ")}
-          </Button>
-        ))}
-      </div>
-      {error ? <p className="text-xs text-red-600">{error}</p> : null}
+    <div className="flex flex-wrap gap-1">
+      {STATUSES.map((s) => (
+        <Button
+          key={s}
+          type="button"
+          size="sm"
+          variant={value === s ? "fortuna" : "outline"}
+          className={cn("h-7 px-2 text-[10px] uppercase tracking-wide")}
+          disabled={busy}
+          onClick={() => save(s)}
+        >
+          {s.replace(/_/g, " ")}
+        </Button>
+      ))}
     </div>
   );
 }

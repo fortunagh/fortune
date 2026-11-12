@@ -173,6 +173,7 @@ export function LoginForm({
             <Button
               type="submit"
               variant="fortuna"
+              size="lg"
               className="w-full"
               disabled={isLoading}
             >

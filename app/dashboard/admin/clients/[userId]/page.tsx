@@ -1,8 +1,7 @@
 import { notFound } from "next/navigation";
 
-import { AdminStepOverride } from "@/components/admin/admin-step-override";
-import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
-import { Badge } from "@/components/ui/badge";
+import { ClientWorkspace } from "@/components/admin/client-workspace";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { createClient } from "@/lib/supabase/server";
 import { getCaseForUser } from "@/lib/onboarding/case";
 import { ONBOARDING_STEPS } from "@/lib/onboarding/steps";
@@ -23,18 +22,37 @@ export default async function AdminClientDetailPage({
     .eq("id", userId)
     .maybeSingle();
 
-  const { data: audit } = await supabase
-    .from("audit_log")
-    .select("*")
-    .eq("meta->>userId", userId)
-    .order("created_at", { ascending: false })
-    .limit(20);
+  let email: string | null = null;
+  try {
+    const admin = createServiceRoleClient();
+    const { data } = await admin.auth.admin.getUserById(userId);
+    email = data.user?.email ?? null;
+  } catch {
+    email = null;
+  }
 
-  const { data: auditByEntity } = await supabase
-    .from("audit_log")
-    .select("*")
-    .order("created_at", { ascending: false })
-    .limit(40);
+  const [{ data: support }, { data: payments }, { data: auditByEntity }] =
+    await Promise.all([
+      supabase
+        .from("support_requests")
+        .select("id, body, status, step_key, created_at")
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("payments")
+        .select(
+          "id, kind, amount_cents, currency, status, period_start, period_end, created_at",
+        )
+        .eq("user_id", userId)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabase
+        .from("audit_log")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(80),
+    ]);
 
   const relatedAudit = (auditByEntity ?? []).filter(
     (a) =>
@@ -42,85 +60,36 @@ export default async function AdminClientDetailPage({
       states.some((s) => s.id === a.entity_id),
   );
 
-  void audit;
+  const name =
+    [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
+    email ||
+    "Client";
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8">
-      <PageHeader
-        title={
-          [profile?.first_name, profile?.last_name].filter(Boolean).join(" ") ||
-          "Client"
-        }
-        description={`Case ${caseRow.id.slice(0, 8)}`}
-      />
-      <div className="flex flex-wrap items-center gap-3">
-        <Badge
-          variant="outline"
-          className="rounded-full border-neutral-200 uppercase"
-        >
-          {caseRow.status}
-        </Badge>
-        {profile?.phone_e164 ? (
-          <span className="text-sm text-neutral-600">
-            SMS: {profile.phone_e164}
-          </span>
-        ) : (
-          <span className="text-sm text-neutral-400">No phone on profile</span>
-        )}
-      </div>
-
-      <WidgetCard>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-          Timeline
-        </h3>
-        <ul className="space-y-2">
-          {ONBOARDING_STEPS.map((step) => {
-            const st = states.find((s) => s.step_key === step.key);
-            return (
-              <li
-                key={step.key}
-                className="flex flex-wrap items-center justify-between gap-2 border-b border-neutral-100 py-2 text-sm last:border-0"
-              >
-                <span className="text-neutral-900">{step.title}</span>
-                <span className="font-mono text-xs text-neutral-500">
-                  {st?.status ?? "—"}
-                  {st?.completed_at
-                    ? ` · ${new Date(st.completed_at).toLocaleString()}`
-                    : ""}
-                </span>
-              </li>
-            );
-          })}
-        </ul>
-      </WidgetCard>
-
-      <WidgetCard>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-          Admin override
-        </h3>
-        <AdminStepOverride
-          userId={userId}
-          steps={ONBOARDING_STEPS.map((s) => s.key)}
-        />
-      </WidgetCard>
-
-      <WidgetCard>
-        <h3 className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-          Recent audit
-        </h3>
-        <ul className="space-y-2 text-sm text-neutral-500">
-          {relatedAudit.length === 0 ? (
-            <li>No audit rows yet.</li>
-          ) : (
-            relatedAudit.slice(0, 15).map((a) => (
-              <li key={a.id}>
-                {new Date(a.created_at).toLocaleString()} — {a.action}{" "}
-                {a.from_status ?? "∅"} → {a.to_status ?? "∅"}
-              </li>
-            ))
-          )}
-        </ul>
-      </WidgetCard>
-    </div>
+    <ClientWorkspace
+      userId={userId}
+      name={name}
+      email={email}
+      phone={profile?.phone_e164 ?? null}
+      caseStatus={caseRow.status}
+      caseId={caseRow.id}
+      currentStepKey={caseRow.current_step_key}
+      steps={ONBOARDING_STEPS.map((s) => ({ key: s.key, title: s.title }))}
+      states={states.map((s) => ({
+        step_key: s.step_key,
+        status: s.status,
+        completed_at: s.completed_at,
+      }))}
+      support={support ?? []}
+      payments={payments ?? []}
+      audit={relatedAudit.slice(0, 30).map((a) => ({
+        id: a.id,
+        action: a.action,
+        from_status: a.from_status,
+        to_status: a.to_status,
+        created_at: a.created_at,
+        entity_type: a.entity_type,
+      }))}
+    />
   );
 }

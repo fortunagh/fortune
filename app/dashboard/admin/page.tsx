@@ -1,13 +1,18 @@
 import Link from "next/link";
 
 import { AdminOverviewCharts } from "@/components/admin/admin-overview-charts";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminStatus } from "@/components/admin/ui/admin-status";
 import {
-  PageHeader,
-  WidgetCard,
-  fortunaDisplayClass,
-  fortunaUiClass,
-} from "@/components/portal/portal-ui";
-import { Button } from "@/components/ui/button";
+  AdminTable,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableRow,
+  AdminTableShell,
+} from "@/components/admin/ui/admin-table";
 import { getStepDef, ONBOARDING_STEPS } from "@/lib/onboarding/steps";
 import { createClient } from "@/lib/supabase/server";
 import { cn } from "@/lib/utils";
@@ -18,7 +23,8 @@ export default async function AdminOverviewPage() {
     { data: rows },
     { data: cases },
     supportRes,
-    { data: recentSubs },
+    { data: recentPending },
+    { data: openTickets },
   ] = await Promise.all([
     supabase.from("request_access_submissions").select("status"),
     supabase.from("onboarding_cases").select("status, current_step_key"),
@@ -28,9 +34,16 @@ export default async function AdminOverviewPage() {
       .eq("status", "open"),
     supabase
       .from("request_access_submissions")
-      .select("id, first_name, last_name, status, created_at")
+      .select("id, first_name, last_name, email, status, created_at")
+      .or("status.eq.pending,status.is.null")
       .order("created_at", { ascending: false })
-      .limit(5),
+      .limit(8),
+    supabase
+      .from("support_requests")
+      .select("id, user_id, body, status, created_at, step_key")
+      .in("status", ["open", "in_progress"])
+      .order("created_at", { ascending: false })
+      .limit(8),
   ]);
 
   const total = rows?.length ?? 0;
@@ -81,7 +94,6 @@ export default async function AdminOverviewPage() {
     }))
     .slice(0, 8);
 
-  // If no active steps matched filter, still show top keys from map
   if (byStep.length === 0 && stepCounts.size > 0) {
     for (const [key, value] of stepCounts) {
       const def = getStepDef(key);
@@ -93,115 +105,162 @@ export default async function AdminOverviewPage() {
     }
   }
 
-  return (
-    <div className="mx-auto w-full max-w-6xl space-y-8">
-      <PageHeader
-        title="Overview"
-        description="Request access, onboarding pipeline, and support at a glance."
-      />
+  const ticketUserIds = Array.from(
+    new Set((openTickets ?? []).map((t) => t.user_id as string)),
+  );
+  const { data: ticketProfiles } =
+    ticketUserIds.length > 0
+      ? await supabase
+          .from("profiles")
+          .select("id, first_name, last_name")
+          .in("id", ticketUserIds)
+      : { data: [] };
+  const profileById = new Map(
+    (ticketProfiles ?? []).map((p) => [p.id as string, p]),
+  );
 
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Total submissions" value={total} />
-        <StatCard label="Pending review" value={pending} accent />
-        <StatCard label="Active onboarding" value={activeCases} />
-        <StatCard label="Open support" value={supportOpen} />
+  type AttentionItem = {
+    id: string;
+    href: string;
+    title: string;
+    subtitle: string;
+    status: string;
+    when: string;
+  };
+
+  const attention: AttentionItem[] = [
+    ...(recentPending ?? []).map((row) => ({
+      id: `req-${row.id}`,
+      href: "/dashboard/admin/request-access?status=pending",
+      title: `${row.first_name} ${row.last_name}`,
+      subtitle: row.email as string,
+      status: (row.status as string) ?? "pending",
+      when: row.created_at as string,
+    })),
+    ...(openTickets ?? []).map((t) => {
+      const p = profileById.get(t.user_id as string);
+      const name =
+        [p?.first_name, p?.last_name].filter(Boolean).join(" ") ||
+        "Support ticket";
+      return {
+        id: `sup-${t.id}`,
+        href: `/dashboard/admin/support?status=${t.status}`,
+        title: name,
+        subtitle: String(t.body).slice(0, 80),
+        status: t.status as string,
+        when: t.created_at as string,
+      };
+    }),
+  ]
+    .sort((a, b) => +new Date(b.when) - +new Date(a.when))
+    .slice(0, 10);
+
+  return (
+    <AdminPage
+      title="Overview"
+      description="Pipeline health and items that need attention."
+    >
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+        <StatLink
+          href="/dashboard/admin/request-access"
+          label="Total submissions"
+          value={total}
+        />
+        <StatLink
+          href="/dashboard/admin/request-access?status=pending"
+          label="Pending review"
+          value={pending}
+          accent
+        />
+        <StatLink
+          href="/dashboard/admin/clients?status=active"
+          label="Active onboarding"
+          value={activeCases}
+        />
+        <StatLink
+          href="/dashboard/admin/support?status=open"
+          label="Open support"
+          value={supportOpen}
+        />
       </div>
 
       <AdminOverviewCharts funnel={funnel} byStep={byStep} />
 
-      <div className="grid gap-4 lg:grid-cols-2">
-        <WidgetCard>
-          <p
-            className={cn(
-              fortunaUiClass,
-              "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500",
-            )}
-          >
-            Recent submissions
-          </p>
-          <ul className="space-y-3">
-            {(recentSubs ?? []).length === 0 ? (
-              <li className="text-sm text-neutral-500">No submissions yet.</li>
-            ) : (
-              (recentSubs ?? []).map((row) => (
-                <li
-                  key={row.id}
-                  className="flex items-center justify-between gap-3 border-b border-black/[0.04] pb-3 last:border-0 last:pb-0"
-                >
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-semibold text-neutral-900">
-                      {row.first_name} {row.last_name}
-                    </p>
-                    <p className="text-xs text-neutral-500">
-                      {new Date(row.created_at).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <span className="shrink-0 rounded-full bg-neutral-100 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wide text-neutral-600">
-                    {row.status ?? "pending"}
-                  </span>
-                </li>
-              ))
-            )}
-          </ul>
-        </WidgetCard>
-
-        <WidgetCard>
-          <p
-            className={cn(
-              fortunaUiClass,
-              "mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500",
-            )}
-          >
-            Quick actions
-          </p>
-          <div className="flex flex-wrap gap-2">
-            <Button asChild variant="outline" size="sm" className="rounded-xl">
-              <Link href="/dashboard/admin/request-access">
-                Manage submissions
-              </Link>
-            </Button>
-            <Button asChild variant="fortuna" size="sm">
-              <Link href="/dashboard/admin/clients">Clients</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm" className="rounded-xl">
-              <Link href="/dashboard/admin/support">Support queue</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm" className="rounded-xl">
-              <Link href="/dashboard/admin/invite">Invite user</Link>
-            </Button>
-            <Button asChild variant="outline" size="sm" className="rounded-xl">
-              <Link href="/dashboard/admin/content">Content</Link>
-            </Button>
-          </div>
-        </WidgetCard>
+      <div className="space-y-3">
+        <h2 className="text-sm font-semibold text-neutral-900">
+          Needs attention
+        </h2>
+        <AdminTableShell>
+          <AdminTable>
+            <AdminTableHeader>
+              <AdminTableRow className="hover:bg-transparent">
+                <AdminTableHead>Item</AdminTableHead>
+                <AdminTableHead>Status</AdminTableHead>
+                <AdminTableHead className="hidden sm:table-cell">
+                  When
+                </AdminTableHead>
+              </AdminTableRow>
+            </AdminTableHeader>
+            <AdminTableBody>
+              {attention.length === 0 ? (
+                <AdminTableEmpty colSpan={3}>
+                  Nothing waiting right now.
+                </AdminTableEmpty>
+              ) : (
+                attention.map((item) => (
+                  <AdminTableRow key={item.id} clickable>
+                    <AdminTableCell>
+                      <Link href={item.href} className="block">
+                        <p className="font-medium text-neutral-950">
+                          {item.title}
+                        </p>
+                        <p className="truncate text-xs text-neutral-500">
+                          {item.subtitle}
+                        </p>
+                      </Link>
+                    </AdminTableCell>
+                    <AdminTableCell>
+                      <AdminStatus status={item.status} />
+                    </AdminTableCell>
+                    <AdminTableCell className="hidden whitespace-nowrap text-xs text-neutral-500 sm:table-cell">
+                      {new Date(item.when).toLocaleString()}
+                    </AdminTableCell>
+                  </AdminTableRow>
+                ))
+              )}
+            </AdminTableBody>
+          </AdminTable>
+        </AdminTableShell>
       </div>
-    </div>
+    </AdminPage>
   );
 }
 
-function StatCard({
+function StatLink({
+  href,
   label,
   value,
   accent,
 }: {
+  href: string;
   label: string;
   value: number;
   accent?: boolean;
 }) {
   return (
-    <WidgetCard>
-      <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-        {label}
-      </p>
+    <Link
+      href={href}
+      className="rounded-xl border border-neutral-200/80 bg-white p-4 transition-colors hover:border-[#c59d3f]/40 hover:bg-[hsl(var(--portal-gold-soft))]/40"
+    >
+      <p className="text-xs font-medium text-neutral-500">{label}</p>
       <p
         className={cn(
-          fortunaDisplayClass,
-          "mt-2 text-3xl tabular-nums",
+          "mt-1 text-2xl font-semibold tabular-nums",
           accent ? "text-[#a8842a]" : "text-neutral-950",
         )}
       >
         {value}
       </p>
-    </WidgetCard>
+    </Link>
   );
 }

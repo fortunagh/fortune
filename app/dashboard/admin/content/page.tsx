@@ -1,5 +1,5 @@
 import { AdminContentForms } from "@/components/admin/admin-content-panel";
-import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
+import { AdminPage } from "@/components/admin/ui/admin-page";
 import { createClient } from "@/lib/supabase/server";
 
 export default async function AdminContentPage() {
@@ -16,19 +16,19 @@ export default async function AdminContentPage() {
     ]);
 
   return (
-    <div className="mx-auto w-full max-w-4xl space-y-8">
-      <PageHeader
-        title="Content"
-        description="Guides, brokers, reminder timing, and step link configuration."
+    <AdminPage
+      title="Content"
+      description="Guides, brokers, reminder timing, and step catalogue."
+    >
+      <AdminContentForms
+        resources={resources ?? []}
+        brokers={brokers ?? []}
+        reminderRules={rules ?? []}
+        steps={(steps ?? []).map((s) => ({
+          key: s.key as string,
+          title: s.title as string,
+        }))}
       />
-      <WidgetCard>
-        <AdminContentForms
-          resources={resources ?? []}
-          brokers={brokers ?? []}
-          reminderRules={rules ?? []}
-          steps={steps ?? []}
-        />
-      </WidgetCard>
-    </div>
+    </AdminPage>
   );
 }

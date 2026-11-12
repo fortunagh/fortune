@@ -1,91 +1,147 @@
 import Link from "next/link";
+import { Suspense } from "react";
 
-import { PageHeader, WidgetCard } from "@/components/portal/portal-ui";
-import { Badge } from "@/components/ui/badge";
-import { createClient } from "@/lib/supabase/server";
+import { InviteUserDialog } from "@/components/admin/invite-user-dialog";
+import { AdminPage } from "@/components/admin/ui/admin-page";
+import { AdminPagination } from "@/components/admin/ui/admin-pagination";
+import { AdminStatus } from "@/components/admin/ui/admin-status";
+import {
+  AdminTable,
+  AdminTableBody,
+  AdminTableCell,
+  AdminTableEmpty,
+  AdminTableHead,
+  AdminTableHeader,
+  AdminTableRow,
+  AdminTableShell,
+} from "@/components/admin/ui/admin-table";
+import { AdminStatusFilterLinks } from "@/components/admin/ui/admin-filter-link";
+import { AdminToolbar } from "@/components/admin/ui/admin-toolbar";
+import {
+  filterAdminClients,
+  loadAdminClientDirectory,
+} from "@/lib/admin/client-directory";
+import {
+  ADMIN_PAGE_SIZE,
+  parseAdminPage,
+  parseAdminQuery,
+  parseAdminStatus,
+} from "@/lib/admin/search-params";
+import { ONBOARDING_STEPS } from "@/lib/onboarding/steps";
+import { ClientsStepFilter } from "@/components/admin/clients-step-filter";
 
-export default async function AdminClientsPage() {
-  const supabase = await createClient();
-  const { data: cases } = await supabase
-    .from("onboarding_cases")
-    .select("*")
-    .order("updated_at", { ascending: false });
+export default async function AdminClientsPage({
+  searchParams,
+}: {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+}) {
+  const sp = await searchParams;
+  const q = parseAdminQuery(sp.q);
+  const status = parseAdminStatus(sp.status, [
+    "active",
+    "completed",
+    "paused",
+    "cancelled",
+  ]);
+  const step = typeof sp.step === "string" ? sp.step : null;
+  const page = parseAdminPage(sp.page);
 
-  const userIds = (cases ?? []).map((c) => c.user_id as string);
-  const { data: profiles } =
-    userIds.length > 0
-      ? await supabase
-          .from("profiles")
-          .select("id, first_name, last_name")
-          .in("id", userIds)
-      : { data: [] };
-
-  const byId = new Map((profiles ?? []).map((p) => [p.id, p]));
+  const all = await loadAdminClientDirectory();
+  const filtered = filterAdminClients(all, { q, status, step });
+  const total = filtered.length;
+  const slice = filtered.slice(
+    (page - 1) * ADMIN_PAGE_SIZE,
+    page * ADMIN_PAGE_SIZE,
+  );
 
   return (
-    <div className="mx-auto w-full max-w-6xl space-y-6">
-      <PageHeader
-        title="Clients"
-        description="Onboarding progress across activated accounts."
-      />
+    <AdminPage
+      title="Clients"
+      description="Onboarding progress across activated accounts."
+      actions={
+        <Suspense fallback={null}>
+          <InviteUserDialog />
+        </Suspense>
+      }
+    >
+      <Suspense fallback={null}>
+        <AdminToolbar
+          searchPlaceholder="Search name, email, phone…"
+          resultCount={total}
+          filters={
+            <>
+              <AdminStatusFilterLinks
+                options={[
+                  { value: "all", label: "All" },
+                  { value: "active", label: "Active" },
+                  { value: "completed", label: "Completed" },
+                ]}
+              />
+              <ClientsStepFilter
+                steps={ONBOARDING_STEPS.map((s) => ({
+                  key: s.key,
+                  title: s.title,
+                }))}
+              />
+            </>
+          }
+        />
+      </Suspense>
 
-      <WidgetCard className="overflow-x-auto p-0 sm:p-0">
-        <table className="w-full min-w-[640px] text-left text-sm">
-          <thead className="border-b border-neutral-100 bg-neutral-50/80 text-[10px] uppercase tracking-[0.14em] text-neutral-500">
-            <tr>
-              <th className="px-5 py-3 font-semibold">Client</th>
-              <th className="px-5 py-3 font-semibold">Current step</th>
-              <th className="px-5 py-3 font-semibold">Status</th>
-              <th className="px-5 py-3 font-semibold" />
-            </tr>
-          </thead>
-          <tbody>
-            {(cases ?? []).length === 0 ? (
-              <tr>
-                <td
-                  colSpan={4}
-                  className="px-5 py-8 text-center text-neutral-500"
-                >
-                  No onboarding cases yet.
-                </td>
-              </tr>
+      <AdminTableShell>
+        <AdminTable>
+          <AdminTableHeader>
+            <AdminTableRow className="hover:bg-transparent">
+              <AdminTableHead>Client</AdminTableHead>
+              <AdminTableHead className="hidden md:table-cell">
+                Email
+              </AdminTableHead>
+              <AdminTableHead>Current step</AdminTableHead>
+              <AdminTableHead>Status</AdminTableHead>
+              <AdminTableHead className="hidden sm:table-cell">
+                Updated
+              </AdminTableHead>
+            </AdminTableRow>
+          </AdminTableHeader>
+          <AdminTableBody>
+            {slice.length === 0 ? (
+              <AdminTableEmpty colSpan={5}>No clients found.</AdminTableEmpty>
             ) : (
-              (cases ?? []).map((row) => {
-                const p = byId.get(row.user_id);
-                const name =
-                  [p?.first_name, p?.last_name].filter(Boolean).join(" ") ||
-                  row.user_id.slice(0, 8);
-                return (
-                  <tr key={row.id} className="border-b border-neutral-100 last:border-0">
-                    <td className="px-5 py-3 font-medium text-neutral-900">
-                      {name}
-                    </td>
-                    <td className="px-5 py-3 font-mono text-xs text-neutral-600">
-                      {row.current_step_key ?? "—"}
-                    </td>
-                    <td className="px-5 py-3">
-                      <Badge
-                        variant="outline"
-                        className="rounded-full border-neutral-200 uppercase"
-                      >
-                        {row.status}
-                      </Badge>
-                    </td>
-                    <td className="px-5 py-3 text-right">
-                      <Link
-                        href={`/dashboard/admin/clients/${row.user_id}`}
-                        className="text-xs font-semibold uppercase tracking-[0.12em] text-[#a8842a] hover:underline"
-                      >
-                        Open
-                      </Link>
-                    </td>
-                  </tr>
-                );
-              })
+              slice.map((row) => (
+                <AdminTableRow key={row.caseId} clickable className="group">
+                  <AdminTableCell>
+                    <Link
+                      href={`/dashboard/admin/clients/${row.userId}`}
+                      className="font-medium text-neutral-950 group-hover:text-[#8a6d1f]"
+                    >
+                      {row.name}
+                    </Link>
+                    <p className="mt-0.5 text-xs text-neutral-500 md:hidden">
+                      {row.email ?? "No email"}
+                    </p>
+                  </AdminTableCell>
+                  <AdminTableCell className="hidden max-w-[220px] truncate text-neutral-600 md:table-cell">
+                    {row.email ?? "—"}
+                  </AdminTableCell>
+                  <AdminTableCell className="max-w-[200px] truncate text-neutral-700">
+                    {row.currentStepTitle}
+                  </AdminTableCell>
+                  <AdminTableCell>
+                    <AdminStatus status={row.status} />
+                  </AdminTableCell>
+                  <AdminTableCell className="hidden whitespace-nowrap text-xs text-neutral-500 sm:table-cell">
+                    {new Date(row.updatedAt).toLocaleString()}
+                  </AdminTableCell>
+                </AdminTableRow>
+              ))
             )}
-          </tbody>
-        </table>
-      </WidgetCard>
-    </div>
+          </AdminTableBody>
+        </AdminTable>
+      </AdminTableShell>
+
+      <Suspense fallback={null}>
+        <AdminPagination page={page} pageSize={ADMIN_PAGE_SIZE} total={total} />
+      </Suspense>
+    </AdminPage>
   );
 }

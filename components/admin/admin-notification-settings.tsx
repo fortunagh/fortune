@@ -1,13 +1,12 @@
 "use client";
 
+import { Plus, Trash2 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { fortunaUiClass } from "@/components/portal/portal-ui";
-import { cn } from "@/lib/utils";
-import { Plus, Trash2 } from "lucide-react";
 
 export function AdminNotificationSettings({
   initialEmails,
@@ -18,8 +17,6 @@ export function AdminNotificationSettings({
     initialEmails.length ? initialEmails : [""],
   );
   const [saving, setSaving] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     setEmails(initialEmails.length ? initialEmails : [""]);
@@ -27,8 +24,6 @@ export function AdminNotificationSettings({
 
   async function save() {
     setSaving(true);
-    setMessage(null);
-    setError(null);
     try {
       const cleaned = emails.map((e) => e.trim()).filter(Boolean);
       const res = await fetch("/api/admin/settings/notifications", {
@@ -42,34 +37,33 @@ export function AdminNotificationSettings({
       };
       if (!res.ok) throw new Error(data.error || "Could not save");
       setEmails(data.emails?.length ? data.emails : [""]);
-      setMessage("Notification emails saved.");
+      toast.success("Notification emails saved");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not save");
+      toast.error(e instanceof Error ? e.message : "Could not save");
     } finally {
       setSaving(false);
     }
   }
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-4">
       <div>
-        <Label className={cn(fortunaUiClass, "text-xs uppercase tracking-[0.14em]")}>
+        <Label className="text-sm font-medium text-neutral-900">
           Notification emails
         </Label>
-        <p className="mt-1 text-sm text-neutral-600">
-          These addresses receive an email whenever someone submits Request
-          access / Register Now.
+        <p className="mt-1 text-sm text-neutral-500">
+          These addresses get an email when someone submits request access.
         </p>
       </div>
 
       <div className="space-y-2">
         {emails.map((email, index) => (
-          <div key={`email-${index}`} className="flex gap-2">
+          <div key={index} className="flex gap-2">
             <Input
               type="email"
               value={email}
               placeholder="you@fortunaglobalholdings.com"
-              className="rounded-xl"
+              className="h-8"
               onChange={(e) => {
                 const next = [...emails];
                 next[index] = e.target.value;
@@ -79,13 +73,13 @@ export function AdminNotificationSettings({
             <Button
               type="button"
               variant="outline"
-              size="icon"
-              className="shrink-0 rounded-xl"
+              size="icon-sm"
+              className="shrink-0"
               disabled={emails.length <= 1}
               onClick={() => setEmails(emails.filter((_, i) => i !== index))}
               aria-label="Remove email"
             >
-              <Trash2 className="h-4 w-4" />
+              <Trash2 className="size-3.5" />
             </Button>
           </div>
         ))}
@@ -95,26 +89,22 @@ export function AdminNotificationSettings({
         <Button
           type="button"
           variant="outline"
-          className="rounded-xl"
+          size="sm"
           onClick={() => setEmails([...emails, ""])}
         >
-          <Plus className="mr-1.5 h-4 w-4" />
+          <Plus className="size-3.5" />
           Add email
         </Button>
         <Button
           type="button"
           variant="fortuna"
+          size="sm"
           disabled={saving}
           onClick={save}
         >
           {saving ? "Saving…" : "Save"}
         </Button>
       </div>
-
-      {message ? (
-        <p className="text-sm text-emerald-700">{message}</p>
-      ) : null}
-      {error ? <p className="text-sm text-red-600">{error}</p> : null}
     </div>
   );
 }

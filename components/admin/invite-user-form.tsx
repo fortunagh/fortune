@@ -1,21 +1,24 @@
 "use client";
 
+import { toast } from "sonner";
+import * as React from "react";
+
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import * as React from "react";
 
-export function InviteUserForm() {
+export function InviteUserForm({
+  onSuccess,
+  compact = false,
+}: {
+  onSuccess?: () => void;
+  compact?: boolean;
+}) {
   const [email, setEmail] = React.useState("");
   const [loading, setLoading] = React.useState(false);
-  const [message, setMessage] = React.useState<{
-    type: "ok" | "err";
-    text: string;
-  } | null>(null);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setMessage(null);
     setLoading(true);
     try {
       const res = await fetch("/api/admin/invite", {
@@ -27,33 +30,33 @@ export function InviteUserForm() {
         error?: string;
       };
       if (!res.ok) {
-        setMessage({ type: "err", text: data.error ?? "Invite failed" });
+        toast.error(data.error ?? "Invite failed");
         return;
       }
-      setMessage({
-        type: "ok",
-        text: "Invitation sent. They will receive an email to set a password.",
-      });
+      toast.success("Invitation sent");
       setEmail("");
+      onSuccess?.();
     } catch {
-      setMessage({ type: "err", text: "Network error" });
+      toast.error("Network error");
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <form
-      onSubmit={onSubmit}
-      className="mx-auto w-full max-w-md space-y-4 rounded-xl border border-neutral-200 bg-white p-6 shadow-sm dark:border-neutral-800 dark:bg-neutral-900"
-    >
-      <div>
-        <h2 className="text-lg font-semibold">Invite a user</h2>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Sends a Supabase invite email so they can set a password and sign in as
-          a customer. Promote them to admin in the database if needed.
+    <form onSubmit={onSubmit} className={compact ? "space-y-4" : "space-y-4"}>
+      {!compact ? (
+        <div>
+          <h2 className="text-base font-semibold">Invite a user</h2>
+          <p className="mt-1 text-sm text-neutral-500">
+            Sends a set-password email so they can sign in as a customer.
+          </p>
+        </div>
+      ) : (
+        <p className="text-sm text-neutral-500">
+          Sends a set-password email so they can sign in as a customer.
         </p>
-      </div>
+      )}
       <div className="space-y-2">
         <Label htmlFor="invite-email">Email</Label>
         <Input
@@ -64,21 +67,10 @@ export function InviteUserForm() {
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           required
+          className="h-8"
         />
       </div>
-      {message && (
-        <p
-          className={
-            message.type === "ok"
-              ? "text-sm text-emerald-700 dark:text-emerald-400"
-              : "text-sm text-destructive"
-          }
-          role="status"
-        >
-          {message.text}
-        </p>
-      )}
-      <Button type="submit" disabled={loading}>
+      <Button type="submit" variant="fortuna" size="sm" disabled={loading}>
         {loading ? "Sending…" : "Send invite"}
       </Button>
     </form>

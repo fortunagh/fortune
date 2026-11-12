@@ -14,19 +14,20 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
+          "rounded-xl border border-input bg-background shadow-sm hover:bg-accent hover:text-accent-foreground",
         secondary:
-          "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+          "rounded-xl bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80",
+        ghost: "rounded-xl hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
         fortuna:
-          "h-auto min-h-11 rounded-xl border-0 bg-[linear-gradient(135deg,#d4af37_0%,#c59d3f_45%,#a8842a_100%)] px-6 py-3 text-sm font-semibold text-white shadow-[0_8px_24px_rgba(197,157,63,0.35)] transition-[transform,box-shadow,filter] duration-150 hover:brightness-105 hover:shadow-[0_10px_28px_rgba(197,157,63,0.45)] focus-visible:ring-2 focus-visible:ring-[#c59d3f]/40 active:scale-[0.99]",
+          "rounded-xl border-0 bg-[linear-gradient(135deg,#d4af37_0%,#c59d3f_45%,#a8842a_100%)] font-semibold text-white shadow-[0_6px_18px_rgba(197,157,63,0.28)] transition-[transform,box-shadow,filter] duration-150 hover:brightness-105 hover:shadow-[0_8px_22px_rgba(197,157,63,0.36)] focus-visible:ring-2 focus-visible:ring-[#c59d3f]/40 active:scale-[0.99]",
       },
       size: {
         default: "h-9 px-4 py-2",
-        sm: "h-8 rounded-md px-3 text-xs",
-        lg: "h-10 rounded-md px-8",
+        sm: "h-8 px-3 text-xs",
+        lg: "h-11 px-8",
         icon: "h-9 w-9",
+        "icon-sm": "h-8 w-8",
       },
     },
     defaultVariants: {

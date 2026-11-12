@@ -126,6 +126,7 @@ export function SignUpForm({
               <Button
                 type="submit"
                 variant="fortuna"
+                size="lg"
                 className="w-full"
                 disabled={isLoading}
               >

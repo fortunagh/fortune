@@ -2,103 +2,144 @@
 
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { toast } from "sonner";
 
+import {
+  ClientCombobox,
+  type ClientOption,
+} from "@/components/admin/client-combobox";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
-export function AdminIssueInvoiceForm({ userIds }: { userIds: string[] }) {
+export function AdminIssueInvoiceForm({
+  clients,
+}: {
+  clients: ClientOption[];
+}) {
   const router = useRouter();
+  const [open, setOpen] = React.useState(false);
   const [busy, setBusy] = React.useState(false);
-  const [message, setMessage] = React.useState<string | null>(null);
+  const [userId, setUserId] = React.useState("");
 
   return (
-    <form
-      className="grid gap-3 border border-border p-5 sm:grid-cols-2"
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setBusy(true);
-        setMessage(null);
-        const fd = new FormData(e.currentTarget);
-        try {
-          const res = await fetch("/api/admin/billing/issue", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              userId: fd.get("userId"),
-              lots: Number(fd.get("lots")),
-              periodStart: fd.get("periodStart"),
-              periodEnd: fd.get("periodEnd"),
-              amountCents: fd.get("amountCents")
-                ? Number(fd.get("amountCents"))
-                : undefined,
-              currency: fd.get("currency") || "usd",
-            }),
-          });
-          const json = await res.json();
-          if (!res.ok) throw new Error(json.error || "Failed");
-          setMessage("Invoice issued.");
-          router.refresh();
-        } catch (err) {
-          setMessage(err instanceof Error ? err.message : "Error");
-        } finally {
-          setBusy(false);
-        }
-      }}
-    >
-      <h3 className="sm:col-span-2 text-xs font-semibold uppercase tracking-[0.14em]">
-        Issue usage invoice
-      </h3>
-      <div className="space-y-1 sm:col-span-2">
-        <Label>User id</Label>
-        <Input
-          name="userId"
-          required
-          className="rounded-xl font-mono text-xs"
-          list="completed-users"
-          placeholder="uuid"
-        />
-        <datalist id="completed-users">
-          {userIds.map((id) => (
-            <option key={id} value={id} />
-          ))}
-        </datalist>
-      </div>
-      <div className="space-y-1">
-        <Label>Round-turn lots</Label>
-        <Input
-          name="lots"
-          type="number"
-          step="0.01"
-          min="0"
-          className="rounded-xl"
-          placeholder="e.g. 10"
-        />
-      </div>
-      <div className="space-y-1">
-        <Label>Amount cents (optional override)</Label>
-        <Input name="amountCents" type="number" className="rounded-xl" />
-      </div>
-      <div className="space-y-1">
-        <Label>Period start</Label>
-        <Input name="periodStart" type="date" required className="rounded-xl" />
-      </div>
-      <div className="space-y-1">
-        <Label>Period end</Label>
-        <Input name="periodEnd" type="date" required className="rounded-xl" />
-      </div>
-      <div className="space-y-1">
-        <Label>Currency</Label>
-        <Input name="currency" defaultValue="usd" className="rounded-xl" />
-      </div>
-      <div className="flex items-end">
-        <Button type="submit" variant="fortuna" disabled={busy}>
-          {busy ? "Issuing…" : "Issue invoice"}
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button type="button" variant="fortuna" size="sm">
+          Issue invoice
         </Button>
-      </div>
-      {message ? (
-        <p className="sm:col-span-2 text-sm text-muted-foreground">{message}</p>
-      ) : null}
-    </form>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-lg">
+        <DialogHeader>
+          <DialogTitle>Issue usage invoice</DialogTitle>
+        </DialogHeader>
+        <form
+          className="grid gap-3"
+          onSubmit={async (e) => {
+            e.preventDefault();
+            if (!userId) {
+              toast.error("Select a client");
+              return;
+            }
+            setBusy(true);
+            const fd = new FormData(e.currentTarget);
+            try {
+              const res = await fetch("/api/admin/billing/issue", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                  userId,
+                  lots: Number(fd.get("lots")),
+                  periodStart: fd.get("periodStart"),
+                  periodEnd: fd.get("periodEnd"),
+                  amountCents: fd.get("amountCents")
+                    ? Number(fd.get("amountCents"))
+                    : undefined,
+                  currency: fd.get("currency") || "usd",
+                }),
+              });
+              const json = await res.json();
+              if (!res.ok) throw new Error(json.error || "Failed");
+              toast.success("Invoice issued");
+              setOpen(false);
+              setUserId("");
+              router.refresh();
+            } catch (err) {
+              toast.error(err instanceof Error ? err.message : "Error");
+            } finally {
+              setBusy(false);
+            }
+          }}
+        >
+          <div className="space-y-1.5">
+            <Label>Client</Label>
+            <ClientCombobox
+              options={clients}
+              value={userId}
+              onChange={setUserId}
+            />
+          </div>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className="space-y-1.5">
+              <Label>Round-turn lots</Label>
+              <Input
+                name="lots"
+                type="number"
+                step="0.01"
+                min="0"
+                className="h-8"
+                placeholder="e.g. 10"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Amount cents (optional)</Label>
+              <Input name="amountCents" type="number" className="h-8" />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Period start</Label>
+              <Input
+                name="periodStart"
+                type="date"
+                required
+                className="h-8"
+              />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Period end</Label>
+              <Input name="periodEnd" type="date" required className="h-8" />
+            </div>
+            <div className="space-y-1.5">
+              <Label>Currency</Label>
+              <Input
+                name="currency"
+                defaultValue="usd"
+                className="h-8"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button type="submit" variant="fortuna" size="sm" disabled={busy}>
+              {busy ? "Issuing…" : "Issue invoice"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
   );
 }

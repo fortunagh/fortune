@@ -104,7 +104,7 @@ const AlertDialogAction = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <AlertDialogPrimitive.Action
     ref={ref}
-    className={cn(buttonVariants({ variant: "fortuna" }), className)}
+    className={cn(buttonVariants({ variant: "fortuna", size: "sm" }), className)}
     {...props}
   />
 ));
@@ -117,8 +117,8 @@ const AlertDialogCancel = React.forwardRef<
   <AlertDialogPrimitive.Cancel
     ref={ref}
     className={cn(
-      buttonVariants({ variant: "outline" }),
-      "mt-0 rounded-xl",
+      buttonVariants({ variant: "outline", size: "sm" }),
+      "mt-0",
       className,
     )}
     {...props}
