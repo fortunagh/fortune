@@ -3,9 +3,11 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 import { sendEmail } from "@/lib/integrations/resend";
 import { sendSms } from "@/lib/integrations/twilio";
 import { resolveUserPhone } from "@/lib/onboarding/phone";
+import { getNotificationEmails } from "@/lib/admin/settings";
 import {
   renderAccessApprovedEmail,
   renderInvoiceEmail,
+  renderNewRequestAccessAdminEmail,
   renderNextStepEmail,
 } from "./templates";
 
@@ -184,6 +186,41 @@ export async function enqueueNextStepNotification(
   }
 
   return sent;
+}
+
+export async function notifyAdminsOfNewRequestAccess(options: {
+  admin: AdminClient;
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  interest: string;
+}) {
+  const emails = await getNotificationEmails(options.admin);
+  if (emails.length === 0) {
+    console.warn(
+      "No admin notification emails configured — skip new request alert",
+    );
+    return { skipped: true as const };
+  }
+
+  const tpl = renderNewRequestAccessAdminEmail({
+    firstName: options.firstName,
+    lastName: options.lastName,
+    email: options.email,
+    phone: options.phone,
+    city: options.city,
+    interest: options.interest,
+    adminUrl: `${siteUrl()}/dashboard/admin/request-access`,
+  });
+
+  return sendEmail({
+    to: emails,
+    subject: tpl.subject,
+    html: tpl.html,
+    text: tpl.text,
+  });
 }
 
 export async function sendAccessApprovedEmail(

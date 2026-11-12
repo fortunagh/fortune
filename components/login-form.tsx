@@ -24,8 +24,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff, Lock, Mail } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useState } from "react";
 
 export function LoginForm({
   className,
@@ -39,6 +39,13 @@ export function LoginForm({
   const [isLoading, setIsLoading] = useState(false);
   const [magicLoading, setMagicLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  useEffect(() => {
+    if (searchParams.get("password_set") === "1") {
+      setInfo("Password saved. Sign in with your email and new password.");
+    }
+  }, [searchParams]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();

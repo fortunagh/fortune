@@ -1,7 +1,7 @@
 import { Resend } from "resend";
 
 export async function sendEmail(options: {
-  to: string;
+  to: string | string[];
   subject: string;
   html: string;
   text: string;
@@ -16,11 +16,18 @@ export async function sendEmail(options: {
     return { ok: false, error: "RESEND_API_KEY not configured" };
   }
 
+  const recipients = (Array.isArray(options.to) ? options.to : [options.to])
+    .map((e) => e.trim())
+    .filter(Boolean);
+  if (recipients.length === 0) {
+    return { ok: false, error: "No recipients" };
+  }
+
   try {
     const resend = new Resend(key);
     const { data, error } = await resend.emails.send({
       from,
-      to: options.to,
+      to: recipients,
       subject: options.subject,
       html: options.html,
       text: options.text,

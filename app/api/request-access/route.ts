@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 
 import { getDialCode } from "@/lib/data/phone-countries";
+import { notifyAdminsOfNewRequestAccess } from "@/lib/notifications/enqueue";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { requestAccessFormSchema } from "@/lib/validation/request-access";
@@ -113,6 +114,20 @@ export async function POST(request: Request) {
       },
       { status: 500 },
     );
+  }
+
+  try {
+    await notifyAdminsOfNewRequestAccess({
+      admin: createServiceRoleClient(),
+      firstName: values.firstName.trim(),
+      lastName: values.lastName.trim(),
+      email: values.email.trim().toLowerCase(),
+      phone: phone_e164 ?? values.mobileNumber.trim(),
+      city: values.city.trim(),
+      interest: values.platformInterest.trim(),
+    });
+  } catch (e) {
+    console.error("admin new-request notify failed", e);
   }
 
   return NextResponse.json({ ok: true });

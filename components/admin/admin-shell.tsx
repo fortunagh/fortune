@@ -12,6 +12,7 @@ import {
   LayoutDashboard,
   LifeBuoy,
   Menu,
+  Settings,
   Shield,
   UserPlus,
   Users,
@@ -36,6 +37,7 @@ const nav = [
   { href: "/dashboard/admin/billing", label: "Billing", icon: CreditCard },
   { href: "/dashboard/admin/audit", label: "Audit", icon: ClipboardList },
   { href: "/dashboard/admin/invite", label: "Invite user", icon: UserPlus },
+  { href: "/dashboard/admin/settings", label: "Settings", icon: Settings },
 ];
 
 export function AdminShell({

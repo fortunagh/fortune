@@ -1,5 +1,11 @@
+import { Suspense } from "react";
+
 import { LoginForm } from "@/components/login-form";
 
 export default function Page() {
-  return <LoginForm />;
+  return (
+    <Suspense fallback={<p className="text-sm text-neutral-500">Loading…</p>}>
+      <LoginForm />
+    </Suspense>
+  );
 }

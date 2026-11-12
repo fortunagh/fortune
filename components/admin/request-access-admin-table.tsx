@@ -11,21 +11,14 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import type {
   RequestAccessStatus,
   RequestAccessSubmissionRow,
 } from "@/lib/types/request-access-submission";
-import { geistSans } from "@/lib/fonts/geist-admin";
+import { fortunaUiClass } from "@/components/portal/portal-ui";
 import { cn } from "@/lib/utils";
-import { Eye, Trash2 } from "lucide-react";
+import { Check, Eye, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import * as React from "react";
 
@@ -39,13 +32,6 @@ function formatDate(iso: string) {
     return iso;
   }
 }
-
-const STATUS_OPTIONS: RequestAccessStatus[] = [
-  "pending",
-  "contacted",
-  "approved",
-  "declined",
-];
 
 function statusBadgeVariant(
   s: RequestAccessStatus,
@@ -73,10 +59,10 @@ function DetailField({
 }) {
   return (
     <div className={cn("min-w-0", className)}>
-      <dt className="text-[11px] font-medium uppercase tracking-[0.06em] text-neutral-500 dark:text-neutral-400">
+      <dt className="text-[11px] font-medium uppercase tracking-[0.06em] text-neutral-500">
         {label}
       </dt>
-      <dd className="mt-1 text-sm font-normal normal-case leading-relaxed tracking-normal text-neutral-900 dark:text-neutral-100">
+      <dd className="mt-1 text-sm leading-relaxed text-neutral-900">
         {children}
       </dd>
     </div>
@@ -91,8 +77,8 @@ function DetailSection({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-lg border border-neutral-200 bg-neutral-50/80 p-4 dark:border-neutral-800 dark:bg-neutral-950/40">
-      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900/80 dark:text-amber-200/80">
+    <section className="rounded-2xl border border-black/[0.06] bg-[#fbf8f3]/80 p-4">
+      <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-[#8a6d1f]">
         {title}
       </h3>
       <dl className="grid gap-4 sm:grid-cols-2">{children}</dl>
@@ -110,10 +96,10 @@ export function RequestAccessAdminTable({
     React.useState<RequestAccessSubmissionRow[]>(initialRows);
   const [viewing, setViewing] =
     React.useState<RequestAccessSubmissionRow | null>(null);
-  const [status, setStatus] = React.useState<RequestAccessStatus>("pending");
   const [notes, setNotes] = React.useState("");
-  const [saving, setSaving] = React.useState(false);
+  const [busyId, setBusyId] = React.useState<string | null>(null);
   const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [actionError, setActionError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
     setRows(initialRows);
@@ -121,29 +107,36 @@ export function RequestAccessAdminTable({
 
   function openView(row: RequestAccessSubmissionRow) {
     setViewing(row);
-    setStatus(row.status ?? "pending");
     setNotes(row.admin_notes ?? "");
+    setActionError(null);
   }
 
-  async function saveEdit() {
-    if (!viewing) return;
-    setSaving(true);
+  async function patchRow(
+    id: string,
+    body: {
+      status?: RequestAccessStatus;
+      admin_notes?: string | null;
+      sendInvitation?: boolean;
+    },
+  ) {
+    setBusyId(id);
+    setActionError(null);
     try {
-      const res = await fetch(`/api/admin/request-access/${viewing.id}`, {
+      const res = await fetch(`/api/admin/request-access/${id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          status,
-          admin_notes: notes.trim() === "" ? null : notes.trim(),
-        }),
+        body: JSON.stringify(body),
       });
       const data = (await res.json().catch(() => ({}))) as {
         row?: RequestAccessSubmissionRow;
         error?: string;
+        warning?: string;
       };
       if (!res.ok) {
-        alert(data.error ?? "Could not save");
-        return;
+        throw new Error(data.error ?? "Could not update");
+      }
+      if (data.warning) {
+        setActionError(data.warning);
       }
       if (data.row) {
         setRows((prev) =>
@@ -153,12 +146,58 @@ export function RequestAccessAdminTable({
               : r,
           ),
         );
-        setViewing(data.row as RequestAccessSubmissionRow);
+        if (viewing?.id === id) {
+          setViewing(data.row as RequestAccessSubmissionRow);
+        }
       }
-      setViewing(null);
       router.refresh();
+      return data.row;
     } finally {
-      setSaving(false);
+      setBusyId(null);
+    }
+  }
+
+  async function accept(row: RequestAccessSubmissionRow) {
+    if (
+      !confirm(
+        `Approve ${row.first_name} ${row.last_name}? They will receive a set-password email.`,
+      )
+    ) {
+      return;
+    }
+    try {
+      await patchRow(row.id, {
+        status: "approved",
+        sendInvitation: true,
+        admin_notes: notes.trim() === "" ? undefined : notes.trim(),
+      });
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Approve failed");
+      alert(e instanceof Error ? e.message : "Approve failed");
+    }
+  }
+
+  async function reject(row: RequestAccessSubmissionRow) {
+    if (!confirm(`Reject ${row.first_name} ${row.last_name}?`)) return;
+    try {
+      await patchRow(row.id, {
+        status: "declined",
+        sendInvitation: false,
+      });
+    } catch (e) {
+      alert(e instanceof Error ? e.message : "Reject failed");
+    }
+  }
+
+  async function saveNotes() {
+    if (!viewing) return;
+    try {
+      await patchRow(viewing.id, {
+        admin_notes: notes.trim() === "" ? null : notes.trim(),
+      });
+      setViewing(null);
+    } catch (e) {
+      setActionError(e instanceof Error ? e.message : "Could not save notes");
     }
   }
 
@@ -184,123 +223,180 @@ export function RequestAccessAdminTable({
 
   return (
     <>
-      <div className="w-full overflow-x-auto rounded-xl border border-neutral-200 bg-white shadow-sm [-webkit-overflow-scrolling:touch] dark:border-neutral-800 dark:bg-neutral-900">
-        <table className="w-full min-w-[900px] border-collapse text-left text-sm">
+      <div className="w-full overflow-x-auto rounded-2xl border border-black/[0.06] bg-white shadow-sm">
+        <table className="w-full min-w-[980px] border-collapse text-left text-sm">
           <thead>
-            <tr className="border-b border-neutral-200 bg-neutral-50/80 dark:border-neutral-800 dark:bg-neutral-950/50">
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+            <tr className="border-b border-black/[0.06] bg-[#fbf8f3]">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 Received
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 Status
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 Name
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 Email
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 Phone
               </th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold">
+              <th className="whitespace-nowrap px-4 py-3 font-semibold">
                 City
               </th>
-              <th className="px-3 py-2.5 font-semibold">Interest</th>
-              <th className="whitespace-nowrap px-3 py-2.5 font-semibold text-right">
+              <th className="px-4 py-3 font-semibold">Interest</th>
+              <th className="whitespace-nowrap px-4 py-3 font-semibold text-right">
                 Actions
               </th>
             </tr>
           </thead>
           <tbody>
-            {rows.map((row) => (
-              <tr
-                key={row.id}
-                className="cursor-pointer border-b border-neutral-100 transition-colors last:border-0 hover:bg-neutral-50/90 dark:border-neutral-800 dark:hover:bg-neutral-800/40"
-                onClick={() => openView(row)}
-              >
-                <td className="whitespace-nowrap px-3 py-2 align-top text-muted-foreground">
-                  {formatDate(row.created_at)}
-                </td>
-                <td className="px-3 py-2 align-top">
-                  <Badge variant={statusBadgeVariant(row.status ?? "pending")}>
-                    {row.status ?? "pending"}
-                  </Badge>
-                </td>
-                <td className="px-3 py-2 align-top">
-                  {row.first_name} {row.last_name}
-                </td>
-                <td className="max-w-[160px] break-all px-3 py-2 align-top text-xs">
-                  {row.email}
-                </td>
-                <td className="max-w-[120px] break-all px-3 py-2 align-top text-xs text-muted-foreground">
-                  {row.phone_e164 ?? row.mobile_number}
-                </td>
-                <td className="px-3 py-2 align-top">{row.city}</td>
-                <td className="max-w-[220px] px-3 py-2 align-top text-xs leading-relaxed text-muted-foreground">
-                  {row.platform_interest.slice(0, 120)}
-                  {row.platform_interest.length > 120 ? "…" : ""}
-                </td>
+            {rows.length === 0 ? (
+              <tr>
                 <td
-                  className="whitespace-nowrap px-3 py-2 align-top text-right"
-                  onClick={(e) => e.stopPropagation()}
+                  colSpan={8}
+                  className="px-4 py-10 text-center text-sm text-neutral-500"
                 >
-                  <div className="flex justify-end gap-1">
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8"
-                      onClick={() => openView(row)}
-                      aria-label="View full registration"
-                      title="View full registration"
-                    >
-                      <Eye className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="ghost"
-                      size="icon"
-                      className="h-8 w-8 text-destructive hover:text-destructive"
-                      disabled={deletingId === row.id}
-                      onClick={() => remove(row.id)}
-                      aria-label="Delete"
-                      title="Delete"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
-                  </div>
+                  No submissions yet.
                 </td>
               </tr>
-            ))}
+            ) : (
+              rows.map((row) => {
+                const status = (row.status ?? "pending") as RequestAccessStatus;
+                const pending =
+                  status === "pending" || status === "contacted";
+                const busy = busyId === row.id;
+                return (
+                  <tr
+                    key={row.id}
+                    className="border-b border-black/[0.04] last:border-0"
+                  >
+                    <td className="whitespace-nowrap px-4 py-3 align-middle text-neutral-500">
+                      {formatDate(row.created_at)}
+                    </td>
+                    <td className="px-4 py-3 align-middle">
+                      <Badge
+                        variant={statusBadgeVariant(status)}
+                        className="rounded-full capitalize"
+                      >
+                        {status}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3 align-middle font-medium">
+                      {row.first_name} {row.last_name}
+                    </td>
+                    <td className="max-w-[180px] break-all px-4 py-3 align-middle text-xs">
+                      {row.email}
+                    </td>
+                    <td className="max-w-[130px] break-all px-4 py-3 align-middle text-xs text-neutral-500">
+                      {row.phone_e164 ?? row.mobile_number}
+                    </td>
+                    <td className="px-4 py-3 align-middle">{row.city}</td>
+                    <td className="max-w-[220px] px-4 py-3 align-middle text-xs leading-relaxed text-neutral-500">
+                      {row.platform_interest.slice(0, 100)}
+                      {row.platform_interest.length > 100 ? "…" : ""}
+                    </td>
+                    <td className="whitespace-nowrap px-4 py-3 align-middle text-right">
+                      <div className="flex flex-wrap justify-end gap-1.5">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="rounded-xl"
+                          onClick={() => openView(row)}
+                        >
+                          <Eye className="mr-1 h-3.5 w-3.5" />
+                          View
+                        </Button>
+                        {pending ? (
+                          <>
+                            <Button
+                              type="button"
+                              variant="fortuna"
+                              size="sm"
+                              disabled={busy}
+                              onClick={() => accept(row)}
+                            >
+                              <Check className="mr-1 h-3.5 w-3.5" />
+                              Accept
+                            </Button>
+                            <Button
+                              type="button"
+                              variant="outline"
+                              size="sm"
+                              className="rounded-xl border-red-200 text-red-700 hover:bg-red-50"
+                              disabled={busy}
+                              onClick={() => reject(row)}
+                            >
+                              <X className="mr-1 h-3.5 w-3.5" />
+                              Reject
+                            </Button>
+                          </>
+                        ) : status === "approved" ? (
+                          <Button
+                            type="button"
+                            variant="outline"
+                            size="sm"
+                            className="rounded-xl"
+                            disabled={busy}
+                            onClick={() => accept(row)}
+                            title="Send a fresh set-password email"
+                          >
+                            Resend invite
+                          </Button>
+                        ) : null}
+                        <Button
+                          type="button"
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 text-destructive"
+                          disabled={deletingId === row.id}
+                          onClick={() => remove(row.id)}
+                          aria-label="Delete"
+                        >
+                          <Trash2 className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })
+            )}
           </tbody>
         </table>
       </div>
 
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
-        <DialogContent
-          className={cn(
-            geistSans.className,
-            "max-h-[90dvh] overflow-y-auto font-normal antialiased sm:max-w-2xl",
-          )}
-        >
+        <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
           <DialogHeader>
-            <DialogTitle className="text-lg font-semibold tracking-tight normal-case">
+            <DialogTitle className="text-lg font-semibold tracking-tight">
               Full registration
             </DialogTitle>
-            <DialogDescription className="text-sm font-normal normal-case tracking-normal">
-              Everything submitted on the form, plus workflow status and
-              internal notes.
+            <DialogDescription>
+              Review the application. Use Accept or Reject on the table, or
+              here.
             </DialogDescription>
           </DialogHeader>
           {viewing && (
             <div className="grid gap-4 py-1">
+              <div className="flex flex-wrap items-center gap-2">
+                <Badge
+                  variant={statusBadgeVariant(
+                    (viewing.status ?? "pending") as RequestAccessStatus,
+                  )}
+                  className="rounded-full capitalize"
+                >
+                  {viewing.status ?? "pending"}
+                </Badge>
+                <span className={cn(fortunaUiClass, "text-xs text-neutral-500")}>
+                  {formatDate(viewing.created_at)}
+                </span>
+              </div>
+
               <DetailSection title="Info">
                 <DetailField label="Name">
                   {viewing.first_name} {viewing.last_name}
-                </DetailField>
-                <DetailField label="Received">
-                  {formatDate(viewing.created_at)}
                 </DetailField>
                 <DetailField label="Referral / source" className="sm:col-span-2">
                   <span className="whitespace-pre-wrap">
@@ -319,34 +415,14 @@ export function RequestAccessAdminTable({
                   </a>
                 </DetailField>
                 <DetailField label="City">{viewing.city}</DetailField>
-                <DetailField label="Phone (E.164)">
+                <DetailField label="Phone">
                   <span className="break-all">
-                    {viewing.phone_e164 ?? "—"}
+                    {viewing.phone_e164 ?? viewing.mobile_number}
                   </span>
-                </DetailField>
-                <DetailField label="Country + national number">
-                  <span className="break-all">
-                    {viewing.phone_country_iso2.toUpperCase()} ·{" "}
-                    {viewing.mobile_number}
-                  </span>
-                </DetailField>
-              </DetailSection>
-
-              <DetailSection title="Schedule">
-                <DetailField label="Time zone">
-                  {viewing.timezone.replace(/_/g, " ")}
                 </DetailField>
                 <DetailField label="Preferred contact">
                   <span className="capitalize">
                     {viewing.preferred_contact_method}
-                  </span>
-                </DetailField>
-                <DetailField
-                  label="Best times to reach"
-                  className="sm:col-span-2"
-                >
-                  <span className="whitespace-pre-wrap">
-                    {viewing.best_contact_times}
                   </span>
                 </DetailField>
               </DetailSection>
@@ -370,56 +446,74 @@ export function RequestAccessAdminTable({
                 </DetailField>
               </DetailSection>
 
-              <section className="rounded-lg border border-neutral-200 p-4 dark:border-neutral-800">
-                <h3 className="mb-3 text-xs font-semibold uppercase tracking-[0.12em] text-amber-900/80 dark:text-amber-200/80">
-                  Review
-                </h3>
-                <div className="grid gap-4">
-                  <div className="grid gap-2">
-                    <Label htmlFor="submission-status">Status</Label>
-                    <Select
-                      value={status}
-                      onValueChange={(v) =>
-                        setStatus(v as RequestAccessStatus)
-                      }
-                    >
-                      <SelectTrigger id="submission-status">
-                        <SelectValue />
-                      </SelectTrigger>
-                      <SelectContent className={geistSans.className}>
-                        {STATUS_OPTIONS.map((s) => (
-                          <SelectItem key={s} value={s} className="capitalize">
-                            {s}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-                  <div className="grid gap-2">
-                    <Label htmlFor="submission-notes">Admin notes</Label>
-                    <Textarea
-                      id="submission-notes"
-                      value={notes}
-                      onChange={(e) => setNotes(e.target.value)}
-                      placeholder="Internal notes (not shown to the applicant)"
-                      className="min-h-[100px] resize-y"
-                    />
-                  </div>
-                </div>
+              <section className="rounded-2xl border border-black/[0.06] p-4">
+                <Label htmlFor="submission-notes">Admin notes</Label>
+                <Textarea
+                  id="submission-notes"
+                  value={notes}
+                  onChange={(e) => setNotes(e.target.value)}
+                  placeholder="Internal notes (not shown to the applicant)"
+                  className="mt-2 min-h-[100px] resize-y rounded-xl"
+                />
               </section>
+
+              {actionError ? (
+                <p className="text-sm text-amber-800">{actionError}</p>
+              ) : null}
             </div>
           )}
-          <DialogFooter className="gap-2 sm:gap-0">
+          <DialogFooter className="flex-col gap-2 sm:flex-row sm:justify-between">
             <Button
               type="button"
               variant="outline"
+              className="rounded-xl"
               onClick={() => setViewing(null)}
             >
               Close
             </Button>
-            <Button type="button" onClick={saveEdit} disabled={saving}>
-              {saving ? "Saving…" : "Save"}
-            </Button>
+            <div className="flex flex-wrap gap-2">
+              <Button
+                type="button"
+                variant="outline"
+                className="rounded-xl"
+                disabled={!viewing || busyId === viewing?.id}
+                onClick={saveNotes}
+              >
+                Save notes
+              </Button>
+              {viewing &&
+              ((viewing.status ?? "pending") === "pending" ||
+                (viewing.status ?? "pending") === "contacted") ? (
+                <>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    className="rounded-xl border-red-200 text-red-700"
+                    disabled={busyId === viewing.id}
+                    onClick={() => reject(viewing)}
+                  >
+                    Reject
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="fortuna"
+                    disabled={busyId === viewing.id}
+                    onClick={() => accept(viewing)}
+                  >
+                    Accept &amp; email invite
+                  </Button>
+                </>
+              ) : viewing?.status === "approved" ? (
+                <Button
+                  type="button"
+                  variant="fortuna"
+                  disabled={busyId === viewing.id}
+                  onClick={() => accept(viewing)}
+                >
+                  Resend set-password email
+                </Button>
+              ) : null}
+            </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -26,7 +26,7 @@ export default async function AdminRequestAccessPage() {
     <div className="mx-auto w-full max-w-6xl space-y-6">
       <PageHeader
         title="Request access"
-        description="Review leads from the public form. Open a row to see the full registration, update status and notes, or delete records."
+        description="Accept sends a set-password email. Reject declines the application. View opens the full registration."
       />
       <WidgetCard className="overflow-x-auto p-0 sm:p-0">
         <div className="p-4 sm:p-5">

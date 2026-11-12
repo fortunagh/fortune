@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
+import { AuthHashRedirect } from "@/components/auth/auth-hash-redirect";
 import { ConditionalSiteFooter } from "@/components/conditional-site-footer";
 import { ThemeProvider } from "next-themes";
 import "./globals.css";
@@ -64,6 +65,7 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
+          <AuthHashRedirect />
           {children}
           <Suspense fallback={null}>
             <ConditionalSiteFooter />

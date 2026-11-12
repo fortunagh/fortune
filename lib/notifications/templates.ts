@@ -121,6 +121,40 @@ export function renderNextStepEmail(options: {
   return { subject: entry.subject, html, text };
 }
 
+/** Alert admins when a new request-access form is submitted. */
+export function renderNewRequestAccessAdminEmail(options: {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  city: string;
+  interest: string;
+  adminUrl: string;
+}): EmailTemplate {
+  const o = options;
+  const { html, text } = wrapFortunaEmail({
+    firstName: "Admin",
+    previewText: `New request from ${o.firstName} ${o.lastName}`,
+    bodyHtml: `<p style="margin:0 0 12px">A new Client Portal access request was submitted.</p>
+<ul style="margin:0 0 12px;padding-left:18px">
+<li><strong>Name</strong> — ${o.firstName} ${o.lastName}</li>
+<li><strong>Email</strong> — ${o.email}</li>
+<li><strong>Phone</strong> — ${o.phone}</li>
+<li><strong>City</strong> — ${o.city}</li>
+<li><strong>Interest</strong> — ${o.interest.slice(0, 280)}</li>
+</ul>`,
+    bodyText: `A new Client Portal access request was submitted.\nName — ${o.firstName} ${o.lastName}\nEmail — ${o.email}\nPhone — ${o.phone}\nCity — ${o.city}\nInterest — ${o.interest}`,
+    ctaLabel: "Review in admin",
+    ctaUrl: o.adminUrl,
+  });
+
+  return {
+    subject: `New access request — ${o.firstName} ${o.lastName}`,
+    html,
+    text,
+  };
+}
+
 /** Branded set-password email after admin approval. */
 export function renderAccessApprovedEmail(options: {
   firstName: string;
