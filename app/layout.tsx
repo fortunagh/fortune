@@ -65,7 +65,9 @@ export default function RootLayout({
           enableSystem={false}
           disableTransitionOnChange
         >
-          <AuthHashRedirect />
+          <Suspense fallback={null}>
+            <AuthHashRedirect />
+          </Suspense>
           {children}
           <Suspense fallback={null}>
             <ConditionalSiteFooter />
