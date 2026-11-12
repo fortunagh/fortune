@@ -1,5 +1,15 @@
 "use client";
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,12 +21,20 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Label } from "@/components/ui/label";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
 import { Textarea } from "@/components/ui/textarea";
+import { fortunaUiClass } from "@/components/portal/portal-ui";
 import type {
   RequestAccessStatus,
   RequestAccessSubmissionRow,
 } from "@/lib/types/request-access-submission";
-import { fortunaUiClass } from "@/components/portal/portal-ui";
 import { cn } from "@/lib/utils";
 import { Check, Eye, Trash2, X } from "lucide-react";
 import { useRouter } from "next/navigation";
@@ -86,6 +104,8 @@ function DetailSection({
   );
 }
 
+type ConfirmKind = "accept" | "reject" | "resend" | "delete" | null;
+
 export function RequestAccessAdminTable({
   initialRows,
 }: {
@@ -98,7 +118,10 @@ export function RequestAccessAdminTable({
     React.useState<RequestAccessSubmissionRow | null>(null);
   const [notes, setNotes] = React.useState("");
   const [busyId, setBusyId] = React.useState<string | null>(null);
-  const [deletingId, setDeletingId] = React.useState<string | null>(null);
+  const [confirm, setConfirm] = React.useState<{
+    kind: ConfirmKind;
+    row: RequestAccessSubmissionRow | null;
+  }>({ kind: null, row: null });
   const [actionError, setActionError] = React.useState<string | null>(null);
 
   React.useEffect(() => {
@@ -132,12 +155,8 @@ export function RequestAccessAdminTable({
         error?: string;
         warning?: string;
       };
-      if (!res.ok) {
-        throw new Error(data.error ?? "Could not update");
-      }
-      if (data.warning) {
-        setActionError(data.warning);
-      }
+      if (!res.ok) throw new Error(data.error ?? "Could not update");
+      if (data.warning) setActionError(data.warning);
       if (data.row) {
         setRows((prev) =>
           prev.map((r) =>
@@ -157,35 +176,41 @@ export function RequestAccessAdminTable({
     }
   }
 
-  async function accept(row: RequestAccessSubmissionRow) {
-    if (
-      !confirm(
-        `Approve ${row.first_name} ${row.last_name}? They will receive a set-password email.`,
-      )
-    ) {
-      return;
-    }
+  async function runConfirm() {
+    const { kind, row } = confirm;
+    if (!kind || !row) return;
+    setConfirm({ kind: null, row: null });
     try {
-      await patchRow(row.id, {
-        status: "approved",
-        sendInvitation: true,
-        admin_notes: notes.trim() === "" ? undefined : notes.trim(),
-      });
+      if (kind === "accept" || kind === "resend") {
+        await patchRow(row.id, {
+          status: "approved",
+          sendInvitation: true,
+          admin_notes: notes.trim() === "" ? undefined : notes.trim(),
+        });
+      } else if (kind === "reject") {
+        await patchRow(row.id, {
+          status: "declined",
+          sendInvitation: false,
+        });
+      } else if (kind === "delete") {
+        setBusyId(row.id);
+        const res = await fetch(`/api/admin/request-access/${row.id}`, {
+          method: "DELETE",
+        });
+        if (!res.ok) {
+          const data = (await res.json().catch(() => ({}))) as {
+            error?: string;
+          };
+          throw new Error(data.error ?? "Could not delete");
+        }
+        setRows((prev) => prev.filter((r) => r.id !== row.id));
+        if (viewing?.id === row.id) setViewing(null);
+        router.refresh();
+        setBusyId(null);
+      }
     } catch (e) {
-      setActionError(e instanceof Error ? e.message : "Approve failed");
-      alert(e instanceof Error ? e.message : "Approve failed");
-    }
-  }
-
-  async function reject(row: RequestAccessSubmissionRow) {
-    if (!confirm(`Reject ${row.first_name} ${row.last_name}?`)) return;
-    try {
-      await patchRow(row.id, {
-        status: "declined",
-        sendInvitation: false,
-      });
-    } catch (e) {
-      alert(e instanceof Error ? e.message : "Reject failed");
+      setBusyId(null);
+      setActionError(e instanceof Error ? e.message : "Action failed");
     }
   }
 
@@ -201,103 +226,85 @@ export function RequestAccessAdminTable({
     }
   }
 
-  async function remove(id: string) {
-    if (!confirm("Delete this submission permanently?")) return;
-    setDeletingId(id);
-    try {
-      const res = await fetch(`/api/admin/request-access/${id}`, {
-        method: "DELETE",
-      });
-      if (!res.ok) {
-        const data = (await res.json().catch(() => ({}))) as { error?: string };
-        alert(data.error ?? "Could not delete");
-        return;
-      }
-      setRows((prev) => prev.filter((r) => r.id !== id));
-      if (viewing?.id === id) setViewing(null);
-      router.refresh();
-    } finally {
-      setDeletingId(null);
-    }
-  }
+  const confirmCopy = {
+    accept: {
+      title: "Accept this request?",
+      description:
+        "They will be approved and receive a set-password email to create their account.",
+      action: "Accept & send email",
+    },
+    reject: {
+      title: "Reject this request?",
+      description: "The application will be marked declined. No invite email is sent.",
+      action: "Reject",
+    },
+    resend: {
+      title: "Resend set-password email?",
+      description:
+        "A fresh invite email will be sent. Old links will stop working.",
+      action: "Resend invite",
+    },
+    delete: {
+      title: "Delete this submission?",
+      description: "This permanently removes the registration record.",
+      action: "Delete",
+    },
+  } as const;
 
   return (
     <>
-      <div className="w-full overflow-x-auto rounded-2xl border border-black/[0.06] bg-white shadow-sm">
-        <table className="w-full min-w-[980px] border-collapse text-left text-sm">
-          <thead>
-            <tr className="border-b border-black/[0.06] bg-[#fbf8f3]">
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                Received
-              </th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                Status
-              </th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                Name
-              </th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                Email
-              </th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                Phone
-              </th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold">
-                City
-              </th>
-              <th className="px-4 py-3 font-semibold">Interest</th>
-              <th className="whitespace-nowrap px-4 py-3 font-semibold text-right">
-                Actions
-              </th>
-            </tr>
-          </thead>
-          <tbody>
+      <div className="rounded-2xl border border-black/[0.06] bg-white">
+        <Table>
+          <TableHeader>
+            <TableRow className="hover:bg-transparent bg-[#fbf8f3]">
+              <TableHead>Applicant</TableHead>
+              <TableHead className="hidden sm:table-cell">Received</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="text-right">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {rows.length === 0 ? (
-              <tr>
-                <td
-                  colSpan={8}
-                  className="px-4 py-10 text-center text-sm text-neutral-500"
+              <TableRow>
+                <TableCell
+                  colSpan={4}
+                  className="h-24 text-center text-neutral-500"
                 >
                   No submissions yet.
-                </td>
-              </tr>
+                </TableCell>
+              </TableRow>
             ) : (
               rows.map((row) => {
-                const status = (row.status ?? "pending") as RequestAccessStatus;
+                const status = (row.status ??
+                  "pending") as RequestAccessStatus;
                 const pending =
                   status === "pending" || status === "contacted";
                 const busy = busyId === row.id;
                 return (
-                  <tr
-                    key={row.id}
-                    className="border-b border-black/[0.04] last:border-0"
-                  >
-                    <td className="whitespace-nowrap px-4 py-3 align-middle text-neutral-500">
+                  <TableRow key={row.id}>
+                    <TableCell className="min-w-0">
+                      <div className="font-medium text-neutral-950">
+                        {row.first_name} {row.last_name}
+                      </div>
+                      <div className="mt-0.5 truncate text-xs text-neutral-500">
+                        {row.email}
+                      </div>
+                      <div className="mt-1 text-xs text-neutral-400 sm:hidden">
+                        {formatDate(row.created_at)}
+                      </div>
+                    </TableCell>
+                    <TableCell className="hidden whitespace-nowrap text-neutral-500 sm:table-cell">
                       {formatDate(row.created_at)}
-                    </td>
-                    <td className="px-4 py-3 align-middle">
+                    </TableCell>
+                    <TableCell>
                       <Badge
                         variant={statusBadgeVariant(status)}
                         className="rounded-full capitalize"
                       >
                         {status}
                       </Badge>
-                    </td>
-                    <td className="px-4 py-3 align-middle font-medium">
-                      {row.first_name} {row.last_name}
-                    </td>
-                    <td className="max-w-[180px] break-all px-4 py-3 align-middle text-xs">
-                      {row.email}
-                    </td>
-                    <td className="max-w-[130px] break-all px-4 py-3 align-middle text-xs text-neutral-500">
-                      {row.phone_e164 ?? row.mobile_number}
-                    </td>
-                    <td className="px-4 py-3 align-middle">{row.city}</td>
-                    <td className="max-w-[220px] px-4 py-3 align-middle text-xs leading-relaxed text-neutral-500">
-                      {row.platform_interest.slice(0, 100)}
-                      {row.platform_interest.length > 100 ? "…" : ""}
-                    </td>
-                    <td className="whitespace-nowrap px-4 py-3 align-middle text-right">
+                    </TableCell>
+                    <TableCell className="text-right">
                       <div className="flex flex-wrap justify-end gap-1.5">
                         <Button
                           type="button"
@@ -316,7 +323,9 @@ export function RequestAccessAdminTable({
                               variant="fortuna"
                               size="sm"
                               disabled={busy}
-                              onClick={() => accept(row)}
+                              onClick={() =>
+                                setConfirm({ kind: "accept", row })
+                              }
                             >
                               <Check className="mr-1 h-3.5 w-3.5" />
                               Accept
@@ -327,7 +336,9 @@ export function RequestAccessAdminTable({
                               size="sm"
                               className="rounded-xl border-red-200 text-red-700 hover:bg-red-50"
                               disabled={busy}
-                              onClick={() => reject(row)}
+                              onClick={() =>
+                                setConfirm({ kind: "reject", row })
+                              }
                             >
                               <X className="mr-1 h-3.5 w-3.5" />
                               Reject
@@ -340,10 +351,11 @@ export function RequestAccessAdminTable({
                             size="sm"
                             className="rounded-xl"
                             disabled={busy}
-                            onClick={() => accept(row)}
-                            title="Send a fresh set-password email"
+                            onClick={() =>
+                              setConfirm({ kind: "resend", row })
+                            }
                           >
-                            Resend invite
+                            Resend
                           </Button>
                         ) : null}
                         <Button
@@ -351,21 +363,25 @@ export function RequestAccessAdminTable({
                           variant="ghost"
                           size="icon"
                           className="h-8 w-8 text-destructive"
-                          disabled={deletingId === row.id}
-                          onClick={() => remove(row.id)}
+                          disabled={busy}
+                          onClick={() => setConfirm({ kind: "delete", row })}
                           aria-label="Delete"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>
-                    </td>
-                  </tr>
+                    </TableCell>
+                  </TableRow>
                 );
               })
             )}
-          </tbody>
-        </table>
+          </TableBody>
+        </Table>
       </div>
+
+      {actionError && !viewing ? (
+        <p className="mt-3 text-sm text-amber-800">{actionError}</p>
+      ) : null}
 
       <Dialog open={!!viewing} onOpenChange={(o) => !o && setViewing(null)}>
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-2xl">
@@ -374,8 +390,7 @@ export function RequestAccessAdminTable({
               Full registration
             </DialogTitle>
             <DialogDescription>
-              Review the application. Use Accept or Reject on the table, or
-              here.
+              All submitted details. Accept or reject from here or the table.
             </DialogDescription>
           </DialogHeader>
           {viewing && (
@@ -423,6 +438,12 @@ export function RequestAccessAdminTable({
                 <DetailField label="Preferred contact">
                   <span className="capitalize">
                     {viewing.preferred_contact_method}
+                  </span>
+                </DetailField>
+                <DetailField label="Time zone">{viewing.timezone}</DetailField>
+                <DetailField label="Best times">
+                  <span className="whitespace-pre-wrap">
+                    {viewing.best_contact_times}
                   </span>
                 </DetailField>
               </DetailSection>
@@ -490,7 +511,9 @@ export function RequestAccessAdminTable({
                     variant="outline"
                     className="rounded-xl border-red-200 text-red-700"
                     disabled={busyId === viewing.id}
-                    onClick={() => reject(viewing)}
+                    onClick={() =>
+                      setConfirm({ kind: "reject", row: viewing })
+                    }
                   >
                     Reject
                   </Button>
@@ -498,9 +521,11 @@ export function RequestAccessAdminTable({
                     type="button"
                     variant="fortuna"
                     disabled={busyId === viewing.id}
-                    onClick={() => accept(viewing)}
+                    onClick={() =>
+                      setConfirm({ kind: "accept", row: viewing })
+                    }
                   >
-                    Accept &amp; email invite
+                    Accept
                   </Button>
                 </>
               ) : viewing?.status === "approved" ? (
@@ -508,15 +533,48 @@ export function RequestAccessAdminTable({
                   type="button"
                   variant="fortuna"
                   disabled={busyId === viewing.id}
-                  onClick={() => accept(viewing)}
+                  onClick={() => setConfirm({ kind: "resend", row: viewing })}
                 >
-                  Resend set-password email
+                  Resend invite
                 </Button>
               ) : null}
             </div>
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <AlertDialog
+        open={confirm.kind !== null}
+        onOpenChange={(open) => {
+          if (!open) setConfirm({ kind: null, row: null });
+        }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              {confirm.kind ? confirmCopy[confirm.kind].title : ""}
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              {confirm.kind && confirm.row
+                ? `${confirmCopy[confirm.kind].description} (${confirm.row.first_name} ${confirm.row.last_name})`
+                : null}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={
+                confirm.kind === "reject" || confirm.kind === "delete"
+                  ? "bg-red-600 hover:bg-red-700"
+                  : undefined
+              }
+              onClick={runConfirm}
+            >
+              {confirm.kind ? confirmCopy[confirm.kind].action : "Confirm"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

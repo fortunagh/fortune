@@ -28,8 +28,8 @@ export default async function AdminRequestAccessPage() {
         title="Request access"
         description="Accept sends a set-password email. Reject declines the application. View opens the full registration."
       />
-      <WidgetCard className="overflow-x-auto p-0 sm:p-0">
-        <div className="p-4 sm:p-5">
+      <WidgetCard className="overflow-hidden p-0 sm:p-0">
+        <div className="p-3 sm:p-5">
           <RequestAccessAdminTable initialRows={rows} />
         </div>
       </WidgetCard>
