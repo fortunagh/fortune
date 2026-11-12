@@ -41,7 +41,7 @@ export default function RegisterPage() {
           <Link href="/" className="inline-block">
             <Image
               src="/fortuna/logo-header.png"
-              alt="Fortuna Global Holdings — Building Infinite Abundance"
+              alt="Fortuna Global Holdings"
               width={1005}
               height={258}
               priority
@@ -50,20 +50,6 @@ export default function RegisterPage() {
               className="h-auto w-[min(260px,78vw)] sm:w-[min(300px,70vw)]"
             />
           </Link>
-          <p
-            className="text-[10px] font-semibold uppercase tracking-[0.18em] sm:text-[11px]"
-            style={{
-              fontFamily: "Arial, Helvetica, sans-serif",
-              color: "#a84d0b",
-            }}
-          >
-            Event registration
-          </p>
-          <div
-            aria-hidden="true"
-            className="h-px w-12 sm:w-14"
-            style={{ background: "#a84d0b" }}
-          />
         </header>
 
         <div className="border border-[#b9764a40] bg-[#fbf8f3]/95 p-4 shadow-[0_12px_40px_rgba(80,40,10,0.06)] backdrop-blur-[2px] sm:p-6 md:p-8">
