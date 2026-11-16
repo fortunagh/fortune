@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Fortuna Portal — Client Testing Guide</title>
+  <style>
+    @page { size: A4; margin: 18mm 16mm; }
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Segoe UI", Calibri, Arial, sans-serif;
+      color: #1a1a1a;
+      line-height: 1.45;
+      font-size: 10.5pt;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 12px 8px 40px;
+    }
+    h1 {
+      font-size: 20pt;
+      margin: 0 0 4px;
+      color: #0f2f24;
+      letter-spacing: -0.02em;
+    }
+    h2 {
+      font-size: 13pt;
+      margin: 22px 0 8px;
+      padding-bottom: 4px;
+      border-bottom: 1.5px solid #0f2f24;
+      color: #0f2f24;
+      page-break-after: avoid;
+    }
+    h3 {
+      font-size: 11pt;
+      margin: 14px 0 6px;
+      color: #1e4d3a;
+      page-break-after: avoid;
+    }
+    p { margin: 0 0 8px; }
+    .subtitle { color: #444; margin-bottom: 16px; font-size: 10pt; }
+    .meta {
+      background: #f3f6f4;
+      border: 1px solid #d5e0da;
+      padding: 10px 12px;
+      margin: 0 0 16px;
+      font-size: 9.5pt;
+    }
+    .cred {
+      background: #0f2f24;
+      color: #fff;
+      padding: 14px 16px;
+      margin: 10px 0 14px;
+      border-radius: 4px;
+    }
+    .cred strong { color: #c8e6d4; }
+    .cred code, .inline-code {
+      font-family: Consolas, "Courier New", monospace;
+      font-size: 10pt;
+    }
+    .cred p { margin: 4px 0; }
+    .warn {
+      background: #fff8e8;
+      border-left: 4px solid #c9891a;
+      padding: 8px 12px;
+      margin: 10px 0;
+      font-size: 9.5pt;
+    }
+    .ok {
+      background: #eef7f1;
+      border-left: 4px solid #2d7a4f;
+      padding: 8px 12px;
+      margin: 10px 0;
+      font-size: 9.5pt;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 8px 0 14px;
+      font-size: 9.5pt;
+      page-break-inside: avoid;
+    }
+    th, td {
+      border: 1px solid #cfd8d3;
+      padding: 6px 8px;
+      text-align: left;
+      vertical-align: top;
+    }
+    th {
+      background: #e8f0eb;
+      color: #0f2f24;
+      font-weight: 600;
+    }
+    tr:nth-child(even) td { background: #fafcfa; }
+    ol, ul { margin: 4px 0 10px; padding-left: 20px; }
+    li { margin: 3px 0; }
+    .step-num {
+      display: inline-block;
+      min-width: 1.4em;
+      font-weight: 700;
+      color: #0f2f24;
+    }
+    .footer {
+      margin-top: 28px;
+      padding-top: 10px;
+      border-top: 1px solid #ccc;
+      font-size: 8.5pt;
+      color: #666;
+    }
+    a { color: #1e4d3a; }
+    .phase {
+      display: inline-block;
+      font-size: 8pt;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      background: #dce8e1;
+      color: #0f2f24;
+      padding: 1px 6px;
+      border-radius: 3px;
+      margin-right: 4px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Fortuna Client Portal — Testing Guide</h1>
+  <p class="subtitle">
+    End-to-end onboarding test instructions for the client and admin portals
+    (Request Access → all 17 steps). Prepared for stakeholder review and UAT.
+  </p>
+
+  <div class="meta">
+    <strong>Site:</strong> <a href="https://www.fortunaglobalholdings.com">https://www.fortunaglobalholdings.com</a><br />
+    <strong>Document purpose:</strong> Follow this guide with a <em>brand-new email address</em> you control so you can verify registration, emails, payment, and the full onboarding journey.<br />
+    <strong>Last verified:</strong> Full 17-step journey smoke tested successfully (including Stripe payment webhook and Dropbox Sign agreement path).
+  </div>
+
+  <h2>1. Logins &amp; access</h2>
+
+  <h3>Admin login (use this account)</h3>
+  <div class="cred">
+    <p><strong>Email:</strong> <code>master@fortunaglobalholdings.com</code></p>
+    <p><strong>Password:</strong> <code>FgH-Master-9ea0be10!</code></p>
+    <p style="margin-top:10px;opacity:.9;font-size:9.5pt;">
+      Sign in at the site login page, then open the Admin area from the dashboard.
+      Admin email notification recipients can be configured under <strong>Admin → Settings</strong>.
+    </p>
+  </div>
+
+  <div class="warn">
+    <strong>Important:</strong> Do not reuse an already-activated customer account for this test.
+    Always start with a <strong>new email address</strong> you can receive mail on (Gmail, etc.).
+    Old demo accounts may already have steps completed and will not show the questionnaire form.
+  </div>
+
+  <h3>Customer account</h3>
+  <p>
+    You create the customer yourself via <strong>Request Access</strong> (see Section 3).
+    After you Accept the request as Admin, the customer receives a set-password email,
+    sets a password, and signs in to the client dashboard.
+  </p>
+
+  <h2>2. What you should see working today</h2>
+  <ul>
+    <li>Request Access form submission</li>
+    <li>Admin → Request Access → Accept / Decline</li>
+    <li>Set-password / access-approved emails (Resend)</li>
+    <li>Customer login and My Journey / current step panel</li>
+    <li>Stripe onboarding payment (AUD $2,750) and admin-side payment verification</li>
+    <li>Questionnaire form (full fields — not only a green “complete” state)</li>
+    <li>Self-confirm setup / demo / live steps</li>
+    <li>Dropbox Sign / HelloSign user agreement</li>
+    <li>Admin Clients tracker, Support, Billing, Content, Settings</li>
+  </ul>
+
+  <h2>3. Start a fresh customer (bootstrap)</h2>
+  <ol>
+    <li>Open <strong>/register</strong> (Request Access) on the live site.</li>
+    <li>Submit the form with a <strong>new email</strong>, valid phone, and your details.</li>
+    <li><strong>Pass:</strong> Success message; row appears under Admin → Request Access as <em>Pending</em>.</li>
+    <li>Sign in as Admin → Request Access → open the submission → <strong>Accept</strong> (sends invitation).</li>
+    <li><strong>Pass:</strong> Status becomes Approved; set-password email arrives at the customer inbox.</li>
+    <li>Open the link from that email only (not an old/expired link) → set password → land on login.</li>
+    <li>Sign in as the new customer.</li>
+    <li><strong>Pass:</strong> Dashboard current step = <strong>Complete onboarding payment</strong>;
+      My Journey shows Request access completed.</li>
+  </ol>
+  <div class="warn">
+    Fail if: expired link, no onboarding case after password, or Accept without email delivery.
+  </div>
+
+  <h2>4. Full 17-step onboarding walkthrough</h2>
+  <p>
+    Complete each step in order as the <strong>customer</strong>, except where noted for Admin.
+    After each step, confirm My Journey marks it complete and the next step unlocks.
+  </p>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width:8%">#</th>
+        <th style="width:28%">Step</th>
+        <th style="width:14%">Who</th>
+        <th>What to do / Pass criteria</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td><span class="phase">Access</span> Request access</td>
+        <td>System</td>
+        <td>Already done at bootstrap. Journey shows completed; no button.</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td><span class="phase">Access</span> Onboarding payment</td>
+        <td>Customer + Stripe</td>
+        <td>
+          Click <strong>Pay onboarding fee</strong> → Stripe Checkout → pay → return with paid confirmation.<br />
+          <strong>Pass:</strong> Step completes after webhook (not toast alone); next = questionnaire;
+          payment shows paid on admin side.<br />
+          <em>Test card (Stripe test mode):</em> 4242 4242 4242 4242 · any future expiry · any CVC · any ZIP.
+        </td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td><span class="phase">Setup</span> Questionnaire</td>
+        <td>Customer</td>
+        <td>
+          Open the step. You <strong>must see the full form</strong> (account type, UBO, tax/passport countries, broker, etc.),
+          not only a green “This step is complete”.<br />
+          Fill required fields → Submit.<br />
+          <strong>Pass:</strong> Submitted; step completed; VPS unlocked.<br />
+          <strong>Fail:</strong> Only Complete button / already complete with no form → wrong or reused account.
+        </td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td><span class="phase">Setup</span> VPS setup</td>
+        <td>Customer</td>
+        <td>
+          Review ForexVPS link/copy → click <strong>My VPS is set up</strong>.<br />
+          (Confirm-only step — no multi-question form. Expected.)
+        </td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td><span class="phase">Setup</span> Broker demo</td>
+        <td>Customer</td>
+        <td>
+          Broker list shows (if content seeded) → confirm demo account open
+          (<strong>My demo account is open</strong>).
+        </td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td><span class="phase">Demo</span> Licence portal</td>
+        <td>Customer</td>
+        <td>Confirm registered in the licence portal.</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td><span class="phase">Demo</span> Demo licence apply</td>
+        <td>Customer</td>
+        <td>Confirm demo EA licence application submitted.</td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td><span class="phase">Demo</span> Demo licence approved</td>
+        <td>Customer</td>
+        <td>Confirm approved (no hard 24h wait enforced in the portal).</td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td><span class="phase">Demo</span> User agreement</td>
+        <td>Customer + Dropbox Sign</td>
+        <td>
+          Click <strong>Sign agreement</strong> → complete HelloSign / Dropbox Sign flow.<br />
+          <strong>Pass:</strong> Step leaves “awaiting” → completed via webhook; demo install unlocks.<br />
+          <strong>Fail:</strong> Stuck on awaiting → webhook/template issue (do not force unless documenting an outage).
+        </td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td><span class="phase">Demo</span> Demo install</td>
+        <td>Customer</td>
+        <td>
+          Confirm EA running on demo.<br />
+          <strong>Pass:</strong> Completed; 28-day demo timer starts; MT5 mobile unlocks.
+        </td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td><span class="phase">Demo</span> MT5 mobile</td>
+        <td>Customer</td>
+        <td>Confirm MT5 mobile set up. Demo readiness unlocks as awaiting/available (Day N of 28 may show).</td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td><span class="phase">Demo</span> Demo readiness</td>
+        <td>Customer or Admin</td>
+        <td>
+          Intentionally gated for <strong>28 days</strong> of demo practice.<br />
+          <strong>For UAT without waiting:</strong> Admin → Clients → this user →
+          <strong>Force complete</strong> on <em>demo_readiness only</em>.<br />
+          If Day ≥ 28: check all 7 checklist items → Confirm.<br />
+          <strong>Pass:</strong> Completed; live licence apply unlocks.
+        </td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td><span class="phase">Live</span> Live licence apply</td>
+        <td>Customer</td>
+        <td>Confirm live application submitted.</td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td><span class="phase">Live</span> Live install</td>
+        <td>Customer</td>
+        <td>
+          Complete <strong>three</strong> flags in order:<br />
+          1) Live licence approved → 2) EA installed → 3) Equity Protect configured.<br />
+          <strong>Pass:</strong> All three done; live activation unlocks. Partial progress stays “in progress”.
+        </td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td><span class="phase">Live</span> Live activation</td>
+        <td>Customer</td>
+        <td>
+          Confirm live EA active.<br />
+          <strong>Pass:</strong> Completes this step <em>and</em> auto-completes Onboarding complete;
+          case status = completed; usage billing becomes current.
+        </td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td><span class="phase">Billing</span> Onboarding complete</td>
+        <td>System</td>
+        <td>No button. Shown completed after live activation.</td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td><span class="phase">Billing</span> Usage billing</td>
+        <td>Ongoing</td>
+        <td>
+          Step available / billing home; case already completed.<br />
+          Optional: Admin → Billing → issue a usage invoice to this client and confirm email + payments row.
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>5. Admin areas to spot-check</h2>
+  <table>
+    <thead>
+      <tr><th>Area</th><th>What to verify</th></tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>Request Access</td>
+        <td>Pending → Accept; invitation email; status Approved.</td>
+      </tr>
+      <tr>
+        <td>Clients</td>
+        <td>Correct name/email; step tracker green through completed steps; status completed after live activation.</td>
+      </tr>
+      <tr>
+        <td>Billing / Payments</td>
+        <td>Onboarding fee marked paid after Stripe; optional usage invoice issue.</td>
+      </tr>
+      <tr>
+        <td>Support</td>
+        <td>Open a ticket as customer → Admin reply → customer sees reply / notes.</td>
+      </tr>
+      <tr>
+        <td>Content</td>
+        <td>At least one active broker with referral URL (needed for broker/live UI). Resources optional.</td>
+      </tr>
+      <tr>
+        <td>Settings</td>
+        <td>Configure admin notification email(s) for new requests and ops alerts.</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>6. Emails to expect</h2>
+  <ul>
+    <li>Admin notified of new Request Access (if Settings configured)</li>
+    <li>Customer: access approved / set-password link</li>
+    <li>Customer: next-step nudges where enabled</li>
+    <li>Customer: completion / billing emails when those paths fire (Resend)</li>
+  </ul>
+  <div class="ok">
+    Customer transactional email from-address is typically
+    <strong>Fortuna Global Holdings &lt;onboarding@fortunaglobalholdings.com&gt;</strong>.
+    Check spam/junk if nothing arrives within a few minutes.
+  </div>
+
+  <h2>7. Known product behaviour (not bugs)</h2>
+  <ul>
+    <li>Most mid-journey steps are <strong>self-confirm</strong> (honour system), not verified against VPS/broker/licence APIs.</li>
+    <li>VPS step has no questionnaire — confirm button only.</li>
+    <li>Questionnaire form only appears when that step is <strong>not</strong> already completed.</li>
+    <li>Demo readiness is intentionally locked for 28 days unless Admin force-completes that step only.</li>
+    <li>Do <strong>not</strong> force-complete other steps casually during UAT — only <code>demo_readiness</code> is the planned exception.</li>
+  </ul>
+
+  <h2>8. If something fails mid-journey</h2>
+  <ol>
+    <li>Note the step name, what the UI shows, and whether an email/webhook seems missing.</li>
+    <li>For payment stuck after “paid” toast: Stripe webhook may not be reaching the app.</li>
+    <li>For agreement stuck on awaiting: Dropbox Sign webhook/template misconfiguration.</li>
+    <li>Fix the root cause, then resume — or start again with a <strong>new email</strong> customer.</li>
+  </ol>
+
+  <h2>9. Quick start checklist</h2>
+  <ol>
+    <li>☐ Log in as Admin with the credentials in Section 1</li>
+    <li>☐ Confirm Admin → Settings notification email is set to an inbox you monitor</li>
+    <li>☐ Submit Request Access with a new customer email</li>
+    <li>☐ Accept as Admin; set password from email; log in as customer</li>
+    <li>☐ Pay onboarding fee (Stripe) and confirm admin payment shows paid</li>
+    <li>☐ Complete questionnaire (full form visible)</li>
+    <li>☐ Walk remaining steps; force only demo readiness if testing live path now</li>
+    <li>☐ Confirm case completed + usage billing available after live activation</li>
+    <li>☐ Optional: support ticket + usage invoice smoke</li>
+  </ol>
+
+  <h2>10. Feedback &amp; recording</h2>
+  <p>
+    If you have feedback on the next part of the flow, or anything that does not match this guide,
+    please reply with the step number, screenshot, and what you expected vs what you saw.
+  </p>
+  <p>
+    A full walkthrough recording (~300+ MB) is available on request via Google Drive
+    (too large for Upwork attachments). A short call can also be arranged to walk through live.
+  </p>
+
+  <div class="footer">
+    Fortuna Global Holdings — Client Portal UAT Guide · Confidential — for project stakeholders only ·
+    Contains login credentials; do not forward publicly.
+  </div>
+
+</body>
+</html>

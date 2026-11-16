@@ -1,0 +1,18 @@
+{
+  "at": "2026-11-16T05:29:26.546Z",
+  "reminder_disabled": true,
+  "waive_results": [
+    {
+      "email": "celetiamiller@gmail.com",
+      "userId": "50a9aaa8-c2da-4be4-9812-728c220855a5",
+      "ok": true,
+      "case_id": "09a4fc17-b344-49ba-ba42-505abc580a54"
+    },
+    {
+      "email": "kim@kimburke.com.au",
+      "userId": "982b5166-492a-4fb1-9e8a-a078c35ba17e",
+      "ok": true,
+      "case_id": "8e359809-08de-4050-8a7d-803df24d53c1"
+    }
+  ]
+}

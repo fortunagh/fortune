@@ -1,0 +1,270 @@
+{
+  "generated_at": "2026-11-16T03:46:12.500Z",
+  "recipients_by_email": {
+    "celetiamiller@gmail.com": [
+      {
+        "template": "reminder_onboarding_payment",
+        "channel": "sms",
+        "status": "skipped",
+        "created_at": "2026-11-15T08:30:03.36415+00:00",
+        "sent_at": null,
+        "meta": {
+          "error": "no_phone",
+          "stepKey": "onboarding_payment"
+        }
+      }
+    ],
+    "kim@kimburke.com.au": [
+      {
+        "template": "reminder_onboarding_payment",
+        "channel": "sms",
+        "status": "sent",
+        "created_at": "2026-11-13T08:30:03.608961+00:00",
+        "sent_at": "2026-11-13T08:30:04.065+00:00",
+        "meta": {
+          "to": "+610414358525",
+          "sid": "SM71b1de82ba009e699c73db28987d55fe",
+          "error": null,
+          "stepKey": "onboarding_payment"
+        }
+      },
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-12T08:58:24.570068+00:00",
+        "sent_at": "2026-11-12T08:58:24.082+00:00",
+        "meta": {
+          "email": "kim@kimburke.com.au"
+        }
+      },
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-11T01:33:33.186334+00:00",
+        "sent_at": "2026-11-11T01:33:32.663+00:00",
+        "meta": {
+          "email": "kim@kimburke.com.au"
+        }
+      }
+    ],
+    "tarunkumarz211286@gmail.com": [
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-13T06:40:30.177254+00:00",
+        "sent_at": "2026-11-13T06:40:30.065+00:00",
+        "meta": {
+          "email": "tarunkumarz211286@gmail.com"
+        }
+      },
+      {
+        "template": "reminder_onboarding_payment",
+        "channel": "sms",
+        "status": "failed",
+        "created_at": "2026-11-12T08:30:01.381116+00:00",
+        "sent_at": null,
+        "meta": {
+          "to": "+917018629215",
+          "sid": null,
+          "error": "Permission to send an SMS has not been enabled for the region indicated by the 'To' number: +91701862XXXX",
+          "stepKey": "onboarding_payment"
+        }
+      },
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-12T05:52:16.724695+00:00",
+        "sent_at": "2026-11-12T05:52:16.202+00:00",
+        "meta": {
+          "email": "tarunkumarz211286@gmail.com"
+        }
+      },
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "failed",
+        "created_at": "2026-11-05T09:33:45.454919+00:00",
+        "sent_at": null,
+        "meta": {
+          "email": "tarunkumarz211286@gmail.com"
+        }
+      }
+    ],
+    "admin@fortunaglobalholdings.com": [
+      {
+        "template": "reminder_onboarding_payment",
+        "channel": "sms",
+        "status": "skipped",
+        "created_at": "2026-11-10T08:30:04.801636+00:00",
+        "sent_at": null,
+        "meta": {
+          "error": "no_phone",
+          "stepKey": "onboarding_payment"
+        }
+      }
+    ],
+    "admin@fortuna.local": [
+      {
+        "template": "reminder_onboarding_payment",
+        "channel": "sms",
+        "status": "skipped",
+        "created_at": "2026-11-10T08:30:01.293596+00:00",
+        "sent_at": null,
+        "meta": {
+          "error": "no_phone",
+          "stepKey": "onboarding_payment"
+        }
+      }
+    ],
+    "kim.burke@avibe.com.au": [
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-09T11:02:26.277268+00:00",
+        "sent_at": "2026-11-09T11:02:25.779+00:00",
+        "meta": {
+          "email": "kim.burke@avibe.com.au"
+        }
+      },
+      {
+        "template": "access_approved",
+        "channel": "email",
+        "status": "sent",
+        "created_at": "2026-11-09T09:36:48.774365+00:00",
+        "sent_at": "2026-11-09T09:36:48.245+00:00",
+        "meta": {
+          "email": "kim.burke@avibe.com.au"
+        }
+      }
+    ]
+  },
+  "stuck_on_payment": [
+    {
+      "case_id": "09a4fc17-b344-49ba-ba42-505abc580a54",
+      "user_id": "50a9aaa8-c2da-4be4-9812-728c220855a5",
+      "email": "celetiamiller@gmail.com",
+      "name": null,
+      "case_status": "active",
+      "case_created": "2026-11-14T21:39:05.009081+00:00",
+      "activated_at": "2026-11-14T21:39:03.074+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "8e359809-08de-4050-8a7d-803df24d53c1",
+      "user_id": "982b5166-492a-4fb1-9e8a-a078c35ba17e",
+      "email": "kim@kimburke.com.au",
+      "name": "kim urke",
+      "case_status": "active",
+      "case_created": "2026-11-12T11:42:06.228004+00:00",
+      "activated_at": "2026-11-12T11:42:04.858+00:00",
+      "payment_statuses": "pending,pending",
+      "has_paid": false
+    },
+    {
+      "case_id": "7c8e098a-3fac-4e83-8ddc-acaa320eece3",
+      "user_id": "716dbcbe-d644-4c5c-84be-e8106c66f387",
+      "email": "admin@fortunaglobalholdings.com",
+      "name": "Admin",
+      "case_status": "active",
+      "case_created": "2026-11-09T09:10:59.525209+00:00",
+      "activated_at": "2026-11-12T05:01:48.957+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "5331fa5c-b68d-447f-998a-1b006f541b8c",
+      "user_id": "0a3bcfd2-2806-4845-8e65-fc2d16b0a1e5",
+      "email": "demo.client@fortunaglobalholdings.com",
+      "name": "Demo",
+      "case_status": "active",
+      "case_created": "2026-11-09T09:08:26.758823+00:00",
+      "activated_at": "2026-11-09T09:08:27.888+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "1a280805-593a-42b1-90f1-166ea0309368",
+      "user_id": "25588fb6-5b1c-41bb-a15b-2fb80d7c2f9b",
+      "email": "admin@fortuna.local",
+      "name": "Admin",
+      "case_status": "active",
+      "case_created": "2026-11-04T08:54:08.426515+00:00",
+      "activated_at": "2026-11-04T08:45:12.73+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    }
+  ],
+  "reminder_rules": [
+    {
+      "id": "19a09de3-66b5-4299-93f0-61f034add319",
+      "step_key": "onboarding_payment",
+      "delay_hours": 1,
+      "channel": "sms",
+      "enabled": true,
+      "template_key": "reminder_onboarding_payment"
+    }
+  ],
+  "unpaid_stuck": [
+    {
+      "case_id": "09a4fc17-b344-49ba-ba42-505abc580a54",
+      "user_id": "50a9aaa8-c2da-4be4-9812-728c220855a5",
+      "email": "celetiamiller@gmail.com",
+      "name": null,
+      "case_status": "active",
+      "case_created": "2026-11-14T21:39:05.009081+00:00",
+      "activated_at": "2026-11-14T21:39:03.074+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "8e359809-08de-4050-8a7d-803df24d53c1",
+      "user_id": "982b5166-492a-4fb1-9e8a-a078c35ba17e",
+      "email": "kim@kimburke.com.au",
+      "name": "kim urke",
+      "case_status": "active",
+      "case_created": "2026-11-12T11:42:06.228004+00:00",
+      "activated_at": "2026-11-12T11:42:04.858+00:00",
+      "payment_statuses": "pending,pending",
+      "has_paid": false
+    },
+    {
+      "case_id": "7c8e098a-3fac-4e83-8ddc-acaa320eece3",
+      "user_id": "716dbcbe-d644-4c5c-84be-e8106c66f387",
+      "email": "admin@fortunaglobalholdings.com",
+      "name": "Admin",
+      "case_status": "active",
+      "case_created": "2026-11-09T09:10:59.525209+00:00",
+      "activated_at": "2026-11-12T05:01:48.957+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "5331fa5c-b68d-447f-998a-1b006f541b8c",
+      "user_id": "0a3bcfd2-2806-4845-8e65-fc2d16b0a1e5",
+      "email": "demo.client@fortunaglobalholdings.com",
+      "name": "Demo",
+      "case_status": "active",
+      "case_created": "2026-11-09T09:08:26.758823+00:00",
+      "activated_at": "2026-11-09T09:08:27.888+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    },
+    {
+      "case_id": "1a280805-593a-42b1-90f1-166ea0309368",
+      "user_id": "25588fb6-5b1c-41bb-a15b-2fb80d7c2f9b",
+      "email": "admin@fortuna.local",
+      "name": "Admin",
+      "case_status": "active",
+      "case_created": "2026-11-04T08:54:08.426515+00:00",
+      "activated_at": "2026-11-04T08:45:12.73+00:00",
+      "payment_statuses": "none",
+      "has_paid": false
+    }
+  ]
+}
