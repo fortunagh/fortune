@@ -1,17 +1,5 @@
 import Image from "next/image";
-import { Cinzel, Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500"],
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
+import { landingCinzel, landingInter } from "@/lib/fonts/google-landing";
 
 const cards = [
   {
@@ -50,13 +38,13 @@ export function ExecutionSection() {
 
         <h2
           id="execution-heading"
-          className={`${cinzel.className}  text-[22px] text-center md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
+          className={`${landingCinzel.className}  text-[22px] text-center md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
         >
           Execution without compromise
         </h2>
 
         <p
-          className={`${inter.className} mt-[20px] mb-[25px] mx-auto mt-6 max-w-2xl text-pretty text-center text-[15px] font-medium leading-[1.6] text-black/75 sm:mt-7 sm:text-[16px] md:mt-8 md:max-w-[42rem] md:text-[17px] lg:text-[18px]`}
+          className={`${landingInter.className} mt-[20px] mb-[25px] mx-auto mt-6 max-w-2xl text-pretty text-center text-[15px] font-medium leading-[1.6] text-black/75 sm:mt-7 sm:text-[16px] md:mt-8 md:max-w-[42rem] md:text-[17px] lg:text-[18px]`}
         >
           A platform grounded in clarity and focus, executed with
           discipline—outcomes are approached with consistency, free from
@@ -75,12 +63,12 @@ export function ExecutionSection() {
                   className="h-[50px] w-[50px] object-contain"
                 />
                 <h3
-                  className={`${cinzel.className} text-[20px] mt-6 text-base font-bold uppercase tracking-[0.08em] text-neutral-950 sm:text-[24px]`}
+                  className={`${landingCinzel.className} text-[20px] mt-6 text-base font-bold uppercase tracking-[0.08em] text-neutral-950 sm:text-[24px]`}
                 >
                   {card.title}
                 </h3>
                 <p
-                  className={`${inter.className} mt-3 max-w-[22ch] text-[14px] leading-relaxed text-black/65 sm:max-w-none sm:text-[15px]`}
+                  className={`${landingInter.className} mt-3 max-w-[22ch] text-[14px] leading-relaxed text-black/65 sm:max-w-none sm:text-[15px]`}
                 >
                   {card.description}
                 </p>

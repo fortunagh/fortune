@@ -1,11 +1,5 @@
 import Image from "next/image";
-import { Cinzel } from "next/font/google";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
+import { landingCinzel } from "@/lib/fonts/google-landing";
 
 export function VaultAccessSection() {
   return (
@@ -29,7 +23,7 @@ export function VaultAccessSection() {
           <div className="inner-arapp rounded-2xl bg-white/88 px-5 py-8 shadow-sm backdrop-blur-md sm:px-7 md:bg-transparent md:p-0 md:shadow-none md:backdrop-blur-none">
             <h2
               id="vault-access-heading"
-              className={`${cinzel.className} !mb-[30px] text-[22px] text-start md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
+              className={`${landingCinzel.className} !mb-[30px] text-[22px] text-start md:font-[Engravers_MT] md:text-[40px] md:leading-[47px] md:font-medium md:text-black`}
             >
               <span className="block text-center">Access is not open It is secured</span>
         

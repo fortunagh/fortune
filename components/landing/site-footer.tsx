@@ -1,13 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Mail } from "lucide-react";
-import { Cinzel } from "next/font/google";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "600"],
-  display: "swap",
-});
+import { landingCinzel } from "@/lib/fonts/google-landing";
 
 const linkClass =
   "text-[11px] font-semibold uppercase tracking-[0.14em] text-neutral-900 transition-opacity hover:opacity-70 sm:text-xs md:text-[0.8rem]";
@@ -15,7 +9,7 @@ const linkClass =
 export function SiteFooter() {
   return (
     <footer className="border-t border-neutral-200 bg-white">
-      <div className={`${cinzel.className} footer-wrapper pt-[60px] pb-[30px] mx-auto max-w-7xl px-6 py-12 lg:px-10`}>
+      <div className={`${landingCinzel.className} footer-wrapper pt-[60px] pb-[30px] mx-auto max-w-7xl px-6 py-12 lg:px-10`}>
         <div className="footer-grid grid grid-cols-1 items-end gap-10 md:grid-cols-3 md:gap-8">
           <div className="flex justify-center md:justify-start">
             <Image

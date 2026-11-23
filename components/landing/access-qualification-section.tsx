@@ -1,18 +1,6 @@
 import { RequestAccessButton } from "@/components/landing/request-access-dialog";
 import Image from "next/image";
-import { Cinzel, Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
+import { landingCinzel } from "@/lib/fonts/google-landing";
 
 const items = [
   {
@@ -48,7 +36,7 @@ export function AccessQualificationSection() {
       <div className="mx-auto max-w-7xl">
         <h2
           id="access-qualification-heading"
-          className={`${cinzel.className}   text-[22px] text-center md:font-[Engravers_MT] md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
+          className={`${landingCinzel.className}   text-[22px] text-center md:font-[Engravers_MT] md:text-[34px] md:leading-[47px] md:font-medium md:text-black`}
         >
           <span className="block sm:inline">Access &amp; qualification</span>
         </h2>
@@ -65,7 +53,7 @@ export function AccessQualificationSection() {
                   className="h-[72px] w-[72px] object-contain sm:h-20 sm:w-20"
                 />
                 <h3
-                  className={`${cinzel.className} mt-6 max-w-[22ch] bg-gradient-to-b from-[#9a7328] via-[#c9a227] to-[#e8c547] bg-clip-text text-xs font-bold uppercase leading-snug tracking-[0.11em] text-transparent sm:max-w-none sm:text-sm md:text-[0.95rem] font-sixe-custom`}
+                  className={`${landingCinzel.className} mt-6 max-w-[22ch] bg-gradient-to-b from-[#9a7328] via-[#c9a227] to-[#e8c547] bg-clip-text text-xs font-bold uppercase leading-snug tracking-[0.11em] text-transparent sm:max-w-none sm:text-sm md:text-[0.95rem] font-sixe-custom`}
                 >
                   {item.title}
                 </h3>

@@ -1,18 +1,8 @@
 import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
-import { Cinzel, Inter } from "next/font/google";
+import { landingCinzel, landingInter } from "@/lib/fonts/google-landing";
 import { CopyUrlButton } from "./copy-url-button";
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-});
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-});
 
 export const metadata: Metadata = {
   title: "Register Now — Stage QR",
@@ -29,7 +19,7 @@ const registerUrl = "https://www.fortunaglobalholdings.com/register";
 export default function PresentPage() {
   return (
     <main
-      className={`${inter.className} relative min-h-dvh overflow-x-hidden overflow-y-auto px-4 py-8 text-center sm:px-6 sm:py-10 lg:flex lg:h-dvh lg:max-h-dvh lg:items-center lg:overflow-hidden lg:px-10 lg:py-8 xl:px-14`}
+      className={`${landingInter.className} relative min-h-dvh overflow-x-hidden overflow-y-auto px-4 py-8 text-center sm:px-6 sm:py-10 lg:flex lg:h-dvh lg:max-h-dvh lg:items-center lg:overflow-hidden lg:px-10 lg:py-8 xl:px-14`}
     >
       <div aria-hidden="true" className="pointer-events-none absolute inset-0">
         <Image
@@ -74,7 +64,7 @@ export default function PresentPage() {
           </div>
 
           <h1
-            className={`${cinzel.className} present-fade-in present-delay-1 mb-3 w-full text-[clamp(1.65rem,7vw,3.25rem)] leading-[1.12] tracking-tight sm:mb-4 lg:text-[clamp(2.4rem,3.6vw,3.5rem)]`}
+            className={`${landingCinzel.className} present-fade-in present-delay-1 mb-3 w-full text-[clamp(1.65rem,7vw,3.25rem)] leading-[1.12] tracking-tight sm:mb-4 lg:text-[clamp(2.4rem,3.6vw,3.5rem)]`}
           >
             <span className="block text-[#101217]">Register For</span>
             <span className="mt-0.5 block text-[1.12em] font-medium text-[#e9a544] sm:mt-1 sm:text-[1.15em]">

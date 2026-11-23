@@ -1,16 +1,4 @@
-import { Cinzel, Inter } from "next/font/google";
-
-const inter = Inter({
-  subsets: ["latin"],
-  weight: ["400"],
-  display: "swap",
-});
-
-const cinzel = Cinzel({
-  subsets: ["latin"],
-  weight: ["600", "700"],
-  display: "swap",
-});
+import { landingCinzel, landingInter } from "@/lib/fonts/google-landing";
 
 export function ReservedSection() {
   return (
@@ -24,13 +12,13 @@ export function ReservedSection() {
            controlled framework. </p>
         <h2
           id="reserved-heading"
-          className={`${cinzel.className} text-[20px] md:font-[Engravers_MT] md:text-[36px] md:leading-[38px] md:font-medium md:text-black`}
+          className={`${landingCinzel.className} text-[20px] md:font-[Engravers_MT] md:text-[36px] md:leading-[38px] md:font-medium md:text-black`}
         >
           <span className="block">Not everything is built for everyone</span>
         </h2>
 
         <div
-          className={`${inter.className}  para-graph`}
+          className={`${landingInter.className}  para-graph`}
         >
           <p>
            This environment is reserved for individuals who understand that performance is engineered—not assumed.
