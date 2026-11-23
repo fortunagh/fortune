@@ -8,6 +8,9 @@ import { PaymentToast } from "@/components/portal/payment-toast";
 import { ResourceList } from "@/components/portal/resource-list";
 import { StepActionBar } from "@/components/portal/current-step-panel";
 import { StepInstructionCard } from "@/components/portal/step-instruction-card";
+import { QuestionnaireForm } from "@/components/portal/questionnaire-form";
+import { DemoReadinessForm } from "@/components/portal/demo-readiness-form";
+import { LiveInstallActions } from "@/components/portal/live-install-actions";
 import {
   PortalMuted,
   PortalPageTitle,
@@ -25,7 +28,11 @@ import {
 } from "@/lib/onboarding/case";
 import { requireRequest } from "@/lib/onboarding/connection";
 import { finalizeInviteAfterPassword } from "@/lib/onboarding/invite";
-import { getStepDef, ONBOARDING_STEPS } from "@/lib/onboarding/steps";
+import {
+  DEMO_READINESS_ITEMS,
+  getStepDef,
+  ONBOARDING_STEPS,
+} from "@/lib/onboarding/steps";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { cn } from "@/lib/utils";
@@ -235,6 +242,28 @@ export default async function ClientHomePage() {
                 </p>
               ) : null}
 
+              {def.key === "questionnaire" ? (
+                <QuestionnaireForm
+                  brokers={(brokers ?? []).map((b) => ({
+                    id: b.id,
+                    name: b.name,
+                  }))}
+                />
+              ) : null}
+
+              {def.key === "demo_readiness" && ready ? (
+                <DemoReadinessForm items={[...DEMO_READINESS_ITEMS]} />
+              ) : null}
+
+              {def.key === "live_install" ? (
+                <LiveInstallActions
+                  payload={
+                    (states.find((s) => s.step_key === "live_install")
+                      ?.payload as Record<string, unknown>) ?? {}
+                  }
+                />
+              ) : null}
+
               {def.key !== "questionnaire" &&
               def.key !== "demo_readiness" &&
               def.key !== "live_install" ? (
@@ -242,7 +271,7 @@ export default async function ClientHomePage() {
                   stepKey={def.key}
                   confirmLabel={def.confirmLabel}
                   confirmationKind={def.confirmationKind}
-                  disabled={def.key === "demo_readiness" && !ready}
+                  disabled={false}
                 />
               ) : null}
             </div>
