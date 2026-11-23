@@ -30,9 +30,19 @@ function displayName(parts: {
   return "Unnamed client";
 }
 
+type CaseListRow = {
+  id: string;
+  user_id: string;
+  status: string;
+  current_step_key: string | null;
+  updated_at: string;
+  requires_onboarding_fee?: boolean | null;
+};
+
 export async function loadAdminClientDirectory(): Promise<AdminClientRow[]> {
   const supabase = await createClient();
-  let { data: cases, error: casesErr } = await supabase
+  let cases: CaseListRow[] | null = null;
+  const { data: casesWithFee, error: casesErr } = await supabase
     .from("onboarding_cases")
     .select(
       "id, user_id, status, current_step_key, updated_at, requires_onboarding_fee",
@@ -40,10 +50,13 @@ export async function loadAdminClientDirectory(): Promise<AdminClientRow[]> {
     .order("updated_at", { ascending: false });
 
   if (casesErr && /requires_onboarding_fee/i.test(casesErr.message)) {
-    ({ data: cases } = await supabase
+    const { data: casesFallback } = await supabase
       .from("onboarding_cases")
       .select("id, user_id, status, current_step_key, updated_at")
-      .order("updated_at", { ascending: false }));
+      .order("updated_at", { ascending: false });
+    cases = (casesFallback ?? []) as CaseListRow[];
+  } else {
+    cases = (casesWithFee ?? null) as CaseListRow[] | null;
   }
 
   if (!cases?.length) return [];
