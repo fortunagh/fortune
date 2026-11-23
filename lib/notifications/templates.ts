@@ -159,15 +159,19 @@ export function renderNewRequestAccessAdminEmail(options: {
 export function renderAccessApprovedEmail(options: {
   firstName: string;
   activateUrl: string;
+  /** Existing clients: do not mention the onboarding payment. */
+  feeWaived?: boolean;
 }): EmailTemplate {
-  const { firstName, activateUrl } = options;
+  const { firstName, activateUrl, feeWaived = false } = options;
+  const body = feeWaived
+    ? "Your Fortuna access has been approved. Set your password with the button below, then sign in to continue your setup steps in the portal."
+    : "Your Fortuna access has been approved. Set your password with the button below, then sign in to complete your onboarding payment and setup steps.";
   const { html, text } = wrapFortunaEmail({
     firstName,
     previewText: "Set your Fortuna password",
-    bodyHtml: `<p style="margin:0 0 12px">Your Fortuna access has been approved. Set your password with the button below, then sign in to complete your onboarding payment and setup steps.</p>
+    bodyHtml: `<p style="margin:0 0 12px">${body}</p>
 <p style="margin:0;color:#737373;font-size:13px">This link expires for security. If it no longer works, contact support@fortunaglobal.com.</p>`,
-    bodyText:
-      "Your Fortuna access has been approved. Set your password with the link below, then sign in to complete your onboarding payment and setup steps.",
+    bodyText: body,
     ctaLabel: "Set your Fortuna password",
     ctaUrl: activateUrl,
   });

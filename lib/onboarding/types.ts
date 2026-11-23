@@ -10,6 +10,8 @@ export type OnboardingCaseRow = {
   readiness_unlocked_at: string | null;
   live_activated_at: string | null;
   completed_at: string | null;
+  /** false = existing client; onboarding fee waived at bootstrap */
+  requires_onboarding_fee?: boolean;
 };
 
 export type StepStateRow = {

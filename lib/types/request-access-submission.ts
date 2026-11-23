@@ -26,4 +26,6 @@ export type RequestAccessSubmissionRow = {
   /** Present after migration `20260330140000_profiles_roles_admin_rls.sql` */
   status?: RequestAccessStatus;
   admin_notes?: string | null;
+  /** Present after migration `20261123120000_onboarding_fee_waive.sql` */
+  waive_onboarding_fee?: boolean;
 };

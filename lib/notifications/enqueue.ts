@@ -232,9 +232,17 @@ export async function sendAccessApprovedEmail(
     firstName: string;
     activateUrl: string;
     idempotencyKey: string;
+    feeWaived?: boolean;
   },
 ) {
-  const { email, firstName, activateUrl, idempotencyKey, userId } = options;
+  const {
+    email,
+    firstName,
+    activateUrl,
+    idempotencyKey,
+    userId,
+    feeWaived = false,
+  } = options;
 
   const { data: existing } = await admin
     .from("deliveries")
@@ -243,7 +251,11 @@ export async function sendAccessApprovedEmail(
     .maybeSingle();
   if (existing) return { skipped: true as const };
 
-  const tpl = renderAccessApprovedEmail({ firstName, activateUrl });
+  const tpl = renderAccessApprovedEmail({
+    firstName,
+    activateUrl,
+    feeWaived,
+  });
 
   const deliveryUser = userId ?? null;
   if (deliveryUser) {

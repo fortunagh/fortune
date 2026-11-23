@@ -69,7 +69,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     title: "Set up your VPS",
     eyebrow: "Setup",
     description:
-      "Sign up via the ForexVPS affiliate link, follow the guide, then confirm your VPS is ready.",
+      "Click the ForexVPS signup link, follow the video guide, then confirm your VPS is ready.",
     confirmLabel: "My VPS is set up",
     confirmationKind: "client",
     prerequisites: ["questionnaire"],
@@ -81,7 +81,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     title: "Open a broker demo account",
     eyebrow: "Setup",
     description:
-      "Open an MT5 demo (USD, 500:1, USD 100,000) with an approved broker using the referral link provided.",
+      "Open an MT5 demo (USD, 500:1, USD 100,000) with an approved broker using the signup link provided.",
     confirmLabel: "My demo account is open",
     confirmationKind: "client",
     prerequisites: ["vps_setup"],

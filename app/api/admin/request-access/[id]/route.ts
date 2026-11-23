@@ -13,6 +13,8 @@ const patchSchema = z.object({
   admin_notes: z.string().max(8000).nullable().optional(),
   /** When true with status approved, send the single-use activation invite */
   sendInvitation: z.boolean().optional(),
+  /** Existing client — waive AUD $2,750 onboarding fee */
+  waiveOnboardingFee: z.boolean().optional(),
 });
 
 export async function PATCH(
@@ -52,18 +54,35 @@ export async function PATCH(
   if (parsed.data.admin_notes !== undefined) {
     updates.admin_notes = parsed.data.admin_notes;
   }
+  if (parsed.data.waiveOnboardingFee !== undefined) {
+    updates.waive_onboarding_fee = parsed.data.waiveOnboardingFee;
+  }
 
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ error: "No fields to update" }, { status: 400 });
   }
 
   const supabase = await createClient();
-  const { data, error } = await supabase
+  let { data, error } = await supabase
     .from("request_access_submissions")
     .update(updates)
     .eq("id", id)
     .select()
     .single();
+
+  if (
+    error &&
+    updates.waive_onboarding_fee !== undefined &&
+    /waive_onboarding_fee/i.test(`${error.message} ${error.details ?? ""}`)
+  ) {
+    const { waive_onboarding_fee: _omit, ...withoutWaive } = updates;
+    ({ data, error } = await supabase
+      .from("request_access_submissions")
+      .update(withoutWaive)
+      .eq("id", id)
+      .select()
+      .single());
+  }
 
   if (error) {
     console.error("admin PATCH request_access", error);
@@ -86,6 +105,9 @@ export async function PATCH(
         email: data.email,
         firstName: data.first_name,
         invitedBy: session.user.id,
+        waiveOnboardingFee:
+          parsed.data.waiveOnboardingFee === true ||
+          data.waive_onboarding_fee === true,
       });
     } catch (e) {
       console.error("invitation on approve", e);

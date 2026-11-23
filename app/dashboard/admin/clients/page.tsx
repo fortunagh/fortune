@@ -116,6 +116,19 @@ export default async function AdminClientsPage({
                     >
                       {row.name}
                     </Link>
+                    <p className="mt-1">
+                      <span
+                        className={
+                          row.requiresOnboardingFee
+                            ? "inline-flex rounded-full bg-amber-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-amber-800"
+                            : "inline-flex rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-emerald-800"
+                        }
+                      >
+                        {row.requiresOnboardingFee
+                          ? "Fee required"
+                          : "Fee waived"}
+                      </span>
+                    </p>
                     <p className="mt-0.5 text-xs text-neutral-500 md:hidden">
                       {row.email ?? "No email"}
                     </p>

@@ -12,6 +12,8 @@ export type AdminClientRow = {
   currentStepKey: string | null;
   currentStepTitle: string;
   updatedAt: string;
+  /** false = fee waived / existing client */
+  requiresOnboardingFee: boolean;
 };
 
 function displayName(parts: {
@@ -30,10 +32,19 @@ function displayName(parts: {
 
 export async function loadAdminClientDirectory(): Promise<AdminClientRow[]> {
   const supabase = await createClient();
-  const { data: cases } = await supabase
+  let { data: cases, error: casesErr } = await supabase
     .from("onboarding_cases")
-    .select("id, user_id, status, current_step_key, updated_at")
+    .select(
+      "id, user_id, status, current_step_key, updated_at, requires_onboarding_fee",
+    )
     .order("updated_at", { ascending: false });
+
+  if (casesErr && /requires_onboarding_fee/i.test(casesErr.message)) {
+    ({ data: cases } = await supabase
+      .from("onboarding_cases")
+      .select("id, user_id, status, current_step_key, updated_at")
+      .order("updated_at", { ascending: false }));
+  }
 
   if (!cases?.length) return [];
 
@@ -152,6 +163,7 @@ export async function loadAdminClientDirectory(): Promise<AdminClientRow[]> {
       currentStepKey: stepKey,
       currentStepTitle: getStepDef(stepKey ?? "")?.title ?? stepKey ?? "—",
       updatedAt: row.updated_at as string,
+      requiresOnboardingFee: row.requires_onboarding_fee !== false,
     };
   });
 }

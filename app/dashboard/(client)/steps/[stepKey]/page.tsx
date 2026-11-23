@@ -27,6 +27,9 @@ import { DemoReadinessForm } from "@/components/portal/demo-readiness-form";
 import { ResourceList } from "@/components/portal/resource-list";
 import { requireRequest } from "@/lib/onboarding/connection";
 
+const LICENCE_PORTAL_SIGNIN =
+  "https://clients.fortunaglobalholdings.com/login";
+
 export default async function StepPage({
   params,
   searchParams,
@@ -63,6 +66,17 @@ export default async function StepPage({
     .eq("published", true)
     .contains("related_step_keys", [stepKey]);
 
+  const { data: questionnaire } =
+    stepKey === "questionnaire"
+      ? await supabase
+          .from("questionnaire_responses")
+          .select(
+            "account_opening_method, entity_type, tax_residency_country, passport_issuing_country, ultimate_beneficial_owner, review_status, updated_at",
+          )
+          .eq("user_id", session.user.id)
+          .maybeSingle()
+      : { data: null };
+
   const demoDays = demoDaysElapsed(caseRow.demo_timer_started_at);
   const ready = readinessUnlocked(
     caseRow.demo_timer_started_at,
@@ -74,6 +88,8 @@ export default async function StepPage({
     status: s.status,
     completedAt: s.completed_at,
   }));
+
+  const hasGuides = (resources?.length ?? 0) > 0;
 
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
@@ -114,7 +130,7 @@ export default async function StepPage({
           </SoftNotice>
         ) : null}
 
-        {completed ? (
+        {completed && stepKey !== "questionnaire" ? (
           <SoftNotice variant="success">This step is complete.</SoftNotice>
         ) : null}
 
@@ -126,6 +142,150 @@ export default async function StepPage({
                 name: b.name,
               }))}
             />
+          </WidgetCard>
+        ) : null}
+
+        {stepKey === "questionnaire" && completed ? (
+          <WidgetCard className="space-y-3">
+            <SoftNotice variant="success">
+              Questionnaire submitted
+              {questionnaire?.updated_at
+                ? ` on ${new Date(questionnaire.updated_at).toLocaleDateString()}`
+                : ""}
+              . Your answers are on file
+              {questionnaire?.review_status
+                ? ` (status: ${questionnaire.review_status.replace(/_/g, " ")})`
+                : ""}
+              .
+            </SoftNotice>
+            {questionnaire ? (
+              <dl className="grid gap-3 text-sm sm:grid-cols-2">
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-neutral-500">
+                    Account opening
+                  </dt>
+                  <dd className="mt-1 text-neutral-900">
+                    {questionnaire.account_opening_method ?? "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-neutral-500">
+                    Entity type
+                  </dt>
+                  <dd className="mt-1 text-neutral-900">
+                    {questionnaire.entity_type ?? "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-neutral-500">
+                    Tax residency
+                  </dt>
+                  <dd className="mt-1 text-neutral-900">
+                    {questionnaire.tax_residency_country ?? "—"}
+                  </dd>
+                </div>
+                <div>
+                  <dt className="text-xs uppercase tracking-wide text-neutral-500">
+                    Passport country
+                  </dt>
+                  <dd className="mt-1 text-neutral-900">
+                    {questionnaire.passport_issuing_country ?? "—"}
+                  </dd>
+                </div>
+              </dl>
+            ) : (
+              <p className="text-sm text-neutral-600">
+                Submitted — answers on file. Contact support if you need a
+                correction.
+              </p>
+            )}
+          </WidgetCard>
+        ) : null}
+
+        {stepKey === "vps_setup" && !locked ? (
+          <WidgetCard className="space-y-3">
+            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
+              What is a VPS?
+            </p>
+            <p className="text-sm leading-relaxed text-neutral-700">
+              A VPS (Virtual Private Server) is a remote Windows computer that
+              stays online so MetaTrader 5 and your Fortuna EA can run 24/7 —
+              not your laptop.
+            </p>
+            <p className="text-sm text-neutral-600">
+              Click the ForexVPS signup link below, follow the video guide, then
+              confirm when your VPS is ready.
+            </p>
+            <Button asChild variant="fortuna" size="sm">
+              <a
+                href={DEFAULT_LINKS.forexVps}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Click the ForexVPS signup link
+              </a>
+            </Button>
+          </WidgetCard>
+        ) : null}
+
+        {stepKey === "broker_demo" && !locked ? (
+          <WidgetCard className="space-y-3">
+            <p className="text-sm leading-relaxed text-neutral-700">
+              Choose a broker from your approved options and use its signup
+              link. It is important to use the link provided so your account is
+              grouped correctly with the broker for EA operations.
+            </p>
+            <p className="text-sm text-neutral-600">
+              Open a <strong>demo</strong> account on <strong>MT5</strong> with{" "}
+              <strong>USD</strong> as the account currency,{" "}
+              <strong>500:1</strong> leverage and a{" "}
+              <strong>USD 100,000</strong> demo balance. Keep your account
+              number and exact demo server handy.
+            </p>
+          </WidgetCard>
+        ) : null}
+
+        {stepKey === "licence_portal" && !locked ? (
+          <WidgetCard className="space-y-3">
+            <p className="text-sm leading-relaxed text-neutral-700">
+              Connect to your VPS and open a web browser inside it, such as
+              Microsoft Edge or Google Chrome. Paste the signup link into the
+              address bar. If you are copying from a Mac, use{" "}
+              <strong>Command+C</strong> on your Mac and{" "}
+              <strong>Control+V</strong> inside the Windows VPS.
+            </p>
+            <div className="flex flex-wrap gap-2">
+              <Button asChild variant="fortuna" size="sm">
+                <a
+                  href={DEFAULT_LINKS.licencePortalSignup}
+                  target="_blank"
+                  rel="noreferrer"
+                >
+                  Register in the Fortuna licence portal
+                </a>
+              </Button>
+              <Button asChild variant="outline" size="sm" className="rounded-xl">
+                <a href={LICENCE_PORTAL_SIGNIN} target="_blank" rel="noreferrer">
+                  Licence portal sign-in
+                </a>
+              </Button>
+            </div>
+          </WidgetCard>
+        ) : null}
+
+        {stepKey === "demo_licence_apply" && !locked ? (
+          <WidgetCard className="space-y-3">
+            <p className="text-sm leading-relaxed text-neutral-700">
+              Review the EA comparison guide to choose the EA you want to use.
+              Sign in to the licence portal and follow the licence application
+              section of the setup guide. Select <strong>Demo</strong> and use
+              the account number and exact demo server from your broker.
+            </p>
+            <Button asChild variant="outline" size="sm" className="rounded-xl">
+              <a href={LICENCE_PORTAL_SIGNIN} target="_blank" rel="noreferrer">
+                Licence portal sign-in
+              </a>
+            </Button>
           </WidgetCard>
         ) : null}
 
@@ -147,13 +307,22 @@ export default async function StepPage({
                   <div className="flex gap-2">
                     {b.referral_url ? (
                       <Button asChild size="sm" variant="fortuna">
-                        <a href={b.referral_url} target="_blank" rel="noreferrer">
-                          Referral link
+                        <a
+                          href={b.referral_url}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          Signup link
                         </a>
                       </Button>
                     ) : null}
                     {b.secure_portal_url ? (
-                      <Button asChild size="sm" variant="outline" className="rounded-xl">
+                      <Button
+                        asChild
+                        size="sm"
+                        variant="outline"
+                        className="rounded-xl"
+                      >
                         <a
                           href={b.secure_portal_url}
                           target="_blank"
@@ -169,7 +338,8 @@ export default async function StepPage({
             </ul>
             {(brokers ?? []).every((b) => !b.referral_url) ? (
               <SoftNotice>
-                Fortuna has not published broker referral links yet.
+                Broker signup links are not published yet. Contact support if
+                you need help.
               </SoftNotice>
             ) : null}
           </WidgetCard>
@@ -204,42 +374,21 @@ export default async function StepPage({
           </WidgetCard>
         ) : null}
 
-        {(resources?.length ?? 0) > 0 ? (
+        {hasGuides ? (
           <WidgetCard>
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
               Guides
             </p>
             <ResourceList resources={resources ?? []} />
           </WidgetCard>
-        ) : (
+        ) : !locked &&
+          stepKey !== "questionnaire" &&
+          stepKey !== "onboarding_payment" &&
+          stepKey !== "request_access" ? (
           <SoftNotice>
-            Guides for this step will appear here when Fortuna publishes them.
+            Guides for this step are being prepared. You can still follow the
+            instructions above and confirm when ready.
           </SoftNotice>
-        )}
-
-        {stepKey === "vps_setup" ? (
-          <WidgetCard>
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-              What is a VPS?
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-neutral-700">
-              A VPS (Virtual Private Server) is a remote Windows computer that
-              stays online so MetaTrader 5 and your Fortuna EA can run 24/7.
-              Fortuna uses ForexVPS for this setup — not your laptop.
-            </p>
-            <p className="mt-3 text-sm text-neutral-600">
-              Sign up via the affiliate link, follow the PDF/video guides below
-              (when published), then confirm when your VPS is ready.
-            </p>
-            <a
-              className="mt-4 inline-flex text-sm font-semibold text-[#a8842a] underline"
-              href={DEFAULT_LINKS.forexVps}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Sign up to ForexVPS
-            </a>
-          </WidgetCard>
         ) : null}
 
         {!locked &&
@@ -257,7 +406,11 @@ export default async function StepPage({
           </WidgetCard>
         ) : null}
 
-        <Button asChild variant="ghost" className="rounded-xl px-0 text-neutral-600">
+        <Button
+          asChild
+          variant="ghost"
+          className="rounded-xl px-0 text-neutral-600"
+        >
           <Link href="/dashboard">← Back to dashboard</Link>
         </Button>
       </div>

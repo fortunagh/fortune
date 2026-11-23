@@ -55,14 +55,23 @@ async function createSetPasswordLink(options: {
   firstName: string;
   invitationId: string;
   submissionId: string;
+  waiveOnboardingFee?: boolean;
 }): Promise<{ userId: string | null; actionLink: string | null }> {
-  const { admin, email, firstName, invitationId, submissionId } = options;
+  const {
+    admin,
+    email,
+    firstName,
+    invitationId,
+    submissionId,
+    waiveOnboardingFee = false,
+  } = options;
   const origin = siteOrigin();
   const redirectTo = `${origin}/auth/update-password`;
   const meta = {
     first_name: firstName,
     invitation_id: invitationId,
     submission_id: submissionId,
+    waive_onboarding_fee: waiveOnboardingFee,
   };
 
   let user = await findUserByEmail(admin, email);
@@ -125,6 +134,8 @@ export async function createAndSendInvitation(options: {
   firstName: string;
   invitedBy: string;
   expiresInDays?: number;
+  /** Existing client — skip AUD $2,750 onboarding fee */
+  waiveOnboardingFee?: boolean;
 }) {
   const {
     admin,
@@ -133,6 +144,7 @@ export async function createAndSendInvitation(options: {
     firstName,
     invitedBy,
     expiresInDays = 7,
+    waiveOnboardingFee = false,
   } = options;
 
   const token = generateInviteToken();
@@ -157,13 +169,23 @@ export async function createAndSendInvitation(options: {
     throw new Error(error?.message ?? "Could not create invitation");
   }
 
-  await admin
-    .from("request_access_submissions")
-    .update({
+  {
+    const baseUpdate: Record<string, unknown> = {
       status: "approved",
       invitation_sent_at: new Date().toISOString(),
-    })
-    .eq("id", submissionId);
+    };
+    let { error: subUpErr } = await admin
+      .from("request_access_submissions")
+      .update({ ...baseUpdate, waive_onboarding_fee: waiveOnboardingFee })
+      .eq("id", submissionId);
+    if (subUpErr && /waive_onboarding_fee/i.test(subUpErr.message)) {
+      ({ error: subUpErr } = await admin
+        .from("request_access_submissions")
+        .update(baseUpdate)
+        .eq("id", submissionId));
+    }
+    if (subUpErr) console.error("submission approve update", subUpErr);
+  }
 
   const origin = siteOrigin();
   const fallbackActivateUrl = `${origin}/auth/activate?token=${token}`;
@@ -174,6 +196,7 @@ export async function createAndSendInvitation(options: {
     firstName,
     invitationId: invite.id,
     submissionId,
+    waiveOnboardingFee,
   });
 
   if (userId) {
@@ -208,6 +231,7 @@ export async function createAndSendInvitation(options: {
     firstName,
     activateUrl: setPasswordUrl,
     idempotencyKey: `access_approved:${submissionId}`,
+    feeWaived: waiveOnboardingFee,
   });
 
   await admin.from("audit_log").insert({
@@ -221,6 +245,7 @@ export async function createAndSendInvitation(options: {
       submissionId,
       email,
       usedGenerateLink: Boolean(actionLink),
+      waiveOnboardingFee,
     },
   });
 
@@ -253,6 +278,10 @@ export async function activateInvitation(options: {
     .update({ used_at: new Date().toISOString() })
     .eq("id", invite.id);
 
+  const { data: activatingUser } = await admin.auth.admin.getUserById(userId);
+  const activatingMeta = activatingUser.user?.user_metadata ?? {};
+  let waiveOnboardingFee = activatingMeta.waive_onboarding_fee === true;
+
   if (invite.submission_id) {
     await admin
       .from("request_access_submissions")
@@ -261,11 +290,14 @@ export async function activateInvitation(options: {
 
     const { data: sub } = await admin
       .from("request_access_submissions")
-      .select("first_name, last_name, phone_e164, mobile_number")
+      .select(
+        "first_name, last_name, phone_e164, mobile_number, waive_onboarding_fee",
+      )
       .eq("id", invite.submission_id)
       .maybeSingle();
 
     if (sub) {
+      if (sub.waive_onboarding_fee === true) waiveOnboardingFee = true;
       const phone =
         normalizePhoneE164(sub.phone_e164) ||
         normalizePhoneE164(sub.mobile_number);
@@ -286,7 +318,9 @@ export async function activateInvitation(options: {
       .eq("id", userId);
   }
 
-  await bootstrapOnboardingCase(admin, userId);
+  await bootstrapOnboardingCase(admin, userId, {
+    requiresOnboardingFee: !waiveOnboardingFee,
+  });
 
   return { ok: true as const, invite };
 }
@@ -311,6 +345,8 @@ export async function finalizeInviteAfterPassword(
       .is("used_at", null);
   }
 
+  let waiveOnboardingFee = meta.waive_onboarding_fee === true;
+
   if (submissionId) {
     await admin
       .from("request_access_submissions")
@@ -319,11 +355,14 @@ export async function finalizeInviteAfterPassword(
 
     const { data: sub } = await admin
       .from("request_access_submissions")
-      .select("first_name, last_name, phone_e164, mobile_number")
+      .select(
+        "first_name, last_name, phone_e164, mobile_number, waive_onboarding_fee",
+      )
       .eq("id", submissionId)
       .maybeSingle();
 
     if (sub) {
+      if (sub.waive_onboarding_fee === true) waiveOnboardingFee = true;
       const phone =
         normalizePhoneE164(sub.phone_e164) ||
         normalizePhoneE164(sub.mobile_number);
@@ -345,6 +384,8 @@ export async function finalizeInviteAfterPassword(
       .is("activated_at", null);
   }
 
-  await bootstrapOnboardingCase(admin, userId);
+  await bootstrapOnboardingCase(admin, userId, {
+    requiresOnboardingFee: !waiveOnboardingFee,
+  });
   return { ok: true as const };
 }

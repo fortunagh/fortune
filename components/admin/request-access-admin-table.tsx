@@ -109,6 +109,7 @@ export function RequestAccessAdminTable({
     kind: ConfirmKind;
     row: RequestAccessSubmissionRow | null;
   }>({ kind: null, row: null });
+  const [waiveOnboardingFee, setWaiveOnboardingFee] = React.useState(false);
   React.useEffect(() => {
     setRows(initialRows);
   }, [initialRows]);
@@ -124,6 +125,7 @@ export function RequestAccessAdminTable({
       status?: RequestAccessStatus;
       admin_notes?: string | null;
       sendInvitation?: boolean;
+      waiveOnboardingFee?: boolean;
     },
   ) {
     setBusyId(id);
@@ -169,10 +171,15 @@ export function RequestAccessAdminTable({
           status: "approved",
           sendInvitation: true,
           admin_notes: notes.trim() === "" ? undefined : notes.trim(),
+          waiveOnboardingFee:
+            kind === "accept"
+              ? waiveOnboardingFee
+              : row.waive_onboarding_fee === true,
         });
         toast.success(
           kind === "resend" ? "Invite resent" : "Accepted and invite sent",
         );
+        setWaiveOnboardingFee(false);
       } else if (kind === "reject") {
         await patchRow(row.id, {
           status: "declined",
@@ -512,7 +519,10 @@ export function RequestAccessAdminTable({
       <AlertDialog
         open={confirm.kind !== null}
         onOpenChange={(open) => {
-          if (!open) setConfirm({ kind: null, row: null });
+          if (!open) {
+            setConfirm({ kind: null, row: null });
+            setWaiveOnboardingFee(false);
+          }
         }}
       >
         <AlertDialogContent>
@@ -526,6 +536,25 @@ export function RequestAccessAdminTable({
                 : null}
             </AlertDialogDescription>
           </AlertDialogHeader>
+          {confirm.kind === "accept" ? (
+            <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-black/[0.08] bg-[#fbf8f3] px-3 py-3 text-sm text-neutral-800">
+              <input
+                type="checkbox"
+                className="mt-1 h-4 w-4 accent-[#a8842a]"
+                checked={waiveOnboardingFee}
+                onChange={(e) => setWaiveOnboardingFee(e.target.checked)}
+              />
+              <span>
+                <span className="font-medium">
+                  Existing client — waive AUD $2,750 onboarding fee
+                </span>
+                <span className="mt-0.5 block text-xs text-neutral-500">
+                  They skip payment and start at the questionnaire. Leave
+                  unchecked for new paying clients.
+                </span>
+              </span>
+            </label>
+          ) : null}
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction
