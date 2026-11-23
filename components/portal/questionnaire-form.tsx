@@ -122,16 +122,16 @@ export function QuestionnaireForm({ brokers }: { brokers: Broker[] }) {
         hint="Will you open the broker account as an individual or through an entity? If using an entity, describe its structure (company or trust)."
       >
         <Select
-          value={form.accountOpeningMethod}
+          value={form.accountOpeningMethod || undefined}
           onValueChange={(v) =>
             setForm((f) => ({ ...f, accountOpeningMethod: v }))
           }
           required
         >
-          <SelectTrigger className="rounded-xl">
+          <SelectTrigger className="rounded-xl border-[#c59d3f]/70">
             <SelectValue placeholder="Select" />
           </SelectTrigger>
-          <SelectContent>
+          <SelectContent position="popper" className="z-[300]">
             <SelectItem value="individual">Individual</SelectItem>
             <SelectItem value="company">Company</SelectItem>
             <SelectItem value="trust">Trust</SelectItem>
@@ -196,18 +196,35 @@ export function QuestionnaireForm({ brokers }: { brokers: Broker[] }) {
         {isEntity ? (
           <div className="mt-3 space-y-2">
             <Label className="text-xs text-neutral-500">More than one UBO?</Label>
-            <Select
-              value={form.multipleUbos}
-              onValueChange={(v) => setForm((f) => ({ ...f, multipleUbos: v }))}
-            >
-              <SelectTrigger className="rounded-xl">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="no">No</SelectItem>
-                <SelectItem value="yes">Yes</SelectItem>
-              </SelectContent>
-            </Select>
+            <div className="flex gap-3" role="radiogroup" aria-label="More than one UBO">
+              {(
+                [
+                  { value: "no", label: "No" },
+                  { value: "yes", label: "Yes" },
+                ] as const
+              ).map((opt) => {
+                const selected = form.multipleUbos === opt.value;
+                return (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    role="radio"
+                    aria-checked={selected}
+                    onClick={() =>
+                      setForm((f) => ({ ...f, multipleUbos: opt.value }))
+                    }
+                    className={cn(
+                      "flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors",
+                      selected
+                        ? "border-[#c59d3f] bg-[hsl(var(--portal-gold-soft))] text-[#8a6d1f]"
+                        : "border-neutral-200 bg-white text-neutral-800 hover:border-[#c59d3f]/50",
+                    )}
+                  >
+                    {opt.label}
+                  </button>
+                );
+              })}
+            </div>
             {form.multipleUbos === "yes" ? (
               <Input
                 className="rounded-xl"
@@ -274,21 +291,50 @@ export function QuestionnaireForm({ brokers }: { brokers: Broker[] }) {
         label="07 Proof of residential address"
         hint="Can you provide current proof of your residential address directly to your broker? Yes / No."
       >
-        <Select
-          value={form.canProvideProofOfAddress}
-          onValueChange={(v) =>
-            setForm((f) => ({ ...f, canProvideProofOfAddress: v }))
-          }
-          required
+        <div
+          className="flex gap-3"
+          role="radiogroup"
+          aria-label="Proof of residential address"
         >
-          <SelectTrigger className="rounded-xl">
-            <SelectValue placeholder="Select Yes or No" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="yes">Yes</SelectItem>
-            <SelectItem value="no">No</SelectItem>
-          </SelectContent>
-        </Select>
+          {(
+            [
+              { value: "yes", label: "Yes" },
+              { value: "no", label: "No" },
+            ] as const
+          ).map((opt) => {
+            const selected = form.canProvideProofOfAddress === opt.value;
+            return (
+              <button
+                key={opt.value}
+                type="button"
+                role="radio"
+                aria-checked={selected}
+                onClick={() =>
+                  setForm((f) => ({
+                    ...f,
+                    canProvideProofOfAddress: opt.value,
+                  }))
+                }
+                className={cn(
+                  "flex-1 rounded-xl border px-4 py-2.5 text-sm font-medium transition-colors",
+                  selected
+                    ? "border-[#c59d3f] bg-[hsl(var(--portal-gold-soft))] text-[#8a6d1f]"
+                    : "border-neutral-200 bg-white text-neutral-800 hover:border-[#c59d3f]/50",
+                )}
+              >
+                {opt.label}
+              </button>
+            );
+          })}
+        </div>
+        {/* Native required control for form validation */}
+        <input
+          tabIndex={-1}
+          className="sr-only"
+          required
+          value={form.canProvideProofOfAddress}
+          onChange={() => undefined}
+        />
       </Field>
 
       {brokers.length > 0 ? (
@@ -308,7 +354,7 @@ export function QuestionnaireForm({ brokers }: { brokers: Broker[] }) {
             <SelectTrigger className="rounded-xl">
               <SelectValue placeholder="Select broker" />
             </SelectTrigger>
-            <SelectContent>
+            <SelectContent position="popper" className="z-[300]">
               <SelectItem value="__none__">No preference yet</SelectItem>
               {brokers.map((b) => (
                 <SelectItem key={b.id} value={b.id}>

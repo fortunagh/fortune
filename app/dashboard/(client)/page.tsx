@@ -33,6 +33,7 @@ import {
   getStepDef,
   ONBOARDING_STEPS,
 } from "@/lib/onboarding/steps";
+import { enqueueStepCommunications } from "@/lib/notifications/enqueue";
 import { createClient } from "@/lib/supabase/server";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { cn } from "@/lib/utils";
@@ -72,6 +73,21 @@ export default async function ClientHomePage() {
         </PortalMuted>
       </WidgetCard>
     );
+  }
+
+  // Backfill Email/SMS for the current step if the sequence never delivered
+  // (e.g. payment completed before notifications were wired).
+  if (caseRow.current_step_key) {
+    try {
+      const admin = createServiceRoleClient();
+      await enqueueStepCommunications(admin, {
+        userId: session.user.id,
+        stepKey: caseRow.current_step_key,
+        idempotencyKey: `next_step:${caseRow.id}:${caseRow.current_step_key}`,
+      });
+    } catch (e) {
+      console.error("ensure current-step notification", e);
+    }
   }
 
   const firstName =

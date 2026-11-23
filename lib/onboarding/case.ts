@@ -1,5 +1,6 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
+import { enqueueStepCommunications } from "@/lib/notifications/enqueue";
 import { ONBOARDING_STEPS } from "./steps";
 import type { OnboardingCaseRow, StepStateRow } from "./types";
 
@@ -141,6 +142,18 @@ export async function bootstrapOnboardingCase(
     throw new Error(statesError.message);
   }
 
+  // Kick off Email/SMS sequence for the first unlocked actionable step
+  // (payment, or questionnaire when fee is waived).
+  try {
+    await enqueueStepCommunications(admin, {
+      userId,
+      stepKey: currentStepKey,
+      idempotencyKey: `step_unlocked:${caseRow.id}:${currentStepKey}`,
+    });
+  } catch (e) {
+    console.error("bootstrap step notification", e);
+  }
+
   return caseRow as OnboardingCaseRow;
 }
 
@@ -183,4 +196,51 @@ export function readinessUnlocked(
 ): boolean {
   if (readinessUnlockedAt) return true;
   return demoDaysElapsed(demoTimerStartedAt) >= 28;
+}
+
+export type ResetOnboardingOptions = {
+  /** Keep Auth login + profile. Default true. */
+  keepAccount?: boolean;
+  /** Also delete payments, agreements, notifications, deliveries. Default true. */
+  clearRelatedData?: boolean;
+  /** Re-require onboarding fee after reset. Default = previous case flag. */
+  requiresOnboardingFee?: boolean;
+};
+
+/**
+ * Soft wipe: clear journey (+ optional related rows) and re-bootstrap.
+ * Does not delete the Auth user — use admin wipe for that.
+ */
+export async function resetOnboardingData(
+  admin: AdminClient,
+  userId: string,
+  options: ResetOnboardingOptions = {},
+): Promise<OnboardingCaseRow> {
+  const clearRelatedData = options.clearRelatedData !== false;
+
+  const { data: existing } = await admin
+    .from("onboarding_cases")
+    .select("id, requires_onboarding_fee")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  const requiresOnboardingFee =
+    options.requiresOnboardingFee ??
+    (existing?.requires_onboarding_fee !== false);
+
+  if (existing) {
+    await admin.from("onboarding_cases").delete().eq("id", existing.id);
+  }
+
+  if (clearRelatedData) {
+    await Promise.all([
+      admin.from("payments").delete().eq("user_id", userId),
+      admin.from("agreements").delete().eq("user_id", userId),
+      admin.from("notifications").delete().eq("user_id", userId),
+      admin.from("deliveries").delete().eq("user_id", userId),
+      admin.from("assistant_threads").delete().eq("user_id", userId),
+    ]);
+  }
+
+  return bootstrapOnboardingCase(admin, userId, { requiresOnboardingFee });
 }

@@ -43,6 +43,32 @@ function siteUrl() {
   );
 }
 
+/**
+ * Send the step email and (when consented) SMS — matches Email/SMS sequence PDF.
+ * Idempotent per channel via `${idempotencyKey}:email` / `:sms`.
+ */
+export async function enqueueStepCommunications(
+  admin: AdminClient,
+  options: {
+    userId: string;
+    stepKey: string;
+    idempotencyKey: string;
+    templateKey?: string;
+  },
+) {
+  const email = await enqueueNextStepNotification(admin, {
+    ...options,
+    channel: "email",
+    idempotencyKey: `${options.idempotencyKey}:email`,
+  });
+  const sms = await enqueueNextStepNotification(admin, {
+    ...options,
+    channel: "sms",
+    idempotencyKey: `${options.idempotencyKey}:sms`,
+  });
+  return { email, sms };
+}
+
 export async function enqueueNextStepNotification(
   admin: AdminClient,
   options: {

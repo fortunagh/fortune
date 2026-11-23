@@ -3,7 +3,10 @@ import { notFound } from "next/navigation";
 import { ClientWorkspace } from "@/components/admin/client-workspace";
 import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { createClient } from "@/lib/supabase/server";
-import { getCaseForUser } from "@/lib/onboarding/case";
+import {
+  demoDaysElapsed,
+  getCaseForUser,
+} from "@/lib/onboarding/case";
 import { ONBOARDING_STEPS } from "@/lib/onboarding/steps";
 
 export default async function AdminClientDetailPage({
@@ -37,11 +40,14 @@ export default async function AdminClientDetailPage({
     email = null;
   }
 
+  const stateIds = states.map((s) => s.id);
+
   const [
     { data: support },
     { data: payments },
-    { data: auditByEntity },
+    { data: auditRows },
     { data: submission },
+    { data: questionnaire },
   ] = await Promise.all([
     supabase
       .from("support_requests")
@@ -59,13 +65,24 @@ export default async function AdminClientDetailPage({
       .limit(50),
     supabase
       .from("audit_log")
-      .select("*")
+      .select(
+        "id, action, from_status, to_status, created_at, entity_type, entity_id, meta",
+      )
       .order("created_at", { ascending: false })
-      .limit(80),
+      .limit(200),
     supabase
       .from("request_access_submissions")
       .select("first_name, last_name, email, phone_e164")
       .eq("user_id", userId)
+      .maybeSingle(),
+    supabase
+      .from("questionnaire_responses")
+      .select(
+        "review_status, account_opening_method, tax_residency_country, passport_issuing_country, can_provide_proof_of_address, created_at",
+      )
+      .eq("case_id", caseRow.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
       .maybeSingle(),
   ]);
 
@@ -81,11 +98,17 @@ export default async function AdminClientDetailPage({
     linkedSubmission = byEmail;
   }
 
-  const relatedAudit = (auditByEntity ?? []).filter(
-    (a) =>
-      (a.meta as { userId?: string } | null)?.userId === userId ||
-      states.some((s) => s.id === a.entity_id),
-  );
+  const relatedAudit = (auditRows ?? [])
+    .filter((a) => {
+      const meta = a.meta as { userId?: string } | null;
+      return (
+        meta?.userId === userId ||
+        a.entity_id === userId ||
+        a.entity_id === caseRow.id ||
+        stateIds.includes(a.entity_id)
+      );
+    })
+    .slice(0, 40);
 
   const name =
     [
@@ -101,6 +124,8 @@ export default async function AdminClientDetailPage({
     email = linkedSubmission.email as string;
   }
 
+  const demoDays = demoDaysElapsed(caseRow.demo_timer_started_at);
+
   return (
     <ClientWorkspace
       userId={userId}
@@ -114,15 +139,28 @@ export default async function AdminClientDetailPage({
       caseStatus={caseRow.status}
       caseId={caseRow.id}
       currentStepKey={caseRow.current_step_key}
-      steps={ONBOARDING_STEPS.map((s) => ({ key: s.key, title: s.title }))}
+      requiresOnboardingFee={caseRow.requires_onboarding_fee !== false}
+      demoTimerStartedAt={caseRow.demo_timer_started_at}
+      readinessUnlockedAt={caseRow.readiness_unlocked_at}
+      liveActivatedAt={caseRow.live_activated_at}
+      demoDays={demoDays}
+      steps={ONBOARDING_STEPS.map((s) => ({
+        key: s.key,
+        title: s.title,
+        phase: s.phase,
+        sort: s.sort,
+      }))}
       states={states.map((s) => ({
         step_key: s.step_key,
         status: s.status,
         completed_at: s.completed_at,
+        unlocked_at: s.unlocked_at,
+        confirmation_source: s.confirmation_source,
+        payload: (s.payload as Record<string, unknown>) ?? {},
       }))}
       support={support ?? []}
       payments={payments ?? []}
-      audit={relatedAudit.slice(0, 30).map((a) => ({
+      audit={relatedAudit.map((a) => ({
         id: a.id,
         action: a.action,
         from_status: a.from_status,
@@ -130,6 +168,19 @@ export default async function AdminClientDetailPage({
         created_at: a.created_at,
         entity_type: a.entity_type,
       }))}
+      questionnaire={
+        questionnaire
+          ? {
+              review_status: questionnaire.review_status,
+              account_opening_method: questionnaire.account_opening_method,
+              tax_residency_country: questionnaire.tax_residency_country,
+              passport_issuing_country: questionnaire.passport_issuing_country,
+              can_provide_proof_of_address:
+                questionnaire.can_provide_proof_of_address,
+              submitted_at: questionnaire.created_at,
+            }
+          : null
+      }
     />
   );
 }

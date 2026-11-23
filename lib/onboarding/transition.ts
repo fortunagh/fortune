@@ -1,7 +1,7 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
-import { enqueueNextStepNotification } from "@/lib/notifications/enqueue";
-import { getNextStepKey, getStepDef } from "./steps";
+import { enqueueStepCommunications } from "@/lib/notifications/enqueue";
+import { ONBOARDING_STEPS, getNextStepKey, getStepDef } from "./steps";
 import { readinessUnlocked } from "./case";
 import type { OnboardingCaseRow, StepStateRow, TransitionSource } from "./types";
 
@@ -300,19 +300,19 @@ export async function completeStep(options: {
 
   if (nextKey && nextKey !== stepKey) {
     try {
-      await enqueueNextStepNotification(admin, {
+      await enqueueStepCommunications(admin, {
         userId,
         stepKey: nextKey,
         idempotencyKey: `next_step:${typedCase.id}:${nextKey}`,
       });
     } catch (e) {
-      console.error("enqueueNextStepNotification", e);
+      console.error("enqueueStepCommunications", e);
     }
   }
 
   if (stepKey === "live_activation") {
     try {
-      await enqueueNextStepNotification(admin, {
+      await enqueueStepCommunications(admin, {
         userId,
         stepKey: "onboarding_complete",
         idempotencyKey: `complete:${typedCase.id}`,
@@ -328,5 +328,174 @@ export async function completeStep(options: {
     caseRow: freshCase as OnboardingCaseRow,
     states: (freshStates ?? []) as StepStateRow[],
     nextStepKey: nextKey && nextKey !== stepKey ? nextKey : null,
+  };
+}
+
+/**
+ * Admin: reopen a step and lock every later step. Clears related case timers.
+ */
+export async function undoStep(options: {
+  admin: AdminClient;
+  userId: string;
+  stepKey: string;
+  actorId: string;
+  /** When true (default), also lock/clear all steps after the target. */
+  cascadeLater?: boolean;
+}): Promise<TransitionResult> {
+  const {
+    admin,
+    userId,
+    stepKey,
+    actorId,
+    cascadeLater = true,
+  } = options;
+
+  const def = getStepDef(stepKey);
+  if (!def) return { ok: false, error: "Unknown step", status: 400 };
+
+  if (stepKey === "request_access") {
+    return {
+      ok: false,
+      error: "Request access cannot be undone — use Reset onboarding data instead",
+      status: 400,
+    };
+  }
+
+  const { data: caseRow, error: caseErr } = await admin
+    .from("onboarding_cases")
+    .select("*")
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (caseErr || !caseRow) {
+    return { ok: false, error: "Onboarding case not found", status: 404 };
+  }
+
+  const typedCase = caseRow as OnboardingCaseRow;
+
+  const { data: statesData } = await admin
+    .from("onboarding_step_states")
+    .select("*")
+    .eq("case_id", typedCase.id);
+
+  const states = (statesData ?? []) as StepStateRow[];
+  const target = states.find((s) => s.step_key === stepKey);
+  if (!target) return { ok: false, error: "Step state missing", status: 404 };
+
+  const sorted = [...ONBOARDING_STEPS].sort((a, b) => a.sort - b.sort);
+  const targetIdx = sorted.findIndex((s) => s.key === stepKey);
+  if (targetIdx < 0) {
+    return { ok: false, error: "Unknown step", status: 400 };
+  }
+
+  const laterKeys = cascadeLater
+    ? sorted.slice(targetIdx + 1).map((s) => s.key)
+    : [];
+
+  const fromStatus = target.status;
+
+  await admin
+    .from("onboarding_step_states")
+    .update({
+      status: "available",
+      unlocked_at: target.unlocked_at ?? new Date().toISOString(),
+      completed_at: null,
+      confirmation_source: null,
+      payload: {},
+    })
+    .eq("id", target.id);
+
+  await writeAudit(
+    admin,
+    actorId,
+    target.id,
+    "undo_step",
+    fromStatus,
+    "available",
+    { stepKey, cascadeLater, laterKeys },
+  );
+
+  for (const laterKey of laterKeys) {
+    const later = states.find((s) => s.step_key === laterKey);
+    if (!later) continue;
+    if (
+      later.status === "locked" &&
+      !later.completed_at &&
+      !later.unlocked_at
+    ) {
+      continue;
+    }
+    await admin
+      .from("onboarding_step_states")
+      .update({
+        status: "locked",
+        unlocked_at: null,
+        completed_at: null,
+        confirmation_source: null,
+        payload: {},
+      })
+      .eq("id", later.id);
+
+    await writeAudit(
+      admin,
+      actorId,
+      later.id,
+      "undo_step_cascade_lock",
+      later.status,
+      "locked",
+      { stepKey: laterKey, undoneFrom: stepKey },
+    );
+  }
+
+  const caseUpdates: Record<string, unknown> = {
+    current_step_key: stepKey,
+    status: "active",
+    completed_at: null,
+  };
+
+  const demoInstallIdx = sorted.findIndex((s) => s.key === "demo_install");
+  const readinessIdx = sorted.findIndex((s) => s.key === "demo_readiness");
+  const liveIdx = sorted.findIndex((s) => s.key === "live_activation");
+
+  if (demoInstallIdx >= 0 && targetIdx <= demoInstallIdx) {
+    caseUpdates.demo_timer_started_at = null;
+  }
+  if (readinessIdx >= 0 && targetIdx <= readinessIdx) {
+    caseUpdates.readiness_unlocked_at = null;
+  }
+  if (liveIdx >= 0 && targetIdx <= liveIdx) {
+    caseUpdates.live_activated_at = null;
+  }
+
+  // Questionnaire answers belong to that step — clear when undoing it or earlier.
+  const questionnaireIdx = sorted.findIndex((s) => s.key === "questionnaire");
+  if (questionnaireIdx >= 0 && targetIdx <= questionnaireIdx) {
+    await admin
+      .from("questionnaire_responses")
+      .delete()
+      .eq("case_id", typedCase.id);
+  }
+
+  await admin
+    .from("onboarding_cases")
+    .update(caseUpdates)
+    .eq("id", typedCase.id);
+
+  const { data: freshCase } = await admin
+    .from("onboarding_cases")
+    .select("*")
+    .eq("id", typedCase.id)
+    .single();
+
+  const { data: freshStates } = await admin
+    .from("onboarding_step_states")
+    .select("*")
+    .eq("case_id", typedCase.id);
+
+  return {
+    ok: true,
+    caseRow: freshCase as OnboardingCaseRow,
+    states: (freshStates ?? []) as StepStateRow[],
+    nextStepKey: stepKey,
   };
 }
