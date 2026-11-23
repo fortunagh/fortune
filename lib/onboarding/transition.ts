@@ -1,14 +1,19 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { enqueueNextStepNotification } from "@/lib/notifications/enqueue";
-import { getStepDef, ONBOARDING_STEPS } from "./steps";
+import { getNextStepKey, getStepDef } from "./steps";
 import { readinessUnlocked } from "./case";
 import type { OnboardingCaseRow, StepStateRow, TransitionSource } from "./types";
 
 type AdminClient = SupabaseClient;
 
 export type TransitionResult =
-  | { ok: true; caseRow: OnboardingCaseRow; states: StepStateRow[] }
+  | {
+      ok: true;
+      caseRow: OnboardingCaseRow;
+      states: StepStateRow[];
+      nextStepKey: string | null;
+    }
   | { ok: false; error: string; status?: number };
 
 async function writeAudit(
@@ -32,9 +37,7 @@ async function writeAudit(
 }
 
 function nextStepKey(completedKey: string): string | null {
-  const idx = ONBOARDING_STEPS.findIndex((s) => s.key === completedKey);
-  if (idx < 0 || idx >= ONBOARDING_STEPS.length - 1) return null;
-  return ONBOARDING_STEPS[idx + 1].key;
+  return getNextStepKey(completedKey);
 }
 
 /**
@@ -105,7 +108,14 @@ export async function completeStep(options: {
   if (!current) return { ok: false, error: "Step state missing", status: 404 };
 
   if (current.status === "completed") {
-    return { ok: true, caseRow: typedCase, states };
+    return {
+      ok: true,
+      caseRow: typedCase,
+      states,
+      nextStepKey: typedCase.current_step_key !== stepKey
+        ? typedCase.current_step_key
+        : nextStepKey(stepKey),
+    };
   }
 
   if (!force) {
@@ -174,6 +184,7 @@ export async function completeStep(options: {
           ok: true,
           caseRow: typedCase,
           states: (refreshed ?? []) as StepStateRow[],
+          nextStepKey: null,
         };
       }
     }
@@ -316,5 +327,6 @@ export async function completeStep(options: {
     ok: true,
     caseRow: freshCase as OnboardingCaseRow,
     states: (freshStates ?? []) as StepStateRow[],
+    nextStepKey: nextKey && nextKey !== stepKey ? nextKey : null,
   };
 }

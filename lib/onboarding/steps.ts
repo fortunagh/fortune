@@ -25,6 +25,7 @@ export const STEP_PHASES: { id: StepPhase; label: string }[] = [
   { id: "billing", label: "Billing" },
 ];
 
+/** Order matches Fortuna_Full_Email_and_SMS_Sequence.pdf (agreement = step 6). */
 export const ONBOARDING_STEPS: OnboardingStepDef[] = [
   {
     key: "request_access",
@@ -57,7 +58,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     title: "Complete the onboarding questionnaire",
     eyebrow: "Setup",
     description:
-      "Tell us how you will open the account so we can show approved broker options.",
+      "Tell us about your account structure so we can identify approved broker options.",
     confirmLabel: "Submit questionnaire",
     confirmationKind: "client",
     prerequisites: ["onboarding_payment"],
@@ -69,7 +70,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     title: "Set up your VPS",
     eyebrow: "Setup",
     description:
-      "Click the ForexVPS signup link, follow the video guide, then confirm your VPS is ready.",
+      "Register with ForexVPS, follow the video guide, then confirm your VPS is ready.",
     confirmLabel: "My VPS is set up",
     confirmationKind: "client",
     prerequisites: ["questionnaire"],
@@ -87,8 +88,20 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     prerequisites: ["vps_setup"],
   },
   {
-    key: "licence_portal",
+    key: "user_agreement",
     sort: 6,
+    phase: "setup",
+    title: "Sign the user agreement",
+    eyebrow: "Setup",
+    description:
+      "Review and sign your Fortuna user agreement before licence portal registration.",
+    confirmLabel: "Sign agreement",
+    confirmationKind: "dropbox_sign",
+    prerequisites: ["broker_demo"],
+  },
+  {
+    key: "licence_portal",
+    sort: 7,
     phase: "demo",
     title: "Register in the EA licence portal",
     eyebrow: "Demo",
@@ -96,11 +109,11 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
       "From inside your VPS browser, create your Fortuna licence portal account.",
     confirmLabel: "I’ve registered in the licence portal",
     confirmationKind: "client",
-    prerequisites: ["broker_demo"],
+    prerequisites: ["user_agreement"],
   },
   {
     key: "demo_licence_apply",
-    sort: 7,
+    sort: 8,
     phase: "demo",
     title: "Choose an EA and apply for a demo licence",
     eyebrow: "Demo",
@@ -112,7 +125,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
   },
   {
     key: "demo_licence_approved",
-    sort: 8,
+    sort: 9,
     phase: "demo",
     title: "Confirm demo licence approval",
     eyebrow: "Demo",
@@ -123,27 +136,16 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     prerequisites: ["demo_licence_apply"],
   },
   {
-    key: "user_agreement",
-    sort: 9,
-    phase: "demo",
-    title: "Sign the user agreement",
-    eyebrow: "Demo",
-    description: "Review and sign your Fortuna user agreement to continue.",
-    confirmLabel: "Sign agreement",
-    confirmationKind: "dropbox_sign",
-    prerequisites: ["demo_licence_approved"],
-  },
-  {
     key: "demo_install",
     sort: 10,
     phase: "demo",
     title: "Install the EA on your demo account",
     eyebrow: "Demo",
     description:
-      "Follow the installation guide on your VPS. Confirm when the EA is running on demo.",
-    confirmLabel: "EA is running on my demo account",
+      "Install the EA on your VPS, practise Equity Protect, then confirm the EA is running on demo.",
+    confirmLabel: "My EA is running on my demo account",
     confirmationKind: "client",
-    prerequisites: ["user_agreement"],
+    prerequisites: ["demo_licence_approved"],
   },
   {
     key: "mt5_mobile",
@@ -245,9 +247,18 @@ export const DEFAULT_LINKS = {
   forexVps: "https://www.forexvps.net/?aff=140887",
   licencePortalSignup:
     "https://clients.fortunaglobalholdings.com/signup/19269b45c6374f4dae93fda3f32f7411",
+  licencePortalSignin: "https://clients.fortunaglobalholdings.com/",
   helloSignTemplate: "https://app.hellosign.com/s/CdRr7SgF",
+  vpsVideo: "/guides/vps-setup-video.mp4",
 } as const;
 
 export function getStepDef(key: string): OnboardingStepDef | undefined {
   return ONBOARDING_STEPS.find((s) => s.key === key);
+}
+
+export function getNextStepKey(completedKey: string): string | null {
+  const sorted = [...ONBOARDING_STEPS].sort((a, b) => a.sort - b.sort);
+  const idx = sorted.findIndex((s) => s.key === completedKey);
+  if (idx < 0 || idx >= sorted.length - 1) return null;
+  return sorted[idx + 1]?.key ?? null;
 }

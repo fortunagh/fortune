@@ -45,3 +45,18 @@ export async function resolveUserPhone(
     normalizePhoneE164(submission?.mobile_number)
   );
 }
+
+/** True when the linked request-access row opted into SMS. */
+export async function userHasSmsConsent(
+  admin: AdminClient,
+  userId: string,
+): Promise<boolean> {
+  const { data: submission } = await admin
+    .from("request_access_submissions")
+    .select("sms_opt_in")
+    .eq("user_id", userId)
+    .order("created_at", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+  return submission?.sms_opt_in === true;
+}

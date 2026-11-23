@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 
 import { QuestionnaireForm } from "@/components/portal/questionnaire-form";
 import { StepActionBar } from "@/components/portal/current-step-panel";
+import { StepInstructionCard } from "@/components/portal/step-instruction-card";
 import { JourneyTimeline } from "@/components/portal/journey-timeline";
 import {
   PageHeader,
@@ -16,19 +17,12 @@ import {
   getCaseForUser,
   readinessUnlocked,
 } from "@/lib/onboarding/case";
-import {
-  DEMO_READINESS_ITEMS,
-  DEFAULT_LINKS,
-  getStepDef,
-} from "@/lib/onboarding/steps";
+import { DEMO_READINESS_ITEMS, getStepDef } from "@/lib/onboarding/steps";
 import { createClient } from "@/lib/supabase/server";
 import { LiveInstallActions } from "@/components/portal/live-install-actions";
 import { DemoReadinessForm } from "@/components/portal/demo-readiness-form";
 import { ResourceList } from "@/components/portal/resource-list";
 import { requireRequest } from "@/lib/onboarding/connection";
-
-const LICENCE_PORTAL_SIGNIN =
-  "https://clients.fortunaglobalholdings.com/login";
 
 export default async function StepPage({
   params,
@@ -60,11 +54,16 @@ export default async function StepPage({
     .eq("active", true)
     .order("sort_order");
 
-  const { data: resources } = await supabase
+  const { data: rawResources } = await supabase
     .from("resources")
     .select("*")
     .eq("published", true)
     .contains("related_step_keys", [stepKey]);
+
+  const resources = (rawResources ?? []).filter((r) => {
+    if (stepKey === "vps_setup") return r.kind !== "video";
+    return r.kind !== "video";
+  });
 
   const { data: questionnaire } =
     stepKey === "questionnaire"
@@ -89,7 +88,7 @@ export default async function StepPage({
     completedAt: s.completed_at,
   }));
 
-  const hasGuides = (resources?.length ?? 0) > 0;
+  const hasGuides = resources.length > 0;
 
   return (
     <div className="mx-auto grid w-full max-w-7xl gap-6 lg:grid-cols-[280px_1fr]">
@@ -107,10 +106,16 @@ export default async function StepPage({
 
       <div className="space-y-5">
         <PageHeader
-          eyebrow={def.eyebrow}
+          eyebrow={`${def.eyebrow} · Step ${def.sort} of 17`}
           title={def.title}
-          description={def.description}
+          description={undefined}
         />
+
+        {!locked ? (
+          <WidgetCard>
+            <StepInstructionCard stepKey={stepKey} />
+          </WidgetCard>
+        ) : null}
 
         {paid === "1" && !completed ? (
           <SoftNotice variant="success">
@@ -199,93 +204,6 @@ export default async function StepPage({
                 correction.
               </p>
             )}
-          </WidgetCard>
-        ) : null}
-
-        {stepKey === "vps_setup" && !locked ? (
-          <WidgetCard className="space-y-3">
-            <p className="text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
-              What is a VPS?
-            </p>
-            <p className="text-sm leading-relaxed text-neutral-700">
-              A VPS (Virtual Private Server) is a remote Windows computer that
-              stays online so MetaTrader 5 and your Fortuna EA can run 24/7 —
-              not your laptop.
-            </p>
-            <p className="text-sm text-neutral-600">
-              Click the ForexVPS signup link below, follow the video guide, then
-              confirm when your VPS is ready.
-            </p>
-            <Button asChild variant="fortuna" size="sm">
-              <a
-                href={DEFAULT_LINKS.forexVps}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Click the ForexVPS signup link
-              </a>
-            </Button>
-          </WidgetCard>
-        ) : null}
-
-        {stepKey === "broker_demo" && !locked ? (
-          <WidgetCard className="space-y-3">
-            <p className="text-sm leading-relaxed text-neutral-700">
-              Choose a broker from your approved options and use its signup
-              link. It is important to use the link provided so your account is
-              grouped correctly with the broker for EA operations.
-            </p>
-            <p className="text-sm text-neutral-600">
-              Open a <strong>demo</strong> account on <strong>MT5</strong> with{" "}
-              <strong>USD</strong> as the account currency,{" "}
-              <strong>500:1</strong> leverage and a{" "}
-              <strong>USD 100,000</strong> demo balance. Keep your account
-              number and exact demo server handy.
-            </p>
-          </WidgetCard>
-        ) : null}
-
-        {stepKey === "licence_portal" && !locked ? (
-          <WidgetCard className="space-y-3">
-            <p className="text-sm leading-relaxed text-neutral-700">
-              Connect to your VPS and open a web browser inside it, such as
-              Microsoft Edge or Google Chrome. Paste the signup link into the
-              address bar. If you are copying from a Mac, use{" "}
-              <strong>Command+C</strong> on your Mac and{" "}
-              <strong>Control+V</strong> inside the Windows VPS.
-            </p>
-            <div className="flex flex-wrap gap-2">
-              <Button asChild variant="fortuna" size="sm">
-                <a
-                  href={DEFAULT_LINKS.licencePortalSignup}
-                  target="_blank"
-                  rel="noreferrer"
-                >
-                  Register in the Fortuna licence portal
-                </a>
-              </Button>
-              <Button asChild variant="outline" size="sm" className="rounded-xl">
-                <a href={LICENCE_PORTAL_SIGNIN} target="_blank" rel="noreferrer">
-                  Licence portal sign-in
-                </a>
-              </Button>
-            </div>
-          </WidgetCard>
-        ) : null}
-
-        {stepKey === "demo_licence_apply" && !locked ? (
-          <WidgetCard className="space-y-3">
-            <p className="text-sm leading-relaxed text-neutral-700">
-              Review the EA comparison guide to choose the EA you want to use.
-              Sign in to the licence portal and follow the licence application
-              section of the setup guide. Select <strong>Demo</strong> and use
-              the account number and exact demo server from your broker.
-            </p>
-            <Button asChild variant="outline" size="sm" className="rounded-xl">
-              <a href={LICENCE_PORTAL_SIGNIN} target="_blank" rel="noreferrer">
-                Licence portal sign-in
-              </a>
-            </Button>
           </WidgetCard>
         ) : null}
 
@@ -379,7 +297,7 @@ export default async function StepPage({
             <p className="mb-4 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500">
               Guides
             </p>
-            <ResourceList resources={resources ?? []} />
+            <ResourceList resources={resources} />
           </WidgetCard>
         ) : !locked &&
           stepKey !== "questionnaire" &&

@@ -3,11 +3,13 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import * as React from "react";
+import { Loader2 } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { getStepDef } from "@/lib/onboarding/steps";
 import { fortunaUiClass } from "@/lib/fonts/fortuna";
 import { cn } from "@/lib/utils";
+import { useNavProgress } from "@/components/portal/navigation-progress";
 
 import {
   BronzeRule,
@@ -103,14 +105,20 @@ export function StepActionBar({
   extraPayload?: Record<string, unknown>;
 }) {
   const router = useRouter();
+  const { start: startNav, done: doneNav } = useNavProgress();
   const [busy, setBusy] = React.useState(false);
+  const [waitingSign, setWaitingSign] = React.useState(false);
   const [error, setError] = React.useState<string | null>(null);
+  const inflight = React.useRef(false);
 
   async function confirm(payload: Record<string, unknown> = {}) {
+    if (inflight.current || disabled) return;
+    inflight.current = true;
     setBusy(true);
     setError(null);
     try {
       if (confirmationKind === "stripe") {
+        startNav();
         const res = await fetch("/api/onboarding/checkout", { method: "POST" });
         const json = await res.json();
         if (!res.ok) throw new Error(json.error || "Checkout failed");
@@ -127,10 +135,12 @@ export function StepActionBar({
         if (json.signUrl) {
           window.open(json.signUrl, "_blank", "noopener,noreferrer");
         }
+        setWaitingSign(true);
         router.refresh();
         return;
       }
 
+      startNav();
       const res = await fetch("/api/onboarding/confirm", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -141,14 +151,25 @@ export function StepActionBar({
       });
       const json = await res.json();
       if (!res.ok) throw new Error(json.error || "Could not confirm");
-      router.push("/dashboard");
+      const next =
+        typeof json.nextStepKey === "string" && json.nextStepKey
+          ? json.nextStepKey
+          : null;
+      router.push(next ? `/dashboard/steps/${next}` : "/dashboard");
       router.refresh();
     } catch (e) {
+      doneNav();
       setError(e instanceof Error ? e.message : "Something went wrong");
-    } finally {
       setBusy(false);
+      inflight.current = false;
     }
   }
+
+  const label = waitingSign
+    ? "Waiting for signature…"
+    : busy
+      ? "Working…"
+      : confirmLabel;
 
   return (
     <div className="space-y-3">
@@ -160,10 +181,13 @@ export function StepActionBar({
           <Button
             type="button"
             variant="fortuna"
-            disabled={disabled || busy}
+            disabled={disabled || busy || waitingSign}
             onClick={() => confirm()}
           >
-            {busy ? "Working…" : confirmLabel}
+            {busy || waitingSign ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : null}
+            {label}
           </Button>
         ) : null}
         <Button asChild variant="outline" className="rounded-xl">

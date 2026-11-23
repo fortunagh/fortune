@@ -2,8 +2,9 @@ import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { sendEmail } from "@/lib/integrations/resend";
 import { sendSms } from "@/lib/integrations/twilio";
-import { resolveUserPhone } from "@/lib/onboarding/phone";
+import { resolveUserPhone, userHasSmsConsent } from "@/lib/onboarding/phone";
 import { getNotificationEmails } from "@/lib/admin/settings";
+import { smsBodyForStep } from "@/lib/onboarding/step-copy";
 import {
   renderAccessApprovedEmail,
   renderInvoiceEmail,
@@ -83,7 +84,10 @@ export async function enqueueNextStepNotification(
         });
 
   const template = templateKey ?? `next_step_${stepKey}`;
-  const smsBody = `Fortuna: ${tpl.subject}. Open ${siteUrl()}/dashboard/steps/${stepKey}`;
+  const smsBody = smsBodyForStep(
+    templateKey === "onboarding_complete" ? "onboarding_complete" : stepKey,
+    siteUrl(),
+  );
 
   await admin.from("notifications").insert({
     user_id: userId,
@@ -107,7 +111,8 @@ export async function enqueueNextStepNotification(
   }
 
   if (channel === "sms") {
-    const phone = await resolveUserPhone(admin, userId);
+    const consented = await userHasSmsConsent(admin, userId);
+    const phone = consented ? await resolveUserPhone(admin, userId) : null;
     const { data: delivery } = await admin
       .from("deliveries")
       .insert({
@@ -120,6 +125,19 @@ export async function enqueueNextStepNotification(
       })
       .select("id")
       .single();
+
+    if (!consented) {
+      if (delivery) {
+        await admin
+          .from("deliveries")
+          .update({
+            status: "skipped",
+            meta: { stepKey, error: "no_sms_consent" },
+          })
+          .eq("id", delivery.id);
+      }
+      return { skipped: true as const };
+    }
 
     if (!phone) {
       if (delivery) {

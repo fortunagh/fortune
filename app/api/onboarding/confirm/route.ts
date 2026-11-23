@@ -58,5 +58,6 @@ export async function POST(request: Request) {
     ok: true,
     case: result.caseRow,
     states: result.states,
+    nextStepKey: result.nextStepKey ?? null,
   });
 }

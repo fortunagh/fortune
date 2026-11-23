@@ -7,6 +7,7 @@ import { JourneyTimeline } from "@/components/portal/journey-timeline";
 import { PaymentToast } from "@/components/portal/payment-toast";
 import { ResourceList } from "@/components/portal/resource-list";
 import { StepActionBar } from "@/components/portal/current-step-panel";
+import { StepInstructionCard } from "@/components/portal/step-instruction-card";
 import {
   PortalMuted,
   PortalPageTitle,
@@ -100,12 +101,19 @@ export default async function ClientHomePage() {
     .order("sort_order")
     .limit(6);
 
-  const { data: resources } = await supabase
-    .from("resources")
-    .select("*")
-    .eq("published", true)
-    .order("sort_order")
-    .limit(4);
+  let resources: Record<string, unknown>[] = [];
+  if (currentKey) {
+    const { data: stepResources } = await supabase
+      .from("resources")
+      .select("*")
+      .eq("published", true)
+      .contains("related_step_keys", [currentKey])
+      .order("sort_order");
+    resources = (stepResources ?? []).filter((r) => {
+      if (currentKey === "vps_setup") return true;
+      return r.kind !== "video";
+    });
+  }
 
   const railStates = states.map((s) => ({
     key: s.step_key,
@@ -188,9 +196,7 @@ export default async function ClientHomePage() {
               <h2 className={cn(fortunaDisplayClass, "text-2xl text-neutral-950")}>
                 {def.title}
               </h2>
-              <p className="text-sm leading-relaxed text-neutral-600">
-                {def.description}
-              </p>
+              <StepInstructionCard stepKey={def.key} />
               {def.key === "demo_readiness" && !ready ? (
                 <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
                   Demo practice day {demoDays} of 28.
@@ -229,12 +235,16 @@ export default async function ClientHomePage() {
                 </p>
               ) : null}
 
-              <StepActionBar
-                stepKey={def.key}
-                confirmLabel={def.confirmLabel}
-                confirmationKind={def.confirmationKind}
-                disabled={def.key === "demo_readiness" && !ready}
-              />
+              {def.key !== "questionnaire" &&
+              def.key !== "demo_readiness" &&
+              def.key !== "live_install" ? (
+                <StepActionBar
+                  stepKey={def.key}
+                  confirmLabel={def.confirmLabel}
+                  confirmationKind={def.confirmationKind}
+                  disabled={def.key === "demo_readiness" && !ready}
+                />
+              ) : null}
             </div>
           ) : (
             <PortalMuted>No active step.</PortalMuted>
@@ -252,10 +262,22 @@ export default async function ClientHomePage() {
             <p className={cn(fortunaUiClass, "mb-3 text-xs font-semibold uppercase tracking-[0.14em] text-neutral-500")}>
               Resources
             </p>
-            {(resources?.length ?? 0) > 0 ? (
-              <ResourceList resources={resources ?? []} />
+            {resources.length > 0 ? (
+              <ResourceList
+                resources={resources as {
+                  id: string;
+                  title: string;
+                  kind: string;
+                  storage_path?: string | null;
+                  external_url?: string | null;
+                }[]}
+              />
             ) : (
-              <PortalMuted>No guides published yet.</PortalMuted>
+              <PortalMuted>
+                {currentKey === "vps_setup"
+                  ? "Watch the VPS video in the step card."
+                  : "Guides for this step appear here when published."}
+              </PortalMuted>
             )}
             <Link
               href="/dashboard/resources"

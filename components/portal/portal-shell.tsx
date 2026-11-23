@@ -21,9 +21,11 @@ import {
 } from "lucide-react";
 
 import { LogoutButton } from "@/components/logout-button";
+import { NavigationProgressProvider } from "@/components/portal/navigation-progress";
 import { InitialsAvatar, fortunaUiClass } from "@/components/portal/portal-ui";
 import { cn } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
+import { Suspense } from "react";
 
 const mainNav = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
@@ -97,6 +99,8 @@ export function PortalShell({
   }
 
   return (
+    <Suspense fallback={null}>
+    <NavigationProgressProvider>
     <div className="flex min-h-[100dvh] w-full bg-[#f7f6f2] text-neutral-950">
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-[100dvh] w-64 shrink-0 flex-col border-r border-black/[0.06] bg-white px-3 py-4 lg:flex">
@@ -341,5 +345,7 @@ export function PortalShell({
         </>
       ) : null}
     </div>
+    </NavigationProgressProvider>
+    </Suspense>
   );
 }
