@@ -17,6 +17,6 @@ export const config = {
      * Proxy runs before public files. Font requests must skip auth or
      * anonymous visitors are redirected to login and the font never loads.
      */
-    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|woff2?|ttf|otf|eot)$).*)",
+    "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp|avif|ico|woff2?|ttf|otf|eot|mp4|webm|mov|pdf)$).*)",
   ],
 };

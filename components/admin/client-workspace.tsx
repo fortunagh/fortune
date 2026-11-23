@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { AdminStatus } from "@/components/admin/ui/admin-status";
+import { AdminClientWipe } from "@/components/admin/admin-client-wipe";
 import { AdminStepOverride } from "@/components/admin/admin-step-override";
 import { AdminSupportStatus } from "@/components/admin/admin-support-status";
 import {
@@ -145,6 +146,13 @@ export function ClientWorkspace({
       <div className="rounded-xl border border-neutral-200/80 bg-white p-4">
         <p className="mb-3 text-xs font-medium text-neutral-500">Admin override</p>
         <AdminStepOverride userId={userId} steps={steps} />
+      </div>
+
+      <div className="rounded-xl border border-red-200/80 bg-red-50/40 p-4">
+        <p className="mb-3 text-xs font-medium uppercase tracking-[0.12em] text-red-700/80">
+          Reset test client
+        </p>
+        <AdminClientWipe userId={userId} email={email} />
       </div>
 
       <Tabs defaultValue="timeline">

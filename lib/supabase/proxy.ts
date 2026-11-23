@@ -63,7 +63,9 @@ export async function updateSession(request: NextRequest) {
   // public/ assets. Matcher should already skip these; this keeps a font
   // request from being sent to the login page if it still reaches the proxy.
   const isStaticAsset =
-    /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|eot)$/i.test(pathname);
+    /\.(?:svg|png|jpe?g|gif|webp|avif|ico|woff2?|ttf|otf|eot|mp4|webm|mov|pdf)$/i.test(
+      pathname,
+    );
 
   if (!user && !isPublicPath && !isStaticAsset) {
     const url = request.nextUrl.clone();
