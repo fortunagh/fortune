@@ -5,6 +5,7 @@ import { sendSms } from "@/lib/integrations/twilio";
 import { resolveUserPhone, userHasSmsConsent } from "@/lib/onboarding/phone";
 import { getNotificationEmails } from "@/lib/admin/settings";
 import { smsBodyForStep } from "@/lib/onboarding/step-copy";
+import { loadStepEmailMaterials } from "./step-attachments";
 import {
   renderAccessApprovedEmail,
   renderInvoiceEmail,
@@ -96,24 +97,39 @@ export async function enqueueNextStepNotification(
   if (existing) return { skipped: true as const };
 
   const { firstName, email } = await profileName(admin, userId);
-  const tpl =
-    templateKey === "onboarding_complete"
-      ? renderNextStepEmail({
-          firstName,
-          stepKey: "onboarding_complete",
-          portalUrl: siteUrl(),
-        })
-      : renderNextStepEmail({
-          firstName,
-          stepKey,
-          portalUrl: siteUrl(),
-        });
+  const emailStepKey =
+    templateKey === "onboarding_complete" ? "onboarding_complete" : stepKey;
+
+  // PDFs for this step (attachments) + video/link guides (body links).
+  let attachments: Awaited<
+    ReturnType<typeof loadStepEmailMaterials>
+  >["attachments"] = [];
+  let linkResources: Awaited<
+    ReturnType<typeof loadStepEmailMaterials>
+  >["linkResources"] = [];
+  if (channel === "email") {
+    try {
+      const materials = await loadStepEmailMaterials(admin, emailStepKey);
+      attachments = materials.attachments;
+      linkResources = materials.linkResources;
+    } catch (e) {
+      console.error("loadStepEmailMaterials", e);
+    }
+  }
+
+  const tpl = renderNextStepEmail({
+    firstName,
+    stepKey: emailStepKey,
+    portalUrl: siteUrl(),
+    attachedFilenames: attachments.map((a) => a.filename),
+    resourceLinks: linkResources.map((r) => ({
+      title: r.title,
+      url: r.url,
+    })),
+  });
 
   const template = templateKey ?? `next_step_${stepKey}`;
-  const smsBody = smsBodyForStep(
-    templateKey === "onboarding_complete" ? "onboarding_complete" : stepKey,
-    siteUrl(),
-  );
+  const smsBody = smsBodyForStep(emailStepKey, siteUrl());
 
   await admin.from("notifications").insert({
     user_id: userId,
@@ -217,6 +233,7 @@ export async function enqueueNextStepNotification(
     subject: tpl.subject,
     html: tpl.html,
     text: tpl.text,
+    attachments,
   });
 
   if (delivery) {
@@ -225,7 +242,12 @@ export async function enqueueNextStepNotification(
       .update({
         status: sent.ok ? "sent" : "failed",
         sent_at: sent.ok ? new Date().toISOString() : null,
-        meta: { stepKey, error: sent.error ?? null },
+        meta: {
+          stepKey,
+          error: sent.error ?? null,
+          attached: attachments.map((a) => a.filename),
+          linked: linkResources.map((r) => r.title),
+        },
       })
       .eq("id", delivery.id);
   }

@@ -63,7 +63,7 @@ const ASSETS = [
     storagePath: "guides/fortuna-equity-protect-guide.pdf",
     title: "Fortuna Equity Protect Guide",
     kind: "pdf",
-    related: ["live_install"],
+    related: ["demo_install", "live_install"],
     contentType: "application/pdf",
   },
   {

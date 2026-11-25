@@ -69,8 +69,18 @@ export function renderNextStepEmail(options: {
   firstName: string;
   stepKey: string;
   portalUrl: string;
+  /** Filenames attached to this email (PDFs). */
+  attachedFilenames?: string[];
+  /** Guides too large to attach (e.g. video) — include as links. */
+  resourceLinks?: { title: string; url: string }[];
 }): EmailTemplate {
-  const { firstName, stepKey, portalUrl } = options;
+  const {
+    firstName,
+    stepKey,
+    portalUrl,
+    attachedFilenames = [],
+    resourceLinks = [],
+  } = options;
   const def = getStepDef(stepKey);
   const copy = getStepCopy(stepKey);
 
@@ -79,7 +89,7 @@ export function renderNextStepEmail(options: {
   const cta = CTA_BY_STEP[stepKey] ?? "Continue in your portal";
   const link = `${portalUrl.replace(/\/$/, "")}/dashboard/steps/${stepKey}`;
 
-  const bodyHtml = copy
+  let bodyHtml = copy
     ? paragraphsToHtml(
         copy.emailParagraphs,
         copy.emailBullets,
@@ -87,13 +97,30 @@ export function renderNextStepEmail(options: {
       )
     : `<p style="margin:0 0 12px">${escapeHtml(def?.description ?? "Your next Fortuna step is ready.")}</p>`;
 
-  const bodyText = copy
+  let bodyText = copy
     ? paragraphsToText(
         copy.emailParagraphs,
         copy.emailBullets,
         copy.emailNote ?? copy.portalNote,
       )
     : (def?.description ?? "Your next Fortuna step is ready.");
+
+  if (attachedFilenames.length > 0) {
+    bodyHtml += `<p style="margin:16px 0 8px;font-size:14px;color:#3f3f46"><strong>Attached for this step</strong> (so you can continue without opening the portal):</p><ul style="margin:0 0 12px;padding-left:18px">${attachedFilenames
+      .map((f) => `<li style="margin:0 0 4px">${escapeHtml(f)}</li>`)
+      .join("")}</ul>`;
+    bodyText += `\n\nAttached for this step:\n${attachedFilenames.map((f) => `• ${f}`).join("\n")}`;
+  }
+
+  if (resourceLinks.length > 0) {
+    bodyHtml += `<p style="margin:16px 0 8px;font-size:14px;color:#3f3f46"><strong>Additional guides for this step</strong></p><ul style="margin:0 0 12px;padding-left:18px">${resourceLinks
+      .map(
+        (r) =>
+          `<li style="margin:0 0 6px"><a href="${escapeHtml(r.url)}" style="color:#8a6d1f">${escapeHtml(r.title)}</a></li>`,
+      )
+      .join("")}</ul>`;
+    bodyText += `\n\nAdditional guides:\n${resourceLinks.map((r) => `• ${r.title}: ${r.url}`).join("\n")}`;
+  }
 
   const { html, text } = wrapFortunaEmail({
     firstName,
