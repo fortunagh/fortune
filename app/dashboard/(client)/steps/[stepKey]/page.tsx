@@ -60,10 +60,18 @@ export default async function StepPage({
     .eq("published", true)
     .contains("related_step_keys", [stepKey]);
 
-  const resources = (rawResources ?? []).filter((r) => {
-    if (stepKey === "vps_setup") return r.kind !== "video";
-    return r.kind !== "video";
-  });
+  const vpsVideoUrl =
+    stepKey === "vps_setup"
+      ? ((rawResources ?? []).find(
+          (r) =>
+            r.kind === "video" &&
+            typeof r.external_url === "string" &&
+            r.external_url,
+        )?.external_url as string | undefined) ?? null
+      : null;
+
+  // Video is embedded in StepInstructionCard for vps_setup — keep list to docs/links.
+  const resources = (rawResources ?? []).filter((r) => r.kind !== "video");
 
   const { data: questionnaire } =
     stepKey === "questionnaire"
@@ -113,7 +121,10 @@ export default async function StepPage({
 
         {!locked ? (
           <WidgetCard>
-            <StepInstructionCard stepKey={stepKey} />
+            <StepInstructionCard
+              stepKey={stepKey}
+              vpsVideoUrl={vpsVideoUrl}
+            />
           </WidgetCard>
         ) : null}
 

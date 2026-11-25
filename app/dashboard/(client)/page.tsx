@@ -219,7 +219,17 @@ export default async function ClientHomePage() {
               <h2 className={cn(fortunaDisplayClass, "text-2xl text-neutral-950")}>
                 {def.title}
               </h2>
-              <StepInstructionCard stepKey={def.key} />
+              <StepInstructionCard
+                stepKey={def.key}
+                vpsVideoUrl={
+                  (resources.find(
+                    (r) =>
+                      r.kind === "video" &&
+                      typeof r.external_url === "string" &&
+                      r.external_url,
+                  )?.external_url as string | undefined) ?? null
+                }
+              />
               {def.key === "demo_readiness" && !ready ? (
                 <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-900">
                   Demo practice day {demoDays} of 28.

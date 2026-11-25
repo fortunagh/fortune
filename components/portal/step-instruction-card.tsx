@@ -2,17 +2,20 @@ import Link from "next/link";
 import { ExternalLink } from "lucide-react";
 
 import { getStepCopy } from "@/lib/onboarding/step-copy";
-import { DEFAULT_LINKS } from "@/lib/onboarding/steps";
 import { fortunaUiClass } from "@/lib/fonts/fortuna";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { VpsVideoPlayer } from "@/components/portal/vps-video-player";
 
 export function StepInstructionCard({
   stepKey,
   className,
+  vpsVideoUrl,
 }: {
   stepKey: string;
   className?: string;
+  /** Prefer Resources external_url when set (Admin → Content). */
+  vpsVideoUrl?: string | null;
 }) {
   const copy = getStepCopy(stepKey);
   if (!copy) return null;
@@ -39,21 +42,7 @@ export function StepInstructionCard({
       ) : null}
 
       {stepKey === "vps_setup" ? (
-        <div className="overflow-hidden rounded-xl border border-neutral-200 bg-black/5">
-          <video
-            controls
-            playsInline
-            preload="metadata"
-            className="aspect-video w-full bg-black"
-            src={DEFAULT_LINKS.vpsVideo}
-          >
-            Your browser does not support embedded video.{" "}
-            <a href={DEFAULT_LINKS.vpsVideo} className="underline">
-              Open the VPS setup video
-            </a>
-            .
-          </video>
-        </div>
+        <VpsVideoPlayer src={vpsVideoUrl} />
       ) : null}
 
       {copy.links?.length ? (

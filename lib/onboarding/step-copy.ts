@@ -107,6 +107,7 @@ export const STEP_COPY: Record<string, StepCopy> = {
     ],
     links: [
       { label: "Sign up to ForexVPS", href: DEFAULT_LINKS.forexVps },
+      { label: "Open VPS setup video", href: DEFAULT_LINKS.vpsVideo },
     ],
   },
 

@@ -249,7 +249,9 @@ export const DEFAULT_LINKS = {
     "https://clients.fortunaglobalholdings.com/signup/19269b45c6374f4dae93fda3f32f7411",
   licencePortalSignin: "https://clients.fortunaglobalholdings.com/",
   helloSignTemplate: "https://app.hellosign.com/s/CdRr7SgF",
-  vpsVideo: "/guides/vps-setup-video.mp4",
+  /** Absolute URL — relative `/guides/...` embeds often sit black until a 60MB+ file finishes metadata. */
+  vpsVideo:
+    "https://www.fortunaglobalholdings.com/guides/vps-setup-video.mp4",
 } as const;
 
 export function getStepDef(key: string): OnboardingStepDef | undefined {
