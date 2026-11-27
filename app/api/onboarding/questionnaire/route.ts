@@ -134,6 +134,6 @@ export async function POST(request: Request) {
     ok: true,
     matchedBrokerIds: matched,
     reviewStatus,
-    nextStepKey: result.nextStepKey ?? "vps_setup",
+    nextStepKey: result.nextStepKey ?? "broker_demo",
   });
 }

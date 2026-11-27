@@ -1,7 +1,11 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { enqueueStepCommunications } from "@/lib/notifications/enqueue";
-import { ONBOARDING_STEPS } from "./steps";
+import {
+  ONBOARDING_STEPS,
+  firstActionableStepKey,
+  isStepFinished,
+} from "./steps";
 import type { OnboardingCaseRow, StepStateRow } from "./types";
 
 type AdminClient = SupabaseClient;
@@ -28,9 +32,11 @@ export async function bootstrapOnboardingCase(
   if (existing) return existing as OnboardingCaseRow;
 
   const now = new Date().toISOString();
+  // Waiving payment must not skip VPS or the questionnaire — broker demo
+  // depends on questionnaire answers.
   const currentStepKey = requiresOnboardingFee
     ? "onboarding_payment"
-    : "questionnaire";
+    : "vps_setup";
 
   let caseRow: OnboardingCaseRow | null = null;
   {
@@ -115,7 +121,7 @@ export async function bootstrapOnboardingCase(
         },
       };
     }
-    if (step.key === "questionnaire" && !requiresOnboardingFee) {
+    if (step.key === "vps_setup" && !requiresOnboardingFee) {
       return {
         case_id: caseRow.id,
         step_key: step.key,
@@ -143,7 +149,7 @@ export async function bootstrapOnboardingCase(
   }
 
   // Kick off Email/SMS sequence for the first unlocked actionable step
-  // (payment, or questionnaire when fee is waived).
+  // (payment, or VPS when fee is waived).
   try {
     await enqueueStepCommunications(admin, {
       userId,
@@ -243,4 +249,143 @@ export async function resetOnboardingData(
   }
 
   return bootstrapOnboardingCase(admin, userId, { requiresOnboardingFee });
+}
+
+/**
+ * If current_step_key jumped past unfinished required steps (e.g. waived
+ * payment landed on broker demo), snap back to the first incomplete step.
+ */
+export async function reconcileOnboardingProgress(
+  admin: AdminClient,
+  userId: string,
+): Promise<{ caseRow: OnboardingCaseRow; states: StepStateRow[] } | null> {
+  const loaded = await getCaseForUser(admin, userId);
+  if (!loaded.caseRow) return null;
+  if (loaded.states.length === 0) {
+    return { caseRow: loaded.caseRow, states: loaded.states };
+  }
+
+  let { caseRow, states } = loaded;
+  const now = new Date().toISOString();
+
+  let waived = caseRow.requires_onboarding_fee === false;
+  if (!waived) {
+    try {
+      const { data: userData } = await admin.auth.admin.getUserById(userId);
+      if (userData.user?.user_metadata?.waive_onboarding_fee === true) {
+        waived = true;
+      }
+    } catch {
+      /* ignore */
+    }
+  }
+  if (!waived) {
+    const { data: sub } = await admin
+      .from("request_access_submissions")
+      .select("waive_onboarding_fee")
+      .eq("user_id", userId)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
+    if (sub?.waive_onboarding_fee === true) waived = true;
+  }
+
+  const requiresFee = !waived;
+
+  const payment = states.find((s) => s.step_key === "onboarding_payment");
+  if (
+    !requiresFee &&
+    payment &&
+    !isStepFinished(payment.status)
+  ) {
+    await admin
+      .from("onboarding_step_states")
+      .update({
+        status: "completed",
+        completed_at: payment.completed_at ?? now,
+        unlocked_at: payment.unlocked_at ?? now,
+        confirmation_source: payment.confirmation_source ?? "admin",
+        payload: {
+          ...(payment.payload ?? {}),
+          fee_waived: true,
+          waive_reason: "reconcile_existing_client_waive",
+        },
+      })
+      .eq("id", payment.id);
+    payment.status = "completed";
+    payment.completed_at = payment.completed_at ?? now;
+
+    if (caseRow.requires_onboarding_fee !== false) {
+      const { error: feeErr } = await admin
+        .from("onboarding_cases")
+        .update({ requires_onboarding_fee: false })
+        .eq("id", caseRow.id);
+      if (!feeErr) {
+        caseRow = { ...caseRow, requires_onboarding_fee: false };
+      }
+    }
+  }
+
+  const actionable = firstActionableStepKey(states);
+  if (!actionable) return { caseRow, states };
+
+  const sorted = [...ONBOARDING_STEPS].sort((a, b) => a.sort - b.sort);
+  const actionIdx = sorted.findIndex((s) => s.key === actionable);
+
+  const target = states.find((s) => s.step_key === actionable);
+  if (
+    target &&
+    (target.status === "locked" ||
+      (target.status !== "available" &&
+        target.status !== "in_progress" &&
+        target.status !== "awaiting" &&
+        !isStepFinished(target.status)))
+  ) {
+    await admin
+      .from("onboarding_step_states")
+      .update({
+        status: actionable === "demo_readiness" ? "awaiting" : "available",
+        unlocked_at: target.unlocked_at ?? now,
+        completed_at: null,
+      })
+      .eq("id", target.id);
+    target.status = "available";
+  }
+
+  for (let i = actionIdx + 1; i < sorted.length; i++) {
+    const later = states.find((s) => s.step_key === sorted[i].key);
+    if (!later) continue;
+    if (isStepFinished(later.status)) continue;
+    if (later.status === "locked") continue;
+    await admin
+      .from("onboarding_step_states")
+      .update({
+        status: "locked",
+        unlocked_at: null,
+        completed_at: null,
+      })
+      .eq("id", later.id);
+    later.status = "locked";
+    later.unlocked_at = null;
+    later.completed_at = null;
+  }
+
+  if (caseRow.current_step_key !== actionable) {
+    await admin
+      .from("onboarding_cases")
+      .update({
+        current_step_key: actionable,
+        status: "active",
+        completed_at: null,
+      })
+      .eq("id", caseRow.id);
+    caseRow = {
+      ...caseRow,
+      current_step_key: actionable,
+      status: "active",
+      completed_at: null,
+    };
+  }
+
+  return { caseRow, states };
 }

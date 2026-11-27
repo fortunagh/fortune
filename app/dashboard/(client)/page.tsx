@@ -25,6 +25,7 @@ import {
   demoDaysElapsed,
   getCaseForUser,
   readinessUnlocked,
+  reconcileOnboardingProgress,
 } from "@/lib/onboarding/case";
 import { requireRequest } from "@/lib/onboarding/connection";
 import { finalizeInviteAfterPassword } from "@/lib/onboarding/invite";
@@ -73,6 +74,17 @@ export default async function ClientHomePage() {
         </PortalMuted>
       </WidgetCard>
     );
+  }
+
+  try {
+    const admin = createServiceRoleClient();
+    const repaired = await reconcileOnboardingProgress(admin, session.user.id);
+    if (repaired?.caseRow) {
+      caseRow = repaired.caseRow;
+      states = repaired.states;
+    }
+  } catch (e) {
+    console.error("reconcile onboarding progress", e);
   }
 
   // Backfill Email/SMS for the current step if the sequence never delivered

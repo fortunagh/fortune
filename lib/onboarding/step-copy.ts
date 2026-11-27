@@ -47,8 +47,8 @@ export const STEP_COPY: Record<string, StepCopy> = {
       "You’ll have training resources to revisit and technical help to get started. Complete each stage in your Fortuna portal so the system can guide you to the next step.",
     ],
     emailBullets: [
-      "Your setup questionnaire, so we can understand your account structure and identify the approved broker options available to you.",
       "VPS setup, with the signup link, instructional video and illustrated PDF guide provided together.",
+      "Your setup questionnaire, so we can understand your account structure and identify the approved broker options available to you.",
       "Opening your broker demo account with the required MT5 settings.",
       "Choosing your EA, registering in the licence portal and applying for your demo licence.",
       "Completing your user agreement and installing the EA on your VPS.",
@@ -58,7 +58,7 @@ export const STEP_COPY: Record<string, StepCopy> = {
     smsBody: `To complete your onboarding, please review the email sent to you.${STOP}`,
     portalHeadline: "Complete your onboarding payment",
     portalParagraphs: [
-      "Pay the one-time AUD $2,750 onboarding fee to unlock setup. We’ll then guide you through questionnaire, VPS, broker demo, licence, agreement, installation and demo practice.",
+      "Pay the one-time AUD $2,750 onboarding fee to unlock setup. We’ll then guide you through VPS, questionnaire, broker demo, licence, agreement, installation and demo practice.",
       "You’ll have training resources and technical help at each stage. Complete each step in this portal so the next one unlocks automatically.",
     ],
   },
@@ -86,7 +86,7 @@ export const STEP_COPY: Record<string, StepCopy> = {
     emailParagraphs: [
       "Your next step is to set up your Virtual Private Server, or VPS. This is the Windows environment where MT5 and your EA will run.",
       "Use the ForexVPS signup link to register. The instructional video and PDF guide are available in your Fortuna portal so you can follow the setup from start to finish.",
-      "Once you can successfully connect and see the Windows desktop, return to your Fortuna portal and select My VPS is set up. You can then continue to opening your broker demo account.",
+      "Once you can successfully connect and see the Windows desktop, return to your Fortuna portal and select My VPS is set up. You can then continue to the onboarding questionnaire.",
       "If you get stuck anywhere, select I need help in your Fortuna portal.",
     ],
     emailBullets: [

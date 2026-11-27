@@ -25,7 +25,7 @@ export const STEP_PHASES: { id: StepPhase; label: string }[] = [
   { id: "billing", label: "Billing" },
 ];
 
-/** Order matches Fortuna_Full_Email_and_SMS_Sequence.pdf (agreement = step 6). */
+/** Client journey order. Payment may be waived; VPS then questionnaire before broker demo. */
 export const ONBOARDING_STEPS: OnboardingStepDef[] = [
   {
     key: "request_access",
@@ -52,20 +52,8 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
     prerequisites: ["request_access"],
   },
   {
-    key: "questionnaire",
-    sort: 3,
-    phase: "setup",
-    title: "Complete the onboarding questionnaire",
-    eyebrow: "Setup",
-    description:
-      "Tell us about your account structure so we can identify approved broker options.",
-    confirmLabel: "Submit questionnaire",
-    confirmationKind: "client",
-    prerequisites: ["onboarding_payment"],
-  },
-  {
     key: "vps_setup",
-    sort: 4,
+    sort: 3,
     phase: "setup",
     title: "Set up your VPS",
     eyebrow: "Setup",
@@ -73,7 +61,19 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
       "Register with ForexVPS, follow the video guide, then confirm your VPS is ready.",
     confirmLabel: "My VPS is set up",
     confirmationKind: "client",
-    prerequisites: ["questionnaire"],
+    prerequisites: ["onboarding_payment"],
+  },
+  {
+    key: "questionnaire",
+    sort: 4,
+    phase: "setup",
+    title: "Complete the onboarding questionnaire",
+    eyebrow: "Setup",
+    description:
+      "Tell us about your account structure so we can identify approved broker options.",
+    confirmLabel: "Submit questionnaire",
+    confirmationKind: "client",
+    prerequisites: ["vps_setup"],
   },
   {
     key: "broker_demo",
@@ -85,7 +85,7 @@ export const ONBOARDING_STEPS: OnboardingStepDef[] = [
       "Open an MT5 demo (USD, 500:1, USD 100,000) with an approved broker using the signup link provided.",
     confirmLabel: "My demo account is open",
     confirmationKind: "client",
-    prerequisites: ["vps_setup"],
+    prerequisites: ["questionnaire"],
   },
   {
     key: "user_agreement",
@@ -263,4 +263,41 @@ export function getNextStepKey(completedKey: string): string | null {
   const idx = sorted.findIndex((s) => s.key === completedKey);
   if (idx < 0 || idx >= sorted.length - 1) return null;
   return sorted[idx + 1]?.key ?? null;
+}
+
+export function isStepFinished(status: string | null | undefined): boolean {
+  return status === "completed" || status === "skipped";
+}
+
+/** First step after `completedKey` that is not already finished. */
+export function getNextActionableStepKey(
+  completedKey: string,
+  states: { step_key: string; status: string }[],
+): string | null {
+  const sorted = [...ONBOARDING_STEPS].sort((a, b) => a.sort - b.sort);
+  const idx = sorted.findIndex((s) => s.key === completedKey);
+  if (idx < 0) return null;
+  const finished = new Set(
+    states
+      .filter((s) => isStepFinished(s.status))
+      .map((s) => s.step_key),
+  );
+  finished.add(completedKey);
+  for (let i = idx + 1; i < sorted.length; i++) {
+    const key = sorted[i]?.key;
+    if (key && !finished.has(key)) return key;
+  }
+  return null;
+}
+
+/** Earliest step that still needs the client (or admin) to act. */
+export function firstActionableStepKey(
+  states: { step_key: string; status: string }[],
+): string | null {
+  const byKey = new Map(states.map((s) => [s.step_key, s]));
+  for (const step of [...ONBOARDING_STEPS].sort((a, b) => a.sort - b.sort)) {
+    const st = byKey.get(step.key);
+    if (!isStepFinished(st?.status)) return step.key;
+  }
+  return null;
 }

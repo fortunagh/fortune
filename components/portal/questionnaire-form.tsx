@@ -94,7 +94,7 @@ export function QuestionnaireForm({ brokers }: { brokers: Broker[] }) {
       if (json.reviewStatus !== "needs_review") {
         startNav();
         const next =
-          typeof json.nextStepKey === "string" ? json.nextStepKey : "vps_setup";
+          typeof json.nextStepKey === "string" ? json.nextStepKey : "broker_demo";
         router.push(`/dashboard/steps/${next}`);
         router.refresh();
         return;

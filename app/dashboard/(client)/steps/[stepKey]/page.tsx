@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 
 import { QuestionnaireForm } from "@/components/portal/questionnaire-form";
 import { StepActionBar } from "@/components/portal/current-step-panel";
@@ -16,9 +16,11 @@ import {
   demoDaysElapsed,
   getCaseForUser,
   readinessUnlocked,
+  reconcileOnboardingProgress,
 } from "@/lib/onboarding/case";
 import { DEMO_READINESS_ITEMS, getStepDef } from "@/lib/onboarding/steps";
 import { createClient } from "@/lib/supabase/server";
+import { createServiceRoleClient } from "@/lib/supabase/service-role";
 import { LiveInstallActions } from "@/components/portal/live-install-actions";
 import { DemoReadinessForm } from "@/components/portal/demo-readiness-form";
 import { ResourceList } from "@/components/portal/resource-list";
@@ -41,12 +43,31 @@ export default async function StepPage({
   if (!session?.user) return null;
 
   const supabase = await createClient();
-  const { caseRow, states } = await getCaseForUser(supabase, session.user.id);
+  let { caseRow, states } = await getCaseForUser(supabase, session.user.id);
   if (!caseRow) notFound();
+
+  try {
+    const admin = createServiceRoleClient();
+    const repaired = await reconcileOnboardingProgress(admin, session.user.id);
+    if (repaired?.caseRow) {
+      caseRow = repaired.caseRow;
+      states = repaired.states;
+    }
+  } catch (e) {
+    console.error("reconcile onboarding progress", e);
+  }
 
   const state = states.find((s) => s.step_key === stepKey);
   const locked = !state || state.status === "locked";
   const completed = state?.status === "completed";
+
+  if (
+    locked &&
+    caseRow.current_step_key &&
+    caseRow.current_step_key !== stepKey
+  ) {
+    redirect(`/dashboard/steps/${caseRow.current_step_key}`);
+  }
 
   const { data: brokers } = await supabase
     .from("brokers")

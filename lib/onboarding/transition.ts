@@ -1,7 +1,12 @@
 import type { SupabaseClient } from "@supabase/supabase-js";
 
 import { enqueueStepCommunications } from "@/lib/notifications/enqueue";
-import { ONBOARDING_STEPS, getNextStepKey, getStepDef } from "./steps";
+import {
+  ONBOARDING_STEPS,
+  getNextActionableStepKey,
+  getNextStepKey,
+  getStepDef,
+} from "./steps";
 import { readinessUnlocked } from "./case";
 import type { OnboardingCaseRow, StepStateRow, TransitionSource } from "./types";
 
@@ -36,8 +41,14 @@ async function writeAudit(
   });
 }
 
-function nextStepKey(completedKey: string): string | null {
-  return getNextStepKey(completedKey);
+function nextStepKey(
+  completedKey: string,
+  states: StepStateRow[] = [],
+): string | null {
+  return (
+    getNextActionableStepKey(completedKey, states) ??
+    getNextStepKey(completedKey)
+  );
 }
 
 /**
@@ -114,7 +125,7 @@ export async function completeStep(options: {
       states,
       nextStepKey: typedCase.current_step_key !== stepKey
         ? typedCase.current_step_key
-        : nextStepKey(stepKey),
+        : nextStepKey(stepKey, states),
     };
   }
 
@@ -230,7 +241,7 @@ export async function completeStep(options: {
     }
   }
 
-  const upcoming = nextStepKey(stepKey);
+  const upcoming = nextStepKey(stepKey, states);
   if (upcoming) {
     caseUpdates.current_step_key = upcoming;
     await admin

@@ -549,8 +549,8 @@ export function RequestAccessAdminTable({
                   Existing client — waive AUD $2,750 onboarding fee
                 </span>
                 <span className="mt-0.5 block text-xs text-neutral-500">
-                  They skip payment and start at the questionnaire. Leave
-                  unchecked for new paying clients.
+                  They skip payment and start at VPS setup, then the
+                  questionnaire. Leave unchecked for new paying clients.
                 </span>
               </span>
             </label>
